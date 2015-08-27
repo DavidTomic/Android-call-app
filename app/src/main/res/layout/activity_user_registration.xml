@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_background"
+    tools:context="test.myprojects.com.callproject.UserRegistrationActivity">
+
+    <Button
+        android:id="@+id/bSignLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@null"
+        android:text="@string/sign_up_log_in"
+        android:textColor="@color/blue_default"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bConfirm"
+        android:layout_below="@+id/bSignLog"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/etPhoneNumber"
+            style="@style/editTextRegistration"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/phone_number"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            style="@style/editTextRegistration"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/etName"
+            style="@style/editTextRegistration"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/name" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            style="@style/editTextRegistration"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/email" />
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray_button"
+        android:text="@string/sign_up"
+        android:textColor="@color/blue_default"
+        android:textSize="20sp" />
+
+
+</RelativeLayout>

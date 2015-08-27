@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="gray_background">#23282D</color>
+    <color name="gray_button">#343C44</color>
+    <color name="gray_light">#343C44</color>
+
+    <color name="blue_default">#2EB3C0</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="hint_color">#AAAAAA</color>
+
+    <color name="tab_bar_background">#373C41</color>
+    <color name="tabMedium">#2B2B2B</color>
+    <color name="tabDark">#000000</color>
+    <color name="tabTransparent">#10ffffff</color>
+    <color name="transparent">#00FFFFFF</color>
+
+</resources>
