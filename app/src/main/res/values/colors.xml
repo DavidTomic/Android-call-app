@@ -15,5 +15,6 @@
     <color name="tabDark">#000000</color>
     <color name="tabTransparent">#10ffffff</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="black">#000000</color>
 
 </resources>

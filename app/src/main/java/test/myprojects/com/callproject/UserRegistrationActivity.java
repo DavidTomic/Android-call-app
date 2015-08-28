@@ -247,10 +247,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
 
-                } else if (resultStatus == 0) {
-                    Toast.makeText(this, getString(R.string.user_already_exists),
-                            Toast.LENGTH_SHORT).show();
-                } else {
+                }else {
                     showErrorMessage();
                 }
 
