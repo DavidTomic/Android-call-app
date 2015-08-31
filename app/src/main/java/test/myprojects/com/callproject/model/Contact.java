@@ -5,6 +5,10 @@ package test.myprojects.com.callproject.model;
  */
 public class Contact {
 
+    public enum ContactType {
+        OUTGOING, RECEIVED, MISSED
+    }
+
 
     private String name;
     private String phoneNumber;
@@ -15,6 +19,36 @@ public class Contact {
     private int status;
     private String statusText;
     private String endTime;
+
+    //only for recents
+    private ContactType contactType;
+    private float duration;
+    private long date;
+
+
+    public float getDuration() {
+        return duration;
+    }
+
+    public void setDuration(float duration) {
+        this.duration = duration;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public ContactType getContactType() {
+        return contactType;
+    }
+
+    public void setContactType(ContactType contactType) {
+        this.contactType = contactType;
+    }
 
     public String getName() {
         return name;

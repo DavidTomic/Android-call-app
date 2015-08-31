@@ -98,6 +98,7 @@ protected boolean isReadyForPullStart() {
             result = isTopFullyVisible;
         }
     }
+    result = false;
     return result;
 }
 
@@ -117,6 +118,7 @@ protected boolean isReadyForPullEnd() {
             result = isLastFullyVisible;
         }
     }
+    result = false;
     return result;
 }
 

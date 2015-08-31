@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import test.myprojects.com.callproject.Util.Prefs;
 
@@ -105,21 +106,21 @@ public class User {
         this.logedIn = logedIn;
     }
 
-
-    public List<Contact> getContactList(){
+    public List<Contact> getContactList() {
         return contactList;
     }
 
 
     //methods
-    public void loadContactsToList(Context context){
+    public void loadContactsToList(Context context) {
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 
-        String[] projection = new String[] {
+        String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_ID
+                ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
+                ContactsContract.CommonDataKinds.Phone.STARRED
         };
 
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
@@ -129,22 +130,45 @@ public class User {
 
         contactList.clear();
 
-        while (phones.moveToNext())
-        {
+        while (phones.moveToNext()) {
             Contact contact = new Contact();
             contact.setName(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
             contact.setPhoneNumber(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+
+            if (contact.getPhoneNumber() == null || contact.getName() == null) continue;
+
             contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
 
             int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
-            if (colPhotoIndex != -1){
+            if (colPhotoIndex != -1) {
                 contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
             }
+
+            int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
+            contact.setFavorit(starred == 1 ? true : false);
 
             Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
             contactList.add(contact);
         }
         phones.close();
+    }
+
+
+    public static int getContactIDFromNumber(String contactNumber, Context context) {
+        contactNumber = Uri.encode(contactNumber);
+        int phoneContactID = -1;
+
+        Cursor contactLookupCursor = context.getContentResolver().query(Uri.
+                withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                        contactNumber), new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME,
+                ContactsContract.PhoneLookup._ID}, null, null, null);
+
+        while (contactLookupCursor.moveToNext()) {
+            phoneContactID = contactLookupCursor.getInt(contactLookupCursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+        }
+        contactLookupCursor.close();
+
+        return phoneContactID;
     }
 
 }

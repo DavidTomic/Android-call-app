@@ -56,7 +56,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
     private void setTabs()
     {
-        addTab(getString(R.string.favortes), R.drawable.tab_favorites, FavoritFragment.class);
+        addTab(getString(R.string.favorites), R.drawable.tab_favorites, FavoritFragment.class);
         addTab(getString(R.string.recents), R.drawable.tab_recents, RecentFragment.class);
 
         addTab(getString(R.string.contacts), R.drawable.tab_contacts, ContactsFragment.class);

@@ -51,7 +51,6 @@ public class ContactsFragment extends Fragment {
             // Initialise your layout here
 
             final PullToRefreshStickyList stlist = (PullToRefreshStickyList)rootView.findViewById(R.id.stickSwipeList);
-            stlist.setRefreshing(false);
             IndexView indexView = (IndexView)rootView.findViewById(R.id.indexView);
 
             StickyAdapter adapter = new StickyAdapter(getActivity());
