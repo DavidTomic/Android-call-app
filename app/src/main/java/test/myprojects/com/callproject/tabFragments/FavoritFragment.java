@@ -38,11 +38,28 @@ public class FavoritFragment extends Fragment {
     private static final String TAG = "FavoritFragment";
     private View rootView;
     private List<Contact> favoritList = new ArrayList<Contact>();
+    private FavoritAdapter favoritAdapter;
 
     public FavoritFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshFavorits();
+    }
+
+    private void refreshFavorits() {
+        favoritList.clear();
+        for (Contact c : User.getInstance(getActivity()).getContactList()) {
+            if (c.isFavorit()) {
+                favoritList.add(c);
+            }
+        }
+
+        favoritAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,7 +71,8 @@ public class FavoritFragment extends Fragment {
             rootView = inflater.inflate(R.layout.fragment_favorit, container, false);
             SwipeMenuListView swipeMenuListView = (SwipeMenuListView) rootView.
                     findViewById(R.id.swipeMenuListView);
-            swipeMenuListView.setAdapter(new FavoritAdapter(getActivity()));
+            favoritAdapter = new FavoritAdapter(getActivity());
+            swipeMenuListView.setAdapter(favoritAdapter);
 
 
             SwipeMenuCreator creator = new SwipeMenuCreator() {
@@ -115,13 +133,6 @@ public class FavoritFragment extends Fragment {
 
         public FavoritAdapter(Context context) {
             inflater = LayoutInflater.from(context);
-            favoritList.clear();
-            for (Contact c : User.getInstance(context).getContactList()) {
-                if (c.isFavorit()) {
-                    favoritList.add(c);
-                }
-            }
-
         }
 
         @Override

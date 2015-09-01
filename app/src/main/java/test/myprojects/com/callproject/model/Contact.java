@@ -6,7 +6,7 @@ package test.myprojects.com.callproject.model;
 public class Contact {
 
     public enum ContactType {
-        OUTGOING, RECEIVED, MISSED
+        INCOMING, OUTGOING, MISSED
     }
 
 
@@ -25,6 +25,15 @@ public class Contact {
     private float duration;
     private long date;
 
+    private String lookupKey;
+
+    public String getLookupKey() {
+        return lookupKey;
+    }
+
+    public void setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
+    }
 
     public float getDuration() {
         return duration;

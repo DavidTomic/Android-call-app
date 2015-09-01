@@ -2,13 +2,20 @@ package test.myprojects.com.callproject.tabFragments;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Contacts;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +25,10 @@ import com.fortysevendeg.swipelistview.SwipeListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
@@ -30,6 +40,7 @@ import test.myprojects.com.callproject.view.PullToRefreshStickyList;
  */
 public class ContactsFragment extends Fragment {
 
+    private static final String TAG = "ContactsFragment";
     private View rootView;
     private List<Contact> contactList = new ArrayList<Contact>();
 
@@ -37,6 +48,15 @@ public class ContactsFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @OnClick(R.id.ibAddContact)
+    public void addContact(){
+        Log.i(TAG, "here");
+
+        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+        intent.putExtra("finishActivityOnSaveCompleted", true);
+        getActivity().startActivity(intent);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,7 +67,7 @@ public class ContactsFragment extends Fragment {
 
             //       Log.i(TAG, "onCreateView inflate");
             rootView = inflater.inflate(R.layout.fragment_contacts, container, false);
-
+            ButterKnife.bind(this, rootView);
             // Initialise your layout here
 
             final PullToRefreshStickyList stlist = (PullToRefreshStickyList)rootView.findViewById(R.id.stickSwipeList);
@@ -118,7 +138,6 @@ public class ContactsFragment extends Fragment {
             currentItem.setLabel(((Contact) contactList.get(position)).getName());
             dataItem.add(currentItem);
             SwipeAdapter sadapter = new SwipeAdapter(getActivity() , dataItem , position);
-
             holder.swipelist.setAdapter(sadapter);
             return convertView;
         }
@@ -220,7 +239,12 @@ public class ContactsFragment extends Fragment {
                 swipeholder.label.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getActivity(), "Item Click " + ((Contact)contactList.get(parent_postion)).getName(), Toast.LENGTH_SHORT).show();
+
+                        Contact contact = contactList.get(parent_postion);
+
+                        Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                        contactDetailIntent.putExtra("contactId", contact.getRecordId());
+                        getActivity().startActivity(contactDetailIntent);
                     }
                 });
 
@@ -249,4 +273,60 @@ public class ContactsFragment extends Fragment {
         }
     }
 
+
+
+    public class ContactAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+
+        public ContactAdapter(Context context) {
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return favoritList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return favoritList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.favorit_list_item, parent, false);
+                holder.name = (TextView) convertView.findViewById(R.id.tvName);
+                holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
+                holder.image = (ImageView) convertView.findViewById(R.id.ivProfile);
+                holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            Contact contact = favoritList.get(position);
+
+            holder.name.setText(contact.getName());
+
+
+            return convertView;
+        }
+
+        class ViewHolder {
+            //TextView text;
+            TextView name;
+            TextView status;
+            ImageButton infoButton;
+            ImageView image;
+        }
+    }
 }

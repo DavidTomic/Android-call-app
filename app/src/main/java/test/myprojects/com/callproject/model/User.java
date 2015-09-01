@@ -120,7 +120,8 @@ public class User {
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
-                ContactsContract.CommonDataKinds.Phone.STARRED
+                ContactsContract.CommonDataKinds.Phone.STARRED,
+                ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
         };
 
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
@@ -147,6 +148,8 @@ public class User {
             int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
             contact.setFavorit(starred == 1 ? true : false);
 
+            contact.setLookupKey(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY)));
+
             Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
             contactList.add(contact);
         }
@@ -169,6 +172,17 @@ public class User {
         contactLookupCursor.close();
 
         return phoneContactID;
+    }
+
+    public Contact getContactWithId(int id){
+
+        for (Contact contact : contactList){
+            if (contact.getRecordId() == id){
+                return contact;
+            }
+        }
+
+        return null;
     }
 
 }

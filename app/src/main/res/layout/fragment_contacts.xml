@@ -21,10 +21,11 @@
             android:gravity="bottom"
             android:orientation="vertical">
 
-            <View android:layout_width="10dp"
+            <View
+                android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:layout_marginBottom="5dp"
-                android:background="@drawable/green_circle"/>
+                android:background="@drawable/green_circle" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -43,12 +44,14 @@
             android:textColor="@color/white" />
 
         <ImageButton
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:id="@+id/ibAddContact"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
+            android:scaleType="fitCenter"
             android:background="@null"
+            android:padding="15dp"
             android:src="@drawable/plus_icon" />
 
     </RelativeLayout>
@@ -58,8 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <test.myprojects.com.callproject.view.PullToRefreshStickyList
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <test.myprojects.com.callproject.view.PullToRefreshStickyList xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/stickSwipeList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

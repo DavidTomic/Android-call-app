@@ -118,7 +118,9 @@ public class RecentFragment extends Fragment {
 
             Contact contact = recentList.get(position);
 
-            holder.name.setText(contact.getName());
+            String name = contact.getName();
+            if (name == null) name = contact.getPhoneNumber();
+            holder.name.setText(name);
 
 
             return convertView;
@@ -154,23 +156,24 @@ public class RecentFragment extends Fragment {
 
         Cursor cursor = getActivity().getContentResolver().query(queryUri, projection, null, null, sortOrder);
 
-        Log.i(TAG, "COUNT: " + cursor.getCount());
+//        Log.i(TAG, "COUNT: " + cursor.getCount());
 
         List<Contact> cList  = User.getInstance(getActivity()).getContactList();
 
+        recentList.clear();
         while (cursor.moveToNext()) {
 
 
-            Log.i(TAG, "TYPE: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)));
+//            Log.i(TAG, "TYPE: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)));
             Log.i(TAG, "CACHED_NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
-            Log.i(TAG, "NUMBER: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)));
-            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DURATION)));
-            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE)));
+//            Log.i(TAG, "NUMBER: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)));
+//            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DURATION)));
+//            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE)));
 
             Contact contact = new Contact();
             contact.setPhoneNumber(cursor.getString(cursor
                     .getColumnIndex(CallLog.Calls.NUMBER)));
-            if (contact.getPhoneNumber()==null) continue;
+            if (contact.getPhoneNumber()==null || contact.getPhoneNumber().length()<5) continue;
 
             contact.setName(cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
             contact.setDuration(Float.parseFloat(cursor.getString(cursor.getColumnIndex(CallLog.Calls.DURATION))));
@@ -178,7 +181,21 @@ public class RecentFragment extends Fragment {
 
             int cId = User.getContactIDFromNumber(contact.getPhoneNumber(), getActivity());
             if (cId!=-1) contact.setRecordId(cId);
-            Log.i(TAG, "cID " + cId);
+          //  Log.i(TAG, "cID " + cId);
+
+            switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))){
+                case CallLog.Calls.INCOMING_TYPE:
+                    contact.setContactType(Contact.ContactType.INCOMING);
+                    break;
+                case CallLog.Calls.OUTGOING_TYPE:
+                    contact.setContactType(Contact.ContactType.OUTGOING);
+                    break;
+                case CallLog.Calls.MISSED_TYPE:
+                    contact.setContactType(Contact.ContactType.MISSED);
+                    break;
+            }
+
+
             recentList.add(contact);
 
         }
