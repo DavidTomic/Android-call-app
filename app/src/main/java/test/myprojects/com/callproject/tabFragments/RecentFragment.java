@@ -2,6 +2,7 @@ package test.myprojects.com.callproject.tabFragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,11 +12,16 @@ import android.os.Bundle;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +37,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
@@ -44,8 +52,48 @@ public class RecentFragment extends Fragment {
     private static final String TAG = "RecentFragment";
     private View rootView;
     private List<Contact> recentList = new ArrayList<Contact>();
+    private boolean showAllContacts;
 
-    @Bind(R.id.swipeMenuListView) SwipeMenuListView swipeMenuListView;
+    @Bind(R.id.swipeMenuListView)
+    SwipeMenuListView swipeMenuListView;
+    @Bind(R.id.bAllMissed)
+    Button bAllMissed;
+
+    @OnClick(R.id.bAllMissed)
+    public void AllMissedClicked() {
+
+        Log.i(TAG, "clicked");
+
+        if (showAllContacts) {
+            showAllContacts = false;
+
+            String AllMissedText = getString(R.string.All_Missed);
+            SpannableString spannablecontent = new SpannableString(AllMissedText);
+            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+                    (R.color.white)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+                    (R.color.blue_default)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            bAllMissed.setText(spannablecontent);
+
+        } else {
+            showAllContacts = true;
+
+            String AllMissedText = getString(R.string.All_Missed);
+            SpannableString spannablecontent = new SpannableString(AllMissedText);
+            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+                    (R.color.blue_default)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+                    (R.color.white)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            bAllMissed.setText(spannablecontent);
+        }
+
+        refreshRecents();
+
+    }
 
     private RecentAdapter recentAdapter;
 
@@ -66,6 +114,57 @@ public class RecentFragment extends Fragment {
             recentAdapter = new RecentAdapter(getActivity());
             swipeMenuListView.setAdapter(recentAdapter);
 
+            String AllMissedText = getString(R.string.All_Missed);
+            SpannableString spannablecontent = new SpannableString(AllMissedText);
+            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+                    (R.color.blue_default)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            bAllMissed.setText(spannablecontent);
+            showAllContacts = true;
+
+            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    dialNumber(recentList.get(position).getPhoneNumber());
+                }
+            });
+
+
+            SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+                @Override
+                public void create(SwipeMenu menu) {
+                    // create "delete" item
+                    SwipeMenuItem deleteItem = new SwipeMenuItem(
+                            getActivity().getApplicationContext());
+                    // set item background
+                    deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                            0x3F, 0x25)));
+                    // set item width
+                    deleteItem.setWidth(120);
+
+                    deleteItem.setTitle("Delete");
+
+                    deleteItem.setTitleSize(18);
+                    // set item title font color
+                    deleteItem.setTitleColor(Color.WHITE);
+                    // add to menu
+                    menu.addMenuItem(deleteItem);
+                }
+            };
+
+            // set creator
+            swipeMenuListView.setMenuCreator(creator);
+
+            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                    DeleteCallById(recentList.get(position).getCallId()+"");
+
+                    // false : close the menu; true : not close the menu
+                    return false;
+                }
+            });
 
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
@@ -106,8 +205,9 @@ public class RecentFragment extends Fragment {
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.favorit_list_item, parent, false);
+                convertView = inflater.inflate(R.layout.recent_list_item, parent, false);
                 holder.name = (TextView) convertView.findViewById(R.id.tvName);
+                holder.date = (TextView) convertView.findViewById(R.id.tvDate);
                 holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
                 holder.image = (ImageView) convertView.findViewById(R.id.ivProfile);
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
@@ -116,20 +216,59 @@ public class RecentFragment extends Fragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            Contact contact = recentList.get(position);
+            final Contact contact = recentList.get(position);
 
             String name = contact.getName();
             if (name == null) name = contact.getPhoneNumber();
             holder.name.setText(name);
 
+            if (showAllContacts) {
+
+                if (contact.getContactType() == Contact.ContactType.MISSED) {
+                    holder.name.setTextColor(getResources().getColor(R.color.red));
+                } else {
+                    holder.name.setTextColor(getResources().getColor(R.color.white));
+                }
+
+                if (contact.getContactType() == Contact.ContactType.OUTGOING) {
+                    holder.image.setVisibility(View.VISIBLE);
+                } else {
+                    holder.image.setVisibility(View.INVISIBLE);
+                }
+
+
+            } else {
+                holder.name.setTextColor(getResources().getColor(R.color.red));
+                holder.image.setVisibility(View.GONE);
+            }
+
+
+            String date = new java.text.SimpleDateFormat("dd-MM-yyyy").format
+                    (new java.util.Date(contact.getDate()));
+
+            holder.date.setText(date);
+
+
+            holder.infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "info " + contact.getName());
+                    Log.i(TAG, "contactId " + contact.getRecordId());
+
+                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                    contactDetailIntent.putExtra("name", contact.getName());
+                    contactDetailIntent.putExtra("contactId", contact.getRecordId());
+                    getActivity().startActivity(contactDetailIntent);
+                }
+            });
 
             return convertView;
         }
 
         class ViewHolder {
-            //TextView text;
             TextView name;
             TextView status;
+            TextView date;
             ImageButton infoButton;
             ImageView image;
         }
@@ -138,13 +277,13 @@ public class RecentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getContactsFromLog();
+        refreshRecents();
     }
 
-    private void getContactsFromLog(){
+    private void refreshRecents() {
         Uri queryUri = android.provider.CallLog.Calls.CONTENT_URI;
 
-        String[] projection = new String[] {
+        String[] projection = new String[]{
                 CallLog.Calls._ID,
                 CallLog.Calls.TYPE,
                 CallLog.Calls.NUMBER,
@@ -152,38 +291,49 @@ public class RecentFragment extends Fragment {
                 CallLog.Calls.DURATION,
                 CallLog.Calls.DATE};
 
-        String sortOrder = CallLog.Calls.CACHED_NAME + " ASC";
+        String sortOrder = CallLog.Calls.DATE + " DESC";
 
         Cursor cursor = getActivity().getContentResolver().query(queryUri, projection, null, null, sortOrder);
 
-//        Log.i(TAG, "COUNT: " + cursor.getCount());
+        Log.i(TAG, "COUNT: " + cursor.getCount());
 
-        List<Contact> cList  = User.getInstance(getActivity()).getContactList();
 
         recentList.clear();
         while (cursor.moveToNext()) {
 
 
 //            Log.i(TAG, "TYPE: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)));
-            Log.i(TAG, "CACHED_NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
+//            Log.i(TAG, "CACHED_NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
 //            Log.i(TAG, "NUMBER: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)));
 //            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DURATION)));
 //            Log.i(TAG, "ID: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE)));
 
             Contact contact = new Contact();
+            contact.setCallId(Integer.parseInt(cursor.getString(cursor
+                    .getColumnIndex(CallLog.Calls._ID))));
+
             contact.setPhoneNumber(cursor.getString(cursor
                     .getColumnIndex(CallLog.Calls.NUMBER)));
-            if (contact.getPhoneNumber()==null || contact.getPhoneNumber().length()<5) continue;
+
+         //   Log.i(TAG, "NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) + " PN: " + contact.getPhoneNumber());
+
+            if (contact.getPhoneNumber() == null || contact.getPhoneNumber().length() < 5) continue;
 
             contact.setName(cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
             contact.setDuration(Float.parseFloat(cursor.getString(cursor.getColumnIndex(CallLog.Calls.DURATION))));
             contact.setDate(Long.parseLong(cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE))));
 
-            int cId = User.getContactIDFromNumber(contact.getPhoneNumber(), getActivity());
-            if (cId!=-1) contact.setRecordId(cId);
-          //  Log.i(TAG, "cID " + cId);
 
-            switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))){
+            if (!showAllContacts && Integer.parseInt(cursor.getString(cursor.
+                    getColumnIndex(CallLog.Calls.TYPE))) != CallLog.Calls.MISSED_TYPE) {
+                continue;
+            }
+
+            int cId = User.getContactIDFromNumber(contact.getPhoneNumber(), getActivity());
+            if (cId != -1) contact.setRecordId(cId);
+            //  Log.i(TAG, "cID " + cId);
+
+            switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))) {
                 case CallLog.Calls.INCOMING_TYPE:
                     contact.setContactType(Contact.ContactType.INCOMING);
                     break;
@@ -195,12 +345,32 @@ public class RecentFragment extends Fragment {
                     break;
             }
 
-
             recentList.add(contact);
 
         }
         cursor.close();
         recentAdapter.notifyDataSetChanged();
 
+    }
+
+
+    public void DeleteCallById(String idd) {
+        try {
+        getActivity().getContentResolver().delete(CallLog.Calls.CONTENT_URI, CallLog.Calls._ID + " = ? ",
+                new String[]{String.valueOf(idd)});
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        refreshRecents();
+    }
+
+    private void dialNumber(String phoneNumber) {
+
+        Log.i(TAG, "Dial " + phoneNumber);
+
+        if (phoneNumber.length() > 0) {
+            startActivity(new Intent(Intent.ACTION_CALL,
+                    Uri.parse("tel:" + phoneNumber)));
+        }
     }
 }

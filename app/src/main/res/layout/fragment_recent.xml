@@ -44,28 +44,6 @@
             android:text="@string/recents"
             android:textColor="@color/white" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Missed"
-                android:textColor="@color/material_grey_850" />
-
-        </LinearLayout>
 
         <Button
             android:id="@+id/bAllMissed"
@@ -75,7 +53,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:background="@null"
-            android:text="All/Missed"
+            android:text="@string/All_Missed"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="12sp" />
@@ -87,6 +65,8 @@
     <com.baoyz.swipemenulistview.SwipeMenuListView
         android:id="@+id/swipeMenuListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@color/gray_button"
+        android:dividerHeight="1px"/>
 
 </LinearLayout>

@@ -102,6 +102,7 @@ public class ContactDetailActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             int contactid = bundle.getInt("contactId");
+            String name = bundle.getString("name");
             this.contact = User.getInstance(this).getContactWithId(contactid);
         }
 

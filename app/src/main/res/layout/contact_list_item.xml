@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gray_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_toLeftOf="@+id/vStatus"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="20dp">
+
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="data depan"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tvStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is my status"
+            android:textColor="@color/gray_light"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vStatus"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/gray_circle" />
+
+</RelativeLayout>

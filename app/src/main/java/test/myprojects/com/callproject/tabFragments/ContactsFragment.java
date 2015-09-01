@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -76,6 +77,18 @@ public class ContactsFragment extends Fragment {
             StickyAdapter adapter = new StickyAdapter(getActivity());
             stlist.getRefreshableView().setAdapter(adapter);
 
+            stlist.StickySwipe.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i(TAG, "Item " + contactList.get(position).getName());
+
+                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                    contactDetailIntent.putExtra("contactId", contactList.get(position).getRecordId());
+                    getActivity().startActivity(contactDetailIntent);
+
+                }
+            });
+
             /** indexable listview */
             indexView.init(stlist,null);
 
@@ -125,20 +138,19 @@ public class ContactsFragment extends Fragment {
             ViewHolder holder;
             if(convertView == null){
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.contacts_list_item, parent , false);
-                holder.swipelist = (SwipeListView) convertView.findViewById(R.id.example_lv_list);
+                convertView = inflater.inflate(R.layout.contact_list_item, parent , false);
+                holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+                holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
+                holder.vStatus = (View) convertView.findViewById(R.id.vStatus);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            List<SwipeItem> dataItem = new ArrayList<SwipeItem>();
-            SwipeItem currentItem = new SwipeItem();
-            currentItem.setLabel(((Contact) contactList.get(position)).getName());
-            dataItem.add(currentItem);
-            SwipeAdapter sadapter = new SwipeAdapter(getActivity() , dataItem , position);
-            holder.swipelist.setAdapter(sadapter);
+            Contact contact = contactList.get(position);
+
+            holder.tvTitle.setText(contact.getName());
+
             return convertView;
         }
 
@@ -171,162 +183,10 @@ public class ContactsFragment extends Fragment {
         }
 
         class ViewHolder {
-            //TextView text;
-            SwipeListView swipelist;
+            TextView tvTitle;
+            TextView tvStatusText;
+            View vStatus;
         }
 
-    }
-
-    public class SwipeItem {
-        private String label;
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-    }
-
-    public class SwipeViewHolder {
-        TextView label;
-        Button edit_btn;
-        Button delete_btn;
-    }
-
-    public class SwipeAdapter extends BaseAdapter {
-        List<SwipeItem> data;
-        Context context;
-        int parent_postion;
-
-        public SwipeAdapter(Context context, List<SwipeItem> data , int parent_postion){
-            this.context = context;
-            this.data = data;
-            this.parent_postion = parent_postion;
-        }
-
-        @Override
-        public int getCount() {
-            return data.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return data.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int pos, View cview, ViewGroup viewGroup) {
-            SwipeItem curitem = this.data.get(pos);
-            SwipeViewHolder swipeholder;
-            if(cview == null){
-                LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                cview = li.inflate(R.layout.contacts_package_row, viewGroup , false);
-                swipeholder = new SwipeViewHolder();
-                swipeholder.label = (TextView)cview.findViewById(R.id.front_label);
-                swipeholder.label.setText(((Contact)contactList.get(parent_postion)).getName());
-                swipeholder.edit_btn = (Button) cview.findViewById(R.id.btn_edit);
-                swipeholder.delete_btn = (Button) cview.findViewById(R.id.btn_delete);
-
-	            /* item click action*/
-
-                swipeholder.label.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        Contact contact = contactList.get(parent_postion);
-
-                        Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
-                        contactDetailIntent.putExtra("contactId", contact.getRecordId());
-                        getActivity().startActivity(contactDetailIntent);
-                    }
-                });
-
-                /* button action */
-
-                swipeholder.edit_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getActivity() , "Edit "+((Contact)contactList.get(parent_postion)).getName() , Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                swipeholder.delete_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getActivity() , "Delete "+((Contact)contactList.get(parent_postion)).getName() , Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                cview.setTag(swipeholder);
-            } else {
-                swipeholder = (SwipeViewHolder)cview.getTag();
-            }
-
-            return cview;
-        }
-    }
-
-
-
-    public class ContactAdapter extends BaseAdapter {
-
-        private LayoutInflater inflater;
-
-        public ContactAdapter(Context context) {
-            inflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public int getCount() {
-            return favoritList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return favoritList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.favorit_list_item, parent, false);
-                holder.name = (TextView) convertView.findViewById(R.id.tvName);
-                holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
-                holder.image = (ImageView) convertView.findViewById(R.id.ivProfile);
-                holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            Contact contact = favoritList.get(position);
-
-            holder.name.setText(contact.getName());
-
-
-            return convertView;
-        }
-
-        class ViewHolder {
-            //TextView text;
-            TextView name;
-            TextView status;
-            ImageButton infoButton;
-            ImageView image;
-        }
     }
 }

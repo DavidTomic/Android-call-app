@@ -3,7 +3,7 @@
 
     <color name="gray_background">#23282D</color>
     <color name="gray_button">#343C44</color>
-    <color name="gray_light">#343C44</color>
+    <color name="gray_light">#70767c</color>
 
     <color name="blue_default">#2EB3C0</color>
 
@@ -16,5 +16,6 @@
     <color name="tabTransparent">#10ffffff</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="red">#FFA500</color>
 
 </resources>

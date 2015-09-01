@@ -16,6 +16,8 @@ import test.myprojects.com.callproject.R;
 
 public class PullToRefreshStickyList extends PullToRefreshBase<StickyListHeadersListView> {
 
+    public StickyListHeadersListView StickySwipe;
+
 private static final OnRefreshListener<StickyListHeadersListView> defaultOnRefreshListener = new OnRefreshListener<StickyListHeadersListView>() {
 
     @Override
@@ -69,7 +71,7 @@ public final Orientation getPullToRefreshScrollDirection() {
 
 @Override
 protected StickyListHeadersListView createRefreshableView(Context context, AttributeSet attrs) {
-	StickyListHeadersListView StickySwipe;
+
 
     if (VERSION.SDK_INT >= VERSION_CODES.GINGERBREAD) {
 	    StickySwipe = new InternalStaggeredGridViewSDK9(context, attrs);

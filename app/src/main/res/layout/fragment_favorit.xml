@@ -50,6 +50,8 @@
     <com.baoyz.swipemenulistview.SwipeMenuListView
         android:id="@+id/swipeMenuListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@color/gray_button"
+        android:dividerHeight="1px"/>
 
 </LinearLayout>

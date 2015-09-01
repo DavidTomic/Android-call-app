@@ -5,6 +5,14 @@ package test.myprojects.com.callproject.model;
  */
 public class Contact {
 
+    public int getCallId() {
+        return callId;
+    }
+
+    public void setCallId(int callId) {
+        this.callId = callId;
+    }
+
     public enum ContactType {
         INCOMING, OUTGOING, MISSED
     }
@@ -26,6 +34,7 @@ public class Contact {
     private long date;
 
     private String lookupKey;
+    private int callId;
 
     public String getLookupKey() {
         return lookupKey;

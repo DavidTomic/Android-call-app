@@ -7,25 +7,13 @@
     android:gravity="center_vertical">
 
 
-    <TextView
-        android:id="@+id/tvProfile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/gray_circle"
-        android:gravity="center"
-        android:text="AD"
-        android:textColor="@color/black" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/ivProfile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
-        android:src="@drawable/hugh"
-        android:visibility="invisible" />
+        android:src="@drawable/outgoing_icon" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -42,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Test Mob"
             android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvStatus"
@@ -68,11 +56,24 @@
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="5dp"
         android:background="@null"
         android:minHeight="0dp"
         android:minWidth="0dp"
         android:padding="12dp"
         android:scaleType="fitCenter"
         android:src="@drawable/info_icon" />
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="15dp"
+        android:text="11-08-2015"
+        android:textColor="@color/gray_light"
+        android:textSize="8sp" />
 
 </RelativeLayout>

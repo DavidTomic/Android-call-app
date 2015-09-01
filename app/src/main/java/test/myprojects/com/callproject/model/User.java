@@ -119,7 +119,7 @@ public class User {
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
                 ContactsContract.CommonDataKinds.Phone.STARRED,
                 ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
         };
