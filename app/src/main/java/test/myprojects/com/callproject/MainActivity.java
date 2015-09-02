@@ -13,14 +13,20 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import org.ksoap2.serialization.KvmSerializable;
+import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import java.util.Hashtable;
+
+import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
 import test.myprojects.com.callproject.tabFragments.RecentFragment;
 import test.myprojects.com.callproject.tabFragments.SettingsFragment;
+import test.myprojects.com.callproject.task.SendMessageTask;
 
 public class MainActivity extends FragmentActivity implements MessageInterface {
 
@@ -51,6 +57,9 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 //            Log.i(TAG, "Rname " + name + "  Rnumber " + phoneNumber);
 //        }
 //        c.close();
+
+        SendMessageTask mtask = new SendMessageTask(null, getCheckPhoneParams());
+        mtask.execute();
 
     }
 
@@ -85,5 +94,69 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     public void responseToSendMessage(SoapObject result, String methodName) {
 
     }
+
+    private SoapObject getCheckPhoneParams() {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        SoapObject so = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
+        PropertyInfo pi2 = new PropertyInfo();
+        pi2.setName("string");
+        pi2.setValue("38593000222");
+        pi2.setType(String.class);
+        so.addProperty(pi2);
+
+
+        request.addProperty("PhoneNumbers", so);
+
+        return request;
+    }
+
+    class PhoneNumbers implements KvmSerializable{
+
+        public String getString() {
+            return string;
+        }
+
+        public void setString(String string) {
+            this.string = string;
+        }
+
+        private String string;
+
+        @Override
+        public Object getProperty(int i) {
+            return string;
+        }
+
+        @Override
+        public int getPropertyCount() {
+            return 1;
+        }
+
+        @Override
+        public void setProperty(int i, Object o) {
+
+        }
+
+        @Override
+        public void getPropertyInfo(int i, Hashtable hashtable, PropertyInfo propertyInfo) {
+            propertyInfo.type = PropertyInfo.STRING_CLASS;
+            propertyInfo.name = "string";
+        }
+    }
+
 
 }

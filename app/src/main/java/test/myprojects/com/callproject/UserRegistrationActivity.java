@@ -71,8 +71,6 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
     @OnClick(R.id.bConfirm)
     public void confirmClicked() {
 
-        String methodName = null;
-
         if (isLogIn) {
 
             if (!(etPhoneNumber.getText().toString().length() > 5 && etPassword.getText()
@@ -80,10 +78,8 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 showErrorMessage();
                 return;
             }
-
-            methodName = SendMessageTask.LOGIN;
-            SendMessageTask task = new SendMessageTask(this, methodName);
-            task.execute(getLogInParams());
+            SendMessageTask task = new SendMessageTask(this, getLogInParams());
+            task.execute();
 
         } else {
 
@@ -94,9 +90,8 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 return;
             }
 
-            methodName = SendMessageTask.CREATE_ACCOUNT;
-            SendMessageTask task = new SendMessageTask(this, methodName);
-            task.execute(getCreateAccountParams());
+            SendMessageTask task = new SendMessageTask(this, getCreateAccountParams());
+            task.execute();
         }
 
 
@@ -155,76 +150,86 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         Toast.makeText(this, getString(R.string.fill_all_data), Toast.LENGTH_SHORT).show();
     }
 
-    private ArrayList<PropertyInfo> getCreateAccountParams() {
-        ArrayList<PropertyInfo> piList = new ArrayList<PropertyInfo>();
+    private SoapObject getCreateAccountParams() {
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CREATE_ACCOUNT);
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         pi.setValue(etPhoneNumber.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("password");
         pi.setValue(etPassword.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Name");
         pi.setValue(etName.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Email");
         pi.setValue(etEmail.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Language");
         pi.setValue(1);
         pi.setType(Integer.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
-        return piList;
+        return request;
     }
 
-    private ArrayList<PropertyInfo> getLogInParams() {
-        ArrayList<PropertyInfo> piList = new ArrayList<PropertyInfo>();
+    private SoapObject getLogInParams() {
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.LOGIN);
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         pi.setValue(etPhoneNumber.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Password");
         pi.setValue(etPassword.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
-        return piList;
+        return request;
     }
 
-    private ArrayList<PropertyInfo> getCheckPhoneParams() {
-        ArrayList<PropertyInfo> piList = new ArrayList<PropertyInfo>();
+    private SoapObject getCheckPhoneParams() {
 
-        SoapObject request = new SoapObject("NAMESPACE", "METHOD_NAME");
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
 
-        ArrayList<PropertyInfo> list = params[0];
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(etPhoneNumber.getText().toString());
+        pi.setType(String.class);
+        request.addProperty(pi);
 
-        if (list!=null && list.size() > 0) {
-            for (PropertyInfo pi : list) {
-                request.addProperty(pi);
-            }
-        }
+        pi = new PropertyInfo();
+        pi.setName("Password");
+        pi.setValue(etPassword.getText().toString());
+        pi.setType(String.class);
+        request.addProperty(pi);
 
+        SoapObject so = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
+        PropertyInfo pi2 = new PropertyInfo();
+        pi2.setName("string");
+        pi2.setValue("38593000222");
+        pi2.setType(String.class);
+        so.addProperty(pi2);
 
+        request.addProperty("PhoneNumbers", so);
 
-        return piList;
+        return request;
     }
 
     @Override
@@ -263,6 +268,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                     Prefs.setUserData(this, user);
 
+//                    SendMessageTask mtask = new SendMessageTask(null, getCheckPhoneParams());
+//                    mtask.execute();
+
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
 
@@ -280,7 +288,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
             try {
 
-                int resultStatus = (int)result.getProperty("Result");
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
                 if (resultStatus == 2) {
 

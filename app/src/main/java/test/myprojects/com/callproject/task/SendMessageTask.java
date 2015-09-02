@@ -14,58 +14,52 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import test.myprojects.com.callproject.model.PhoneNumbers;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 
 /**
  * Created by dtomic on 25/08/15.
  */
-public class SendMessageTask extends AsyncTask<ArrayList<PropertyInfo>, Void, SoapObject> {
+public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
 
     private static final String TAG = "SendMessageTask";
 
     //All method names
     public static final String CREATE_ACCOUNT = "CreateAccount";
     public static final String LOGIN = "GetAccountSetup";
+    public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
     public static final String UPDATE_STATUS = "UpdateStatus";
 
 
-    private static final String NAMESPACE = "http://tempuri.org/";
+    public static final String NAMESPACE = "http://tempuri.org/";
     private static final String URL = "http://call.celox.dk/wsCall.asmx";
     private String SOAP_ACTION;
-    private String METHOD_NAME;
 
     private MessageInterface messageInterface;
-    private String methodName;
     private SoapObject request;
+    HttpTransportSE aht;
 
-    public SendMessageTask(MessageInterface messageInterface, String methodName) {
+    public SendMessageTask(MessageInterface messageInterface, SoapObject request) {
         this.messageInterface = messageInterface;
-        this.methodName = methodName;
-        this.METHOD_NAME = methodName;
-        this.SOAP_ACTION = NAMESPACE + methodName;
-      //  this.request
+        this.SOAP_ACTION = NAMESPACE + request.getName();
+        this.request = request;
     }
 
     @Override
-    protected SoapObject doInBackground(ArrayList<PropertyInfo>...params) {
-        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-
-        ArrayList<PropertyInfo> list = params[0];
-
-        if (list!=null && list.size() > 0) {
-            for (PropertyInfo pi : list) {
-                request.addProperty(pi);
-            }
-        }
+    protected SoapObject doInBackground(Void...params) {
 
         SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         soapEnvelope.dotNet = true;
         soapEnvelope.setOutputSoapObject(request);
 
-        HttpTransportSE aht = new HttpTransportSE(URL);
+        //mozda
+        soapEnvelope.implicitTypes = true;
+        soapEnvelope.addMapping(NAMESPACE, "ActionRequest", new PhoneNumbers().getClass());
 
-        try
-        {
+        aht = new HttpTransportSE(URL);
+        aht.debug=true;
+
+        try {
             aht.setXmlVersionTag("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             aht.call(SOAP_ACTION, soapEnvelope);
 
@@ -87,10 +81,12 @@ public class SendMessageTask extends AsyncTask<ArrayList<PropertyInfo>, Void, So
     @Override
     protected void onPostExecute(SoapObject result) {
         super.onPostExecute(result);
-        Log.i(TAG, "result " + result + " methodName " + methodName);
+        Log.i(TAG, "result " + result + " methodName " + request.getName());
+
+        Log.d("dump Request: ", aht.requestDump);
 
         if (messageInterface!=null)
-        messageInterface.responseToSendMessage(result, methodName);
+        messageInterface.responseToSendMessage(result, request.getName());
 
     }
 }

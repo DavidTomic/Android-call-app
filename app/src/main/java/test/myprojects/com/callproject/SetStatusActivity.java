@@ -59,8 +59,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     @OnClick(R.id.bConfirm)
     public void confirm() {
-        SendMessageTask task = new SendMessageTask(this, SendMessageTask.UPDATE_STATUS);
-        task.execute(getUpdateStatusParams());
+        SendMessageTask task = new SendMessageTask(this, getUpdateStatusParams());
+        task.execute();
     }
 
     @Override
@@ -189,42 +189,42 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         adb.show();
     }
 
-    private ArrayList<PropertyInfo> getUpdateStatusParams() {
-        ArrayList<PropertyInfo> piList = new ArrayList<PropertyInfo>();
+    private SoapObject getUpdateStatusParams() {
 
-        Log.i(TAG, "currentStatus " + currentStatus.getValue());
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
+
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         pi.setValue(User.getInstance(this).getPhoneNumber());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("password");
         pi.setValue(User.getInstance(this).getPassword());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Status");
         pi.setValue(currentStatus.getValue());
         pi.setType(Integer.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
         pi.setValue("2000-01-01T00:00:00");
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
         pi = new PropertyInfo();
         pi.setName("Text");
         pi.setValue(etStatus.getText().toString());
         pi.setType(String.class);
-        piList.add(pi);
+        request.addProperty(pi);
 
-        return piList;
+        return request;
     }
 
     private void setStatusBackgrounds() {

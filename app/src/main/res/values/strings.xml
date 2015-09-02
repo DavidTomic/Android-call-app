@@ -13,7 +13,7 @@
     <string name="password">Password</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
-    <string name="fill_all_data">Please enter all information</string>
+    <string name="fill_all_data">Please check your information</string>
     <string name="title_activity_favorit_tab">FavoritTabActivity</string>
 
 <!-- TODO: Remove or change this placeholder text -->
