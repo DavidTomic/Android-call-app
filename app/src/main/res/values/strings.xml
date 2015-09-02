@@ -40,4 +40,10 @@
     <string name="backspace">&lt;</string>
     <string name="user_already_exists">Phone number already exists</string>
     <string name="All_Missed">All/Missed</string>
+    <string name="title_activity_set_status">SetStatusActivity</string>
+    <string name="set_status">Set status</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="status_updated">Status updated</string>
+    <string name="status_not_updated">Status not updated</string>
+    <string name="arrow_back"><![CDATA[< Back]]></string>
 </resources>

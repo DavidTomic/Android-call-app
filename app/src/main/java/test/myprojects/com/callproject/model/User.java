@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.Util.Prefs;
 
 /**
@@ -24,13 +26,43 @@ public class User {
     private String email;
     private String password;
     private String language;
-    private String defaultText;
-    private boolean logedIn;
+    private boolean loggedIn;
+
+    private SetStatusActivity.Status status;
+    private String statusText;
 
     private List<Contact> contactList = new ArrayList<Contact>();
 
+
+    private boolean contactEdited;
+
     public User() {
 
+    }
+
+
+    public boolean isContactEdited() {
+        return contactEdited;
+    }
+
+    public void setContactEdited(boolean contactEdited) {
+        this.contactEdited = contactEdited;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
+    }
+
+    public SetStatusActivity.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(SetStatusActivity.Status status) {
+        this.status = status;
     }
 
     public static void empty() {
@@ -90,20 +122,12 @@ public class User {
         this.language = language;
     }
 
-    public String getDefaultText() {
-        return defaultText;
-    }
-
-    public void setDefaultText(String defaultText) {
-        this.defaultText = defaultText;
-    }
-
     public boolean isLogedIn() {
-        return logedIn;
+        return loggedIn;
     }
 
     public void setLogedIn(boolean logedIn) {
-        this.logedIn = logedIn;
+        this.loggedIn = logedIn;
     }
 
     public List<Contact> getContactList() {
@@ -138,6 +162,8 @@ public class User {
 
             if (contact.getPhoneNumber() == null || contact.getName() == null) continue;
 
+            contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
+
             contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
 
             int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
@@ -155,7 +181,6 @@ public class User {
         }
         phones.close();
     }
-
 
     public static int getContactIDFromNumber(String contactNumber, Context context) {
         contactNumber = Uri.encode(contactNumber);
@@ -183,6 +208,24 @@ public class User {
         }
 
         return null;
+    }
+
+    public int getStatusColor(){
+
+        if (status==null){
+            return R.drawable.green_circle;
+        }
+
+        switch (status){
+            case RED_STATUS:
+                return R.drawable.red_circle;
+            case GREEN_STATUS:
+                return R.drawable.green_circle;
+            case YELLOW_STATUS:
+                return R.drawable.yellow_circle;
+        }
+
+        return R.drawable.green_circle;
     }
 
 }

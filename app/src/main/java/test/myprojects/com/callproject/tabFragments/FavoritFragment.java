@@ -27,9 +27,13 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 
@@ -48,10 +52,34 @@ public class FavoritFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Bind(R.id.tvStatusText) TextView tvStatusText;
+    @Bind(R.id.vStatusColor) View vStatusColor;
+
+    @OnClick(R.id.llStatus)
+    public void setStatus(){
+        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         refreshFavorits();
+        refreshMyStatusUI();
+    }
+
+    private void refreshMyStatusUI() {
+
+        String statusText = User.getInstance(getActivity()).getStatusText();
+
+        if (statusText==null || statusText.length()<1){
+            tvStatusText.setVisibility(View.GONE);
+        }else {
+            tvStatusText.setText(statusText);
+            tvStatusText.setVisibility(View.VISIBLE);
+        }
+
+        vStatusColor.setBackgroundDrawable(getResources().
+                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 
     private void refreshFavorits() {
@@ -73,6 +101,7 @@ public class FavoritFragment extends Fragment {
 
             //       Log.i(TAG, "onCreateView inflate");
             rootView = inflater.inflate(R.layout.fragment_favorit, container, false);
+            ButterKnife.bind(this, rootView);
             SwipeMenuListView swipeMenuListView = (SwipeMenuListView) rootView.
                     findViewById(R.id.swipeMenuListView);
             favoritAdapter = new FavoritAdapter(getActivity());

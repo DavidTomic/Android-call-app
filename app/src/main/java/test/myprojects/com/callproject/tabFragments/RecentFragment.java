@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 
@@ -58,6 +59,8 @@ public class RecentFragment extends Fragment {
     SwipeMenuListView swipeMenuListView;
     @Bind(R.id.bAllMissed)
     Button bAllMissed;
+    @Bind(R.id.tvStatusText) TextView tvStatusText;
+    @Bind(R.id.vStatusColor) View vStatusColor;
 
     @OnClick(R.id.bAllMissed)
     public void AllMissedClicked() {
@@ -93,6 +96,11 @@ public class RecentFragment extends Fragment {
 
         refreshRecents();
 
+    }
+
+    @OnClick(R.id.llStatus)
+    public void setStatus(){
+        startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
     private RecentAdapter recentAdapter;
@@ -278,6 +286,7 @@ public class RecentFragment extends Fragment {
     public void onResume() {
         super.onResume();
         refreshRecents();
+        refreshMyStatusUI();
     }
 
     private void refreshRecents() {
@@ -299,8 +308,9 @@ public class RecentFragment extends Fragment {
 
 
         recentList.clear();
-        while (cursor.moveToNext()) {
-
+        int i = 0;
+        while (cursor.moveToNext() && i < 20) {
+              i++;
 
 //            Log.i(TAG, "TYPE: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)));
 //            Log.i(TAG, "CACHED_NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
@@ -372,5 +382,20 @@ public class RecentFragment extends Fragment {
             startActivity(new Intent(Intent.ACTION_CALL,
                     Uri.parse("tel:" + phoneNumber)));
         }
+    }
+
+    private void refreshMyStatusUI() {
+
+        String statusText = User.getInstance(getActivity()).getStatusText();
+
+        if (statusText==null || statusText.length()<1){
+            tvStatusText.setVisibility(View.GONE);
+        }else {
+            tvStatusText.setText(statusText);
+            tvStatusText.setVisibility(View.VISIBLE);
+        }
+
+        vStatusColor.setBackgroundDrawable(getResources().
+                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 }

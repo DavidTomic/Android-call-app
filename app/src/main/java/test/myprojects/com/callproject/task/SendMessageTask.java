@@ -26,6 +26,7 @@ public class SendMessageTask extends AsyncTask<ArrayList<PropertyInfo>, Void, So
     //All method names
     public static final String CREATE_ACCOUNT = "CreateAccount";
     public static final String LOGIN = "GetAccountSetup";
+    public static final String UPDATE_STATUS = "UpdateStatus";
 
 
     private static final String NAMESPACE = "http://tempuri.org/";
@@ -35,12 +36,14 @@ public class SendMessageTask extends AsyncTask<ArrayList<PropertyInfo>, Void, So
 
     private MessageInterface messageInterface;
     private String methodName;
+    private SoapObject request;
 
     public SendMessageTask(MessageInterface messageInterface, String methodName) {
         this.messageInterface = messageInterface;
         this.methodName = methodName;
         this.METHOD_NAME = methodName;
         this.SOAP_ACTION = NAMESPACE + methodName;
+      //  this.request
     }
 
     @Override
@@ -84,8 +87,9 @@ public class SendMessageTask extends AsyncTask<ArrayList<PropertyInfo>, Void, So
     @Override
     protected void onPostExecute(SoapObject result) {
         super.onPostExecute(result);
-        Log.i(TAG, "result " + result.toString() + " methodName " + methodName);
+        Log.i(TAG, "result " + result + " methodName " + methodName);
 
+        if (messageInterface!=null)
         messageInterface.responseToSendMessage(result, methodName);
 
     }

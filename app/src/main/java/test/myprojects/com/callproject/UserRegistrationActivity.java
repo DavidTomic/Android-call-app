@@ -30,6 +30,7 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -204,6 +205,24 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         pi.setValue(etPassword.getText().toString());
         pi.setType(String.class);
         piList.add(pi);
+
+        return piList;
+    }
+
+    private ArrayList<PropertyInfo> getCheckPhoneParams() {
+        ArrayList<PropertyInfo> piList = new ArrayList<PropertyInfo>();
+
+        SoapObject request = new SoapObject("NAMESPACE", "METHOD_NAME");
+
+        ArrayList<PropertyInfo> list = params[0];
+
+        if (list!=null && list.size() > 0) {
+            for (PropertyInfo pi : list) {
+                request.addProperty(pi);
+            }
+        }
+
+
 
         return piList;
     }

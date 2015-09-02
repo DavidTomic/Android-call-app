@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,8 +16,11 @@ import android.widget.TextView;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.model.Contact;
 
 public class IndexView extends LinearLayout {
+	private static final String TAG = "IndexView";
+
 	public IndexView(Context context) {
 		super(context);
 	}
@@ -50,9 +54,12 @@ public class IndexView extends LinearLayout {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 
+				Log.i(TAG, "onTouch");
+
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 				case MotionEvent.ACTION_MOVE:
+                    Log.i(TAG, "ACTION_MOVE");
 					int position = (int) (event.getY() * 27 / v.getHeight());
 					if (position >= 0 && position <= 26) {
 						char c;
@@ -64,14 +71,24 @@ public class IndexView extends LinearLayout {
 							c = (char) ('A' - 1 + position);
 							localPosition = searchPosition(listAdapter, c);
 						}
+
+
 						if (localPosition != -1) {
+							Log.i(TAG, "setSelection localPosition " + localPosition);
 							pullToRefreshStickyList.getRefreshableView().setSelection(localPosition);
 						}
-						textView.setText(String.valueOf(c));
-						if (textView.getVisibility() == View.GONE) {
-							textView.setVisibility(View.VISIBLE);
-						}
-						textView.startAnimation(animation);
+
+
+
+
+                        if (textView!=null){
+                            textView.setText(String.valueOf(c));
+                            if (textView.getVisibility() == View.GONE) {
+                                textView.setVisibility(View.VISIBLE);
+                            }
+                            textView.startAnimation(animation);
+                        }
+
 					} else {
 						pullToRefreshStickyList.getRefreshableView().setSelection(0);
 					}
@@ -96,10 +113,12 @@ public class IndexView extends LinearLayout {
 
 	private int searchPosition(StickyListHeadersAdapter listAdapter, char c) {
 		for (int i = 0; i < listAdapter.getCount(); i++) {
-			if (c == listAdapter.getItem(i).toString().charAt(0)){
+            Contact contact = (Contact) listAdapter.getItem(i);
+			if (c == contact.getName().charAt(0)){
 				return i;
 			}
 		}
+
 		return -1;
 	}
 }

@@ -3,9 +3,7 @@ package test.myprojects.com.callproject.tabFragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,23 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.fortysevendeg.swipelistview.SwipeListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.view.IndexView;
@@ -44,19 +38,28 @@ public class ContactsFragment extends Fragment {
     private static final String TAG = "ContactsFragment";
     private View rootView;
     private List<Contact> contactList = new ArrayList<Contact>();
+    private StickyAdapter adapter;
+
+    @Bind(R.id.tvStatusText) TextView tvStatusText;
+    @Bind(R.id.vStatusColor) View vStatusColor;
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
     @OnClick(R.id.ibAddContact)
-    public void addContact(){
+    public void addContact() {
         Log.i(TAG, "here");
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
         intent.putExtra("finishActivityOnSaveCompleted", true);
         getActivity().startActivity(intent);
+    }
+
+    @OnClick(R.id.llStatus)
+    public void setStatus() {
+        startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
     @Override
@@ -71,10 +74,10 @@ public class ContactsFragment extends Fragment {
             ButterKnife.bind(this, rootView);
             // Initialise your layout here
 
-            final PullToRefreshStickyList stlist = (PullToRefreshStickyList)rootView.findViewById(R.id.stickSwipeList);
-            IndexView indexView = (IndexView)rootView.findViewById(R.id.indexView);
+            final PullToRefreshStickyList stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
+            IndexView indexView = (IndexView) rootView.findViewById(R.id.indexView);
 
-            StickyAdapter adapter = new StickyAdapter(getActivity());
+            adapter = new StickyAdapter(getActivity());
             stlist.getRefreshableView().setAdapter(adapter);
 
             stlist.StickySwipe.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,18 +93,28 @@ public class ContactsFragment extends Fragment {
             });
 
             /** indexable listview */
-            indexView.init(stlist,null);
+            indexView.init(stlist, null);
 
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (parent != null)
-            {
+            if (parent != null) {
                 parent.removeView(rootView);
             }
 
         }
 
-        return  rootView;
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshMyStatusUI();
+
+        if (User.getInstance(getActivity()).isContactEdited()){
+            User.getInstance(getActivity()).setContactEdited(false);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
@@ -109,7 +122,7 @@ public class ContactsFragment extends Fragment {
 
         private LayoutInflater inflater;
 
-        public StickyAdapter(Context context){
+        public StickyAdapter(Context context) {
             inflater = LayoutInflater.from(context);
             contactList = User.getInstance(context).getContactList();
         }
@@ -136,9 +149,9 @@ public class ContactsFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
             ViewHolder holder;
-            if(convertView == null){
+            if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.contact_list_item, parent , false);
+                convertView = inflater.inflate(R.layout.contact_list_item, parent, false);
                 holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
                 holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
                 holder.vStatus = (View) convertView.findViewById(R.id.vStatus);
@@ -158,16 +171,16 @@ public class ContactsFragment extends Fragment {
         public View getHeaderView(int position, View convertView,
                                   ViewGroup parent) {
             HeaderViewHolder holder;
-            if(convertView == null){
+            if (convertView == null) {
                 holder = new HeaderViewHolder();
-                convertView = inflater.inflate(R.layout.header, parent , false);
+                convertView = inflater.inflate(R.layout.header, parent, false);
                 holder.text = (TextView) convertView.findViewById(R.id.text1);
                 convertView.setTag(holder);
             } else {
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text first char
-            String headerText = ""+((Contact)contactList.get(position)).getName().subSequence(0, 1).charAt(0);
+            String headerText = "" + ((Contact) contactList.get(position)).getName().subSequence(0, 1).charAt(0);
             holder.text.setText(headerText);
             return convertView;
         }
@@ -175,7 +188,7 @@ public class ContactsFragment extends Fragment {
         @Override
         public long getHeaderId(int position) {
             //return the first character of the country as ID because this is what headers are based upon
-            return ((Contact)contactList.get(position)).getName().subSequence(0, 1).charAt(0);
+            return ((Contact) contactList.get(position)).getName().subSequence(0, 1).charAt(0);
         }
 
         class HeaderViewHolder {
@@ -188,5 +201,20 @@ public class ContactsFragment extends Fragment {
             View vStatus;
         }
 
+    }
+
+    private void refreshMyStatusUI() {
+
+        String statusText = User.getInstance(getActivity()).getStatusText();
+
+        if (statusText==null || statusText.length()<1){
+            tvStatusText.setVisibility(View.GONE);
+        }else {
+            tvStatusText.setText(statusText);
+            tvStatusText.setVisibility(View.VISIBLE);
+        }
+
+        vStatusColor.setBackgroundDrawable(getResources().
+                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 }

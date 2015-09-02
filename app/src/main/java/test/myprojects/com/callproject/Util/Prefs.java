@@ -3,6 +3,8 @@ package test.myprojects.com.callproject.Util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import test.myprojects.com.callproject.SetStatusActivity;
+import test.myprojects.com.callproject.SetStatusActivity.Status;
 import test.myprojects.com.callproject.model.User;
 
 /**
@@ -18,7 +20,8 @@ public class Prefs {
     public static final String PREFS_USER_EMAIL= "user_email";
     public static final String PREFS_USER_PASSWORD= "user_password";
     public static final String PREFS_USER_LANGUAGE= "user_language";
-    public static final String PREFS_USER_DEFAULT_TEXT= "user_default_text";
+    public static final String PREFS_USER_STATUS_TEXT= "user_status_text";
+    public static final String PREFS_USER_STATUS= "user_status";
     public static final String PREFS_USER_LOGED_IN= "user_loged_in";
 
     public static void setUserData(Context context, User user) {
@@ -31,7 +34,8 @@ public class Prefs {
         editor.putString(PREFS_USER_EMAIL, user.getEmail());
         editor.putString(PREFS_USER_PASSWORD, user.getPassword());
         editor.putString(PREFS_USER_LANGUAGE, user.getLanguage());
-        editor.putString(PREFS_USER_DEFAULT_TEXT, user.getDefaultText());
+        editor.putString(PREFS_USER_STATUS_TEXT, user.getStatusText());
+        editor.putInt(PREFS_USER_STATUS, user.getStatus().getValue());
         editor.putBoolean(PREFS_USER_LOGED_IN, user.isLogedIn());
         editor.commit();
     }
@@ -46,7 +50,8 @@ public class Prefs {
         user.setEmail(prefs.getString(PREFS_USER_EMAIL, ""));
         user.setPassword(prefs.getString(PREFS_USER_PASSWORD, ""));
         user.setLanguage(prefs.getString(PREFS_USER_LANGUAGE, ""));
-        user.setDefaultText(prefs.getString(PREFS_USER_DEFAULT_TEXT, ""));
+        user.setStatusText(prefs.getString(PREFS_USER_STATUS_TEXT, ""));
+        user.setStatus(Status.values()[prefs.getInt(PREFS_USER_STATUS, 1)]);
         user.setLogedIn(prefs.getBoolean(PREFS_USER_LOGED_IN, false));
     }
 }
