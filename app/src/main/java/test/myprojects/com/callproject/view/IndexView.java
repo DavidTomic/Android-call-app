@@ -37,9 +37,12 @@ public class IndexView extends LinearLayout {
 	public void init(final PullToRefreshStickyList pullToRefreshStickyList, final TextView textView) {
 		setOrientation(VERTICAL);
 
-		addTextView('#');
-		for (int i = 0; i < 26; i++) {
-			addTextView((char) ('A' + i));
+		final String[] letters = {"A", "•", "D", "•", "F", "•", "I", "•", "K", "•", "N", "•",
+				"P", "•", "S", "•", "U", "•", "X", "•", "Z"};
+
+	//	addTextView('#');
+		for (int i = 0; i < letters.length; i++) {
+			addTextView(letters[i]);
 		}
 
 		final Animation animation = new AlphaAnimation(1, 0);
@@ -60,8 +63,8 @@ public class IndexView extends LinearLayout {
 				case MotionEvent.ACTION_DOWN:
 				case MotionEvent.ACTION_MOVE:
                     Log.i(TAG, "ACTION_MOVE");
-					int position = (int) (event.getY() * 27 / v.getHeight());
-					if (position >= 0 && position <= 26) {
+					int position = (int) (event.getY() * letters.length / v.getHeight());
+					if (position >= 0 && position <= letters.length) {
 						char c;
 						int localPosition;
 						if (position == 0) {
@@ -100,9 +103,9 @@ public class IndexView extends LinearLayout {
 		});
 	}
 
-	private void addTextView(char c) {
+	private void addTextView(String c) {
 		TextView textView = new TextView(getContext());
-		textView.setText(String.valueOf(c));
+		textView.setText(c);
 		textView.setTextColor(getResources().getColor(R.color.blue_default));
 		textView.setGravity(Gravity.CENTER);
 		LayoutParams lllp = new LayoutParams(

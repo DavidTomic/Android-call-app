@@ -4,15 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import test.myprojects.com.callproject.model.PhoneNumbers;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
@@ -29,6 +23,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String LOGIN = "GetAccountSetup";
     public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
     public static final String UPDATE_STATUS = "UpdateStatus";
+    public static final String REQUEST_STATUS_INFO = "RequestStatusInfo";
 
 
     public static final String NAMESPACE = "http://tempuri.org/";
@@ -46,31 +41,31 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     }
 
     @Override
-    protected SoapObject doInBackground(Void...params) {
+    protected SoapObject doInBackground(Void... params) {
 
         SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         soapEnvelope.dotNet = true;
         soapEnvelope.setOutputSoapObject(request);
 
-        //mozda
-        soapEnvelope.implicitTypes = true;
-        soapEnvelope.addMapping(NAMESPACE, "ActionRequest", new PhoneNumbers().getClass());
+//        //mozda
+//        if (request.getName().contentEquals(CHECK_PHONE_NUMBERS)){
+//            soapEnvelope.implicitTypes = true;
+//            soapEnvelope.addMapping(NAMESPACE, "ActionRequest", new PhoneNumbers().getClass());
+//        }
+
 
         aht = new HttpTransportSE(URL);
-        aht.debug=true;
+        aht.debug = true;
 
         try {
             aht.setXmlVersionTag("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             aht.call(SOAP_ACTION, soapEnvelope);
 
-            SoapObject result = (SoapObject)soapEnvelope.getResponse();
-
+            SoapObject result = (SoapObject) soapEnvelope.getResponse();
 
 
             return result;
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -85,8 +80,8 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
 
         Log.d("dump Request: ", aht.requestDump);
 
-        if (messageInterface!=null)
-        messageInterface.responseToSendMessage(result, request.getName());
+        if (messageInterface != null)
+            messageInterface.responseToSendMessage(result, request.getName());
 
     }
 }

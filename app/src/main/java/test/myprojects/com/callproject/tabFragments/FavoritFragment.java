@@ -1,13 +1,16 @@
 package test.myprojects.com.callproject.tabFragments;
 
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,16 +35,17 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
+import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
+import test.myprojects.com.callproject.task.SendMessageTask;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FavoritFragment extends Fragment {
-
 
     private static final String TAG = "FavoritFragment";
     private View rootView;
@@ -52,34 +56,50 @@ public class FavoritFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @Bind(R.id.tvStatusText) TextView tvStatusText;
-    @Bind(R.id.vStatusColor) View vStatusColor;
+//    @Bind(R.id.tvStatusText)
+//    TextView tvStatusText;
+//    @Bind(R.id.vStatusColor)
+//    View vStatusColor;
 
-    @OnClick(R.id.llStatus)
-    public void setStatus(){
-        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-    }
+//    @OnClick(R.id.llStatus)
+//    public void setStatus() {
+//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+//    }
+
 
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().registerReceiver(statusUpdateBroadcastReceiver,
+                new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
         refreshFavorits();
         refreshMyStatusUI();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            getActivity().unregisterReceiver(statusUpdateBroadcastReceiver);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void refreshMyStatusUI() {
 
         String statusText = User.getInstance(getActivity()).getStatusText();
 
-        if (statusText==null || statusText.length()<1){
-            tvStatusText.setVisibility(View.GONE);
-        }else {
-            tvStatusText.setText(statusText);
-            tvStatusText.setVisibility(View.VISIBLE);
-        }
-
-        vStatusColor.setBackgroundDrawable(getResources().
-                getDrawable(User.getInstance(getActivity()).getStatusColor()));
+//        if (statusText == null || statusText.length() < 1) {
+//            tvStatusText.setVisibility(View.GONE);
+//        } else {
+//            tvStatusText.setText(statusText);
+//            tvStatusText.setVisibility(View.VISIBLE);
+//        }
+//
+//        vStatusColor.setBackgroundDrawable(getResources().
+//                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 
     private void refreshFavorits() {
@@ -213,14 +233,14 @@ public class FavoritFragment extends Fragment {
 
             holder.name.setText(contact.getName());
 
-            if (contact.getImage()!=null){
+            if (contact.getImage() != null) {
                 Log.i(TAG, "name " + contact.getName());
                 Uri imageUri = Uri.parse(contact.getImage());
                 holder.ivProfile.setImageURI(imageUri);
                 holder.ivProfile.setVisibility(View.VISIBLE);
                 holder.tvProfile.setVisibility(View.INVISIBLE);
-            }else {
-                holder.tvProfile.setText(contact.getName().substring(0,1).toUpperCase());
+            } else {
+                holder.tvProfile.setText(contact.getName().substring(0, 1).toUpperCase());
 
                 holder.ivProfile.setVisibility(View.INVISIBLE);
                 holder.tvProfile.setVisibility(View.VISIBLE);
@@ -251,7 +271,7 @@ public class FavoritFragment extends Fragment {
         }
     }
 
-    private void removeFromFavorites(Contact contact){
+    private void removeFromFavorites(Contact contact) {
         User.getInstance(getActivity()).getContactWithId(contact.getRecordId()).setFavorit(false);
         ContentValues v = new ContentValues();
         v.put(ContactsContract.Contacts.STARRED, 0);
@@ -260,4 +280,13 @@ public class FavoritFragment extends Fragment {
 
         refreshFavorits();
     }
+
+    private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.i(TAG, "statusUpdateBroadcastReceiver");
+
+        }
+    };
 }

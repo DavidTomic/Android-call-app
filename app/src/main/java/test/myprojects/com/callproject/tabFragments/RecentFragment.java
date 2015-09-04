@@ -1,8 +1,10 @@
 package test.myprojects.com.callproject.tabFragments;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -39,6 +41,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.ContactDetailActivity;
+import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
@@ -59,8 +62,10 @@ public class RecentFragment extends Fragment {
     SwipeMenuListView swipeMenuListView;
     @Bind(R.id.bAllMissed)
     Button bAllMissed;
-    @Bind(R.id.tvStatusText) TextView tvStatusText;
-    @Bind(R.id.vStatusColor) View vStatusColor;
+    @Bind(R.id.tvStatusText)
+    TextView tvStatusText;
+    @Bind(R.id.vStatusColor)
+    View vStatusColor;
 
     @OnClick(R.id.bAllMissed)
     public void AllMissedClicked() {
@@ -99,7 +104,7 @@ public class RecentFragment extends Fragment {
     }
 
     @OnClick(R.id.llStatus)
-    public void setStatus(){
+    public void setStatus() {
         startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
@@ -167,7 +172,7 @@ public class RecentFragment extends Fragment {
             swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                    DeleteCallById(recentList.get(position).getCallId()+"");
+                    DeleteCallById(recentList.get(position).getCallId() + "");
 
                     // false : close the menu; true : not close the menu
                     return false;
@@ -285,8 +290,21 @@ public class RecentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().registerReceiver(statusUpdateBroadcastReceiver,
+                new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
         refreshRecents();
         refreshMyStatusUI();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            getActivity().unregisterReceiver(statusUpdateBroadcastReceiver);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void refreshRecents() {
@@ -310,7 +328,7 @@ public class RecentFragment extends Fragment {
         recentList.clear();
         int i = 0;
         while (cursor.moveToNext() && i < 20) {
-              i++;
+            i++;
 
 //            Log.i(TAG, "TYPE: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)));
 //            Log.i(TAG, "CACHED_NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
@@ -325,7 +343,7 @@ public class RecentFragment extends Fragment {
             contact.setPhoneNumber(cursor.getString(cursor
                     .getColumnIndex(CallLog.Calls.NUMBER)));
 
-         //   Log.i(TAG, "NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) + " PN: " + contact.getPhoneNumber());
+            //   Log.i(TAG, "NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) + " PN: " + contact.getPhoneNumber());
 
             if (contact.getPhoneNumber() == null || contact.getPhoneNumber().length() < 5) continue;
 
@@ -366,8 +384,8 @@ public class RecentFragment extends Fragment {
 
     public void DeleteCallById(String idd) {
         try {
-        getActivity().getContentResolver().delete(CallLog.Calls.CONTENT_URI, CallLog.Calls._ID + " = ? ",
-                new String[]{String.valueOf(idd)});
+            getActivity().getContentResolver().delete(CallLog.Calls.CONTENT_URI, CallLog.Calls._ID + " = ? ",
+                    new String[]{String.valueOf(idd)});
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -388,9 +406,9 @@ public class RecentFragment extends Fragment {
 
         String statusText = User.getInstance(getActivity()).getStatusText();
 
-        if (statusText==null || statusText.length()<1){
+        if (statusText == null || statusText.length() < 1) {
             tvStatusText.setVisibility(View.GONE);
-        }else {
+        } else {
             tvStatusText.setText(statusText);
             tvStatusText.setVisibility(View.VISIBLE);
         }
@@ -398,4 +416,13 @@ public class RecentFragment extends Fragment {
         vStatusColor.setBackgroundDrawable(getResources().
                 getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
+
+    private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.i(TAG, "statusUpdateBroadcastReceiver");
+
+        }
+    };
 }

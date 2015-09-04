@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp">
 
     <TextView
         android:id="@+id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="start|left"
-        android:paddingLeft="5dp"
-        android:background="#565857"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        android:textStyle="bold"/>
+        android:background="@drawable/blue_default_circle"
+        android:gravity="center"
+        android:text="A"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 </RelativeLayout>

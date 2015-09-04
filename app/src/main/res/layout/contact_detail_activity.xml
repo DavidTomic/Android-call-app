@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/gray_background">
+        android:background="@color/white">
 
         <Button
             android:id="@+id/bBack"

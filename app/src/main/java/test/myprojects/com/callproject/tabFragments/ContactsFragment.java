@@ -1,8 +1,10 @@
 package test.myprojects.com.callproject.tabFragments;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -23,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
+import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
@@ -40,8 +43,10 @@ public class ContactsFragment extends Fragment {
     private List<Contact> contactList = new ArrayList<Contact>();
     private StickyAdapter adapter;
 
-    @Bind(R.id.tvStatusText) TextView tvStatusText;
-    @Bind(R.id.vStatusColor) View vStatusColor;
+//    @Bind(R.id.tvStatusText)
+//    TextView tvStatusText;
+//    @Bind(R.id.vStatusColor)
+//    View vStatusColor;
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -57,10 +62,10 @@ public class ContactsFragment extends Fragment {
         getActivity().startActivity(intent);
     }
 
-    @OnClick(R.id.llStatus)
-    public void setStatus() {
-        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-    }
+//    @OnClick(R.id.llStatus)
+//    public void setStatus() {
+//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,11 +114,26 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        getActivity().registerReceiver(statusUpdateBroadcastReceiver,
+                new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
+
         refreshMyStatusUI();
 
-        if (User.getInstance(getActivity()).isContactEdited()){
+        if (User.getInstance(getActivity()).isContactEdited()) {
             User.getInstance(getActivity()).setContactEdited(false);
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            getActivity().unregisterReceiver(statusUpdateBroadcastReceiver);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -154,7 +174,7 @@ public class ContactsFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.contact_list_item, parent, false);
                 holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
                 holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
-                holder.vStatus = (View) convertView.findViewById(R.id.vStatus);
+             //   holder.vStatus = (View) convertView.findViewById(R.id.vStatus);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -207,14 +227,23 @@ public class ContactsFragment extends Fragment {
 
         String statusText = User.getInstance(getActivity()).getStatusText();
 
-        if (statusText==null || statusText.length()<1){
-            tvStatusText.setVisibility(View.GONE);
-        }else {
-            tvStatusText.setText(statusText);
-            tvStatusText.setVisibility(View.VISIBLE);
-        }
-
-        vStatusColor.setBackgroundDrawable(getResources().
-                getDrawable(User.getInstance(getActivity()).getStatusColor()));
+//        if (statusText == null || statusText.length() < 1) {
+//            tvStatusText.setVisibility(View.GONE);
+//        } else {
+//            tvStatusText.setText(statusText);
+//            tvStatusText.setVisibility(View.VISIBLE);
+//        }
+//
+//        vStatusColor.setBackgroundDrawable(getResources().
+//                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
+
+    private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.i(TAG, "statusUpdateBroadcastReceiver");
+
+        }
+    };
 }

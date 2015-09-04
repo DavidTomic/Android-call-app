@@ -20,7 +20,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="favorites">Favorites</string>
     <string name="recents">Recents</string>
-    <string name="contacts">Contacts</string>
+    <string name="all_contacts">All Contacts</string>
     <string name="keypad">Keypad</string>
     <string name="settings">Settings</string>
 
@@ -46,4 +46,7 @@
     <string name="status_updated">Status updated</string>
     <string name="status_not_updated">Status not updated</string>
     <string name="arrow_back"><![CDATA[< Back]]></string>
+    <string name="please_try_again">Error, please try again</string>
+    <string name="status_update_error">Status not updated</string>
+    <string name="contacts">Contacts</string>
 </resources>

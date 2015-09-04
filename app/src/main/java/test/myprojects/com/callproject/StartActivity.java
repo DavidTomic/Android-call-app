@@ -40,6 +40,9 @@ public class StartActivity extends Activity {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
+
+//        startActivity(new Intent(this, MainActivity.class));
+//        finish();
     }
 
 }

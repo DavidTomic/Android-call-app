@@ -38,7 +38,7 @@
         android:id="@+id/front"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:background="@color/gray_background"
+        android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingLeft="20dp"
@@ -49,18 +49,18 @@
             android:id="@+id/front_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/gray_background"
+            android:background="@color/white"
             android:text="data depan"
-            android:textColor="@color/white" />
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/sub_front_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/front_label"
-            android:background="@color/gray_background"
+            android:background="@color/white"
             android:text="This is my status"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="10sp" />
 
     </LinearLayout>
