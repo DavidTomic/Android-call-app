@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import test.myprojects.com.callproject.R;
 
@@ -28,16 +29,16 @@ public class KeypadFragment extends Fragment implements View.OnClickListener,
     private View rootView;
 
     private EditText mPhoneNumberField;
-    private Button mOneButton;
-    private Button mTwoButton;
-    private Button mThreeButton;
-    private Button mFourButton;
-    private Button mFiveButton;
-    private Button mSixButton;
-    private Button mSevenButton;
-    private Button mEightButton;
-    private Button mNineButton;
-    private Button mZeroButton;
+    private RelativeLayout mOneButton;
+    private RelativeLayout mTwoButton;
+    private RelativeLayout mThreeButton;
+    private RelativeLayout mFourButton;
+    private RelativeLayout mFiveButton;
+    private RelativeLayout mSixButton;
+    private RelativeLayout mSevenButton;
+    private RelativeLayout mEightButton;
+    private RelativeLayout mNineButton;
+    private RelativeLayout mZeroButton;
     private Button mStarButton;
     private Button mPoundButton;
     private ImageView mDialButton;
@@ -58,16 +59,16 @@ public class KeypadFragment extends Fragment implements View.OnClickListener,
         mPhoneNumberField = (EditText) v.findViewById(R.id.phone_number);
         mPhoneNumberField.setInputType(android.text.InputType.TYPE_NULL);
 
-        mOneButton = (Button) v.findViewById(R.id.one);
-        mTwoButton = (Button) v.findViewById(R.id.two);
-        mThreeButton = (Button) v.findViewById(R.id.three);
-        mFourButton = (Button) v.findViewById(R.id.four);
-        mFiveButton = (Button) v.findViewById(R.id.five);
-        mSixButton = (Button) v.findViewById(R.id.six);
-        mSevenButton = (Button) v.findViewById(R.id.seven);
-        mEightButton = (Button) v.findViewById(R.id.eight);
-        mNineButton = (Button) v.findViewById(R.id.nine);
-        mZeroButton = (Button) v.findViewById(R.id.zero);
+        mOneButton = (RelativeLayout) v.findViewById(R.id.one);
+        mTwoButton = (RelativeLayout) v.findViewById(R.id.two);
+        mThreeButton = (RelativeLayout) v.findViewById(R.id.three);
+        mFourButton = (RelativeLayout) v.findViewById(R.id.four);
+        mFiveButton = (RelativeLayout) v.findViewById(R.id.five);
+        mSixButton = (RelativeLayout) v.findViewById(R.id.six);
+        mSevenButton = (RelativeLayout) v.findViewById(R.id.seven);
+        mEightButton = (RelativeLayout) v.findViewById(R.id.eight);
+        mNineButton = (RelativeLayout) v.findViewById(R.id.nine);
+        mZeroButton = (RelativeLayout) v.findViewById(R.id.zero);
         mStarButton = (Button) v.findViewById(R.id.asterisk);
         mPoundButton = (Button) v.findViewById(R.id.hash);
         mDialButton = (ImageView) v.findViewById(R.id.dialButton);

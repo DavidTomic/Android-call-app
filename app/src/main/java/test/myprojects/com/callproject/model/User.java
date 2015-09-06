@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -160,7 +161,8 @@ public class User {
             contact.setName(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
             contact.setPhoneNumber(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
 
-            if (contact.getPhoneNumber() == null || contact.getName() == null) continue;
+            if (contact.getPhoneNumber() == null || contact.getName() == null ||
+                    TextUtils.isDigitsOnly(String.valueOf(contact.getName().charAt(0)))) continue;
 
             contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
 
@@ -170,6 +172,7 @@ public class User {
             if (colPhotoIndex != -1) {
                 contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
             }
+
 
             int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
             contact.setFavorit(starred == 1 ? true : false);

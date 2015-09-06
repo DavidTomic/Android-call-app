@@ -90,6 +90,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.keypad), R.drawable.tab_keypad, KeypadFragment.class);
 
         addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
+
+
     }
     private void addTab(String labelId, int drawableId, Class<?> c) {
 

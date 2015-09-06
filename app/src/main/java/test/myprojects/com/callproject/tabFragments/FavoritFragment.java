@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -51,6 +52,8 @@ public class FavoritFragment extends Fragment {
     private View rootView;
     private List<Contact> favoritList = new ArrayList<Contact>();
     private FavoritAdapter favoritAdapter;
+    private SwipeMenuListView swipeMenuListView;
+    private boolean editEnabled;
 
     public FavoritFragment() {
         // Required empty public constructor
@@ -63,8 +66,30 @@ public class FavoritFragment extends Fragment {
 
 //    @OnClick(R.id.llStatus)
 //    public void setStatus() {
-//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+//        Log.i(TAG, "click");
+//     //   for (int i=0; i<favoritList.size();i++)
+//    //        swipeMenuListView.smoothOpenMenu(i);
+//
+//        swipeMenuListView.smoothOpenMenu(0);
+//
 //    }
+
+    @Bind(R.id.bEdit) Button bEdit;
+
+    @OnClick(R.id.bEdit)
+    public void editFavorites(){
+        if (editEnabled){
+            bEdit.setText(getString(R.string.edit));
+            editEnabled=false;
+            swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        }else {
+            swipeMenuListView.setSwipeDirection(0);
+            bEdit.setText(getString(R.string.done));
+            editEnabled=true;
+        }
+
+        favoritAdapter.notifyDataSetChanged();
+    }
 
 
     @Override
@@ -122,10 +147,11 @@ public class FavoritFragment extends Fragment {
             //       Log.i(TAG, "onCreateView inflate");
             rootView = inflater.inflate(R.layout.fragment_favorit, container, false);
             ButterKnife.bind(this, rootView);
-            SwipeMenuListView swipeMenuListView = (SwipeMenuListView) rootView.
+            swipeMenuListView = (SwipeMenuListView) rootView.
                     findViewById(R.id.swipeMenuListView);
             favoritAdapter = new FavoritAdapter(getActivity());
             swipeMenuListView.setAdapter(favoritAdapter);
+
 
             swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -161,6 +187,7 @@ public class FavoritFragment extends Fragment {
 
             // set creator
             swipeMenuListView.setMenuCreator(creator);
+
 
             swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
                 @Override
@@ -224,6 +251,7 @@ public class FavoritFragment extends Fragment {
                 holder.tvProfile = (TextView) convertView.findViewById(R.id.tvProfile);
                 holder.ivProfile = (CircleImageView) convertView.findViewById(R.id.ivProfile);
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
+                holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -258,16 +286,30 @@ public class FavoritFragment extends Fragment {
                 }
             });
 
+            holder.bDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeFromFavorites(contact);
+                }
+            });
+
+
+            if (editEnabled){
+                holder.bDelete.setVisibility(View.VISIBLE);
+            }else{
+                holder.bDelete.setVisibility(View.GONE);
+            }
+
             return convertView;
         }
 
         class ViewHolder {
-            //TextView text;
             TextView name;
             TextView status;
             ImageButton infoButton;
             CircleImageView ivProfile;
             TextView tvProfile;
+            Button bDelete;
         }
     }
 

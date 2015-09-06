@@ -34,20 +34,18 @@ public class IndexView extends LinearLayout {
 		super(context, attrs, defStyle);
 	}
 
-	public void init(final PullToRefreshStickyList pullToRefreshStickyList, final TextView textView) {
+	public void init(final PullToRefreshStickyList pullToRefreshStickyList) {
 		setOrientation(VERTICAL);
 
-		final String[] letters = {"A", "•", "D", "•", "F", "•", "I", "•", "K", "•", "N", "•",
-				"P", "•", "S", "•", "U", "•", "X", "•", "Z"};
+
+		final char[] letters = {'A', '•', 'D', '•', 'F', '•', 'I', '•', 'K', '•', 'N', '•',
+				'P', '•', 'S', '•', 'U', '•', 'X', '•', 'Z'};
+
 
 	//	addTextView('#');
 		for (int i = 0; i < letters.length; i++) {
-			addTextView(letters[i]);
+			addTextView(String.valueOf(letters[i]));
 		}
-
-		final Animation animation = new AlphaAnimation(1, 0);
-		animation.setDuration(1500);
-		animation.setFillAfter(true);
 
 		final StickyListHeadersAdapter listAdapter;
 		listAdapter = pullToRefreshStickyList.getRefreshableView().getAdapter();
@@ -65,13 +63,14 @@ public class IndexView extends LinearLayout {
                     Log.i(TAG, "ACTION_MOVE");
 					int position = (int) (event.getY() * letters.length / v.getHeight());
 					if (position >= 0 && position <= letters.length) {
-						char c;
 						int localPosition;
 						if (position == 0) {
-							c = '#';
 							localPosition = 0;
 						} else {
-							c = (char) ('A' - 1 + position);
+							char c = letters[position];
+							if (c == '•' && (position+1) <=letters.length){
+								c = letters[position+1];
+							}
 							localPosition = searchPosition(listAdapter, c);
 						}
 
@@ -80,17 +79,6 @@ public class IndexView extends LinearLayout {
 							Log.i(TAG, "setSelection localPosition " + localPosition);
 							pullToRefreshStickyList.getRefreshableView().setSelection(localPosition);
 						}
-
-
-
-
-                        if (textView!=null){
-                            textView.setText(String.valueOf(c));
-                            if (textView.getVisibility() == View.GONE) {
-                                textView.setVisibility(View.VISIBLE);
-                            }
-                            textView.startAnimation(animation);
-                        }
 
 					} else {
 						pullToRefreshStickyList.getRefreshableView().setSelection(0);
@@ -115,13 +103,18 @@ public class IndexView extends LinearLayout {
 	}
 
 	private int searchPosition(StickyListHeadersAdapter listAdapter, char c) {
+
+		Log.i(TAG, "char " + String.valueOf(c));
+
 		for (int i = 0; i < listAdapter.getCount(); i++) {
             Contact contact = (Contact) listAdapter.getItem(i);
 			if (c == contact.getName().charAt(0)){
+				Log.i(TAG, "return " + i);
 				return i;
 			}
 		}
 
+		Log.i(TAG, "return -1");
 		return -1;
 	}
 }

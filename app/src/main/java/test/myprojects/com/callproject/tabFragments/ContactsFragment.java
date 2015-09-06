@@ -98,7 +98,7 @@ public class ContactsFragment extends Fragment {
             });
 
             /** indexable listview */
-            indexView.init(stlist, null);
+            indexView.init(stlist);
 
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();

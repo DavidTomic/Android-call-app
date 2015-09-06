@@ -31,7 +31,7 @@
                 android:gravity="center"
                 android:maxLines="1"
                 android:scrollHorizontally="true"
-                android:textColor="@color/white"
+                android:textColor="@color/gray_button"
                 android:textSize="33sp"></EditText>
 
             <Button
@@ -41,7 +41,7 @@
                 android:layout_weight="0"
                 android:background="@null"
                 android:text="@string/backspace"
-                android:textColor="@color/white"
+                android:textColor="@color/gray_button"
                 android:textSize="30sp"></Button>
         </LinearLayout>
 
@@ -61,51 +61,96 @@
                 android:layout_marginTop="10dip">
 
                 <RelativeLayout
+                    android:id="@+id/one"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/one"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/one"
-                        android:textColor="@color/white"></Button>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/one"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" "
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
 
 
                 <RelativeLayout
+                    android:id="@+id/two"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/two"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/two"
-                        android:textColor="@color/white"></Button>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/two"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ABC"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/three"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/three"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/three"
-                        android:textColor="@color/white"></Button>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/three"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DEF"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
             </LinearLayout>
@@ -114,111 +159,207 @@
                 android:id="@+id/linearLayout2"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dip">
+                android:layout_marginTop="10dip">
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/four"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/four"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/four"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/four"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="GHI"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/five"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/five"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/five"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/five"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="JKL"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/six"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/six"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/six"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/six"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MNO"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout3"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dip">
+                android:layout_marginTop="10dip">
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/seven"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/seven"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/seven"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/seven"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PQRS"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/eight"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/eight"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/eight"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                <LinearLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/eight"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TUV"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/nine"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/nine"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/nine"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nine"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="WXYZ"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout4"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dip">
+                android:layout_marginTop="10dip">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -228,27 +369,43 @@
 
                     <Button
                         android:id="@+id/asterisk"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
                         android:text="@string/asterisk"
-                        android:textColor="@color/white"></Button>
+                        android:textColor="@color/black"></Button>
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
+                    android:id="@+id/zero"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center">
 
-                    <Button
-                        android:id="@+id/zero"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
-                        android:text="@string/zero"
-                        android:textColor="@color/white"></Button>
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zero"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="*"
+                            android:textColor="@color/gray_light" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -258,11 +415,11 @@
 
                     <Button
                         android:id="@+id/hash"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/button_circle_white_bg"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_circle_black_bg"
                         android:text="@string/hash"
-                        android:textColor="@color/white"></Button>
+                        android:textColor="@color/black"></Button>
                 </LinearLayout>
             </LinearLayout>
 

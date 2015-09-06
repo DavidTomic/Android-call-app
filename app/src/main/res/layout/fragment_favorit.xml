@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:background="@color/tab_bar_background">
 
-
+<!--
         <RelativeLayout
             android:id="@+id/llStatus"
             android:layout_width="wrap_content"
@@ -39,12 +39,25 @@
 
         </RelativeLayout>
 
+        -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/favorites"
-            android:textColor="@color/white" />
+            android:textSize="18sp"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/bEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:textAllCaps="false"
+            android:textColor="@color/blue_default"
+            android:background="@null"
+            android:layout_alignParentRight="true"/>
 
 
     </RelativeLayout>
@@ -54,7 +67,7 @@
         android:id="@+id/swipeMenuListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/gray_button"
+        android:divider="@drawable/favorit_list_divider"
         android:dividerHeight="1px" />
 
 </LinearLayout>

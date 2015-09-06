@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="60dp"
     android:background="@color/white"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical">
@@ -16,39 +16,64 @@
         android:src="@drawable/outgoing_icon" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/ivProfile"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_toLeftOf="@+id/vStatus"
+        android:layout_toRightOf="@id/ivProfile"
+        android:orientation="vertical"
+        android:paddingLeft="20dp">
+
 
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Test Mob"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:text="data depan"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="hello this is my status"
+            android:text="This is my status"
             android:textColor="@color/gray_light"
             android:textSize="10sp" />
 
     </LinearLayout>
 
-    <View
+    <LinearLayout
         android:id="@+id/vStatus"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/ibInfo"
-        android:background="@drawable/gray_circle" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/ibInfo">
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/red_circle">
+
+        </View>
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/yellow_circle">
+
+        </View>
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/green_circle">
+
+        </View>
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/ibInfo"
@@ -75,5 +100,16 @@
         android:text="11-08-2015"
         android:textColor="@color/gray_light"
         android:textSize="8sp" />
+
+    <Button
+        android:id="@+id/bDelete"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@color/red"
+        android:text="@string/delete"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone" />
 
 </RelativeLayout>
