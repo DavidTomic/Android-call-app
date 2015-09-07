@@ -1,5 +1,7 @@
 package test.myprojects.com.callproject.model;
 
+import test.myprojects.com.callproject.SetStatusActivity;
+
 /**
  * Created by dtomic on 25/08/15.
  */
@@ -24,7 +26,7 @@ public class Contact {
     private boolean favorit;
     private String image;
 
-    private int status;
+    private Status status;
     private String statusText;
     private String endTime;
 
@@ -100,11 +102,11 @@ public class Contact {
         this.favorit = favorit;
     }
 
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

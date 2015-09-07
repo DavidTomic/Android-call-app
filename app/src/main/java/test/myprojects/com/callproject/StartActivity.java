@@ -22,12 +22,14 @@ public class StartActivity extends Activity {
         Intent i = new Intent(this, UserRegistrationActivity.class);
         i.putExtra("isLogIn", false);
         startActivity(i);
+        finish();
     }
     @OnClick(R.id.bLogIn)
     public void logClicked(){
         Intent i = new Intent(this, UserRegistrationActivity.class);
         i.putExtra("isLogIn", true);
         startActivity(i);
+        finish();
     }
 
     @Override

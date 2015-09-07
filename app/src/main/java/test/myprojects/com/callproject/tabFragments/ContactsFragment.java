@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -122,8 +123,10 @@ public class ContactsFragment extends Fragment {
 
         if (User.getInstance(getActivity()).isContactEdited()) {
             User.getInstance(getActivity()).setContactEdited(false);
-            adapter.notifyDataSetChanged();
+            User.getInstance(getActivity()).loadContactsToList(getActivity());
         }
+
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -174,7 +177,7 @@ public class ContactsFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.contact_list_item, parent, false);
                 holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
                 holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
-             //   holder.vStatus = (View) convertView.findViewById(R.id.vStatus);
+                holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -183,6 +186,15 @@ public class ContactsFragment extends Fragment {
             Contact contact = contactList.get(position);
 
             holder.tvTitle.setText(contact.getName());
+
+            String statusText = contact.getStatusText();
+            if (statusText!=null){
+                holder.tvStatusText.setText(contact.getStatusText());
+            }else {
+                holder.tvStatusText.setText("");
+            }
+
+            Log.i(TAG, "status " + contact.getStatus());
 
             return convertView;
         }
@@ -218,7 +230,7 @@ public class ContactsFragment extends Fragment {
         class ViewHolder {
             TextView tvTitle;
             TextView tvStatusText;
-            View vStatus;
+            LinearLayout vStatus;
         }
 
     }
@@ -243,7 +255,7 @@ public class ContactsFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
-
+            adapter.notifyDataSetChanged();
         }
     };
 

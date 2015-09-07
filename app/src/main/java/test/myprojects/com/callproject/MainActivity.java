@@ -26,6 +26,7 @@ import java.util.List;
 
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
@@ -58,7 +59,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         new SendMessageTask(this, getDefaultTextParams()).execute();
 
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -66,7 +66,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         mPollHandler.postDelayed(mPollRunnable, 500);
         callCheckPhoneNumbers();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -85,7 +84,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
 
     }
-
     private void addTab(String labelId, int drawableId, Class<?> c) {
 
         TabHost.TabSpec spec = mTabHost.newTabSpec("tab" + labelId);
@@ -114,7 +112,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 e.printStackTrace();
                 // TODO Auto-generated catch block
             }
-            mPollHandler.postDelayed(mPollRunnable, 1000 * 60 * 4);
+            mPollHandler.postDelayed(mPollRunnable, 1000 * 60);
         }
     };
 
@@ -137,13 +135,43 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                 if (resultStatus == 2) {
 
+                    List<Contact> pomList = new ArrayList<Contact>();
+
                     SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
 
                     for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
                         SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
                         Log.i(TAG, "text " + csUserStatusSoapObject.getProperty(i));
+                        Contact contact = new Contact();
+
+
+                        pomList.add(contact);
                     }
 
+                    //temp
+                    Contact c1 = new Contact();
+                    c1.setPhoneNumber("38594000111");
+                    c1.setStatus(Status.GREEN_STATUS);
+                    c1.setStatusText("Hello");
+                    pomList.add(c1);
+
+                    c1 = new Contact();
+                    c1.setPhoneNumber("38594000444");
+                    c1.setStatus(Status.RED_STATUS);
+                    c1.setStatusText("How are you");
+                    pomList.add(c1);
+
+                    List<Contact> contactList = User.getInstance(MainActivity.this).getContactList();
+
+                    for (Contact pomContact : pomList){
+                        for (Contact contact : contactList){
+                            if (contact.getPhoneNumber().contentEquals(pomContact.getPhoneNumber())){
+                                contact.setStatus(pomContact.getStatus());
+                                contact.setStatusText(pomContact.getStatusText());
+                                break;
+                            }
+                        }
+                    }
 
                     Intent returnIntent = new Intent(BROADCAST_STATUS_APDATE_ACTION);
                     sendBroadcast(returnIntent);

@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
@@ -114,18 +115,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         finish();
     }
 
-    public enum Status {
-        RED_STATUS(0), GREEN_STATUS(1), YELLOW_STATUS(2),;
-        private final int value;
-
-        private Status(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
 
     private Status currentStatus;
 

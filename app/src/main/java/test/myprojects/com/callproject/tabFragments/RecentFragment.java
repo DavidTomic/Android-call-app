@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -239,10 +240,11 @@ public class RecentFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.recent_list_item, parent, false);
                 holder.name = (TextView) convertView.findViewById(R.id.tvName);
                 holder.date = (TextView) convertView.findViewById(R.id.tvDate);
-                holder.status = (TextView) convertView.findViewById(R.id.tvStatus);
+                holder.statusText = (TextView) convertView.findViewById(R.id.tvStatus);
                 holder.image = (ImageView) convertView.findViewById(R.id.ivProfile);
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
                 holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
+                holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -308,16 +310,29 @@ public class RecentFragment extends Fragment {
                 holder.bDelete.setVisibility(View.GONE);
             }
 
+
+            String statusText = contact.getStatusText();
+            if (statusText!=null){
+                holder.statusText.setText(contact.getStatusText());
+                holder.statusText.setVisibility(View.VISIBLE);
+            }else {
+                holder.statusText.setText("");
+                holder.statusText.setVisibility(View.GONE);
+            }
+
+            Log.i(TAG, "status " + contact.getStatus());
+
             return convertView;
         }
 
         class ViewHolder {
             TextView name;
-            TextView status;
+            TextView statusText;
             TextView date;
             ImageButton infoButton;
             ImageView image;
             Button bDelete;
+            LinearLayout vStatus;
         }
     }
 
@@ -456,7 +471,7 @@ public class RecentFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
-
+            recentAdapter.notifyDataSetChanged();
         }
     };
 

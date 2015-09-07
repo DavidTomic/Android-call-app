@@ -30,7 +30,7 @@ public class User {
     private Language language;
     private boolean loggedIn;
 
-    private SetStatusActivity.Status status;
+    private Status status;
     private String statusText;
 
     private List<Contact> contactList = new ArrayList<Contact>();
@@ -59,11 +59,11 @@ public class User {
         this.statusText = statusText;
     }
 
-    public SetStatusActivity.Status getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(SetStatusActivity.Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

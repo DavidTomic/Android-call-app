@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import java.util.ArrayList;
 import java.util.List;
 
-import test.myprojects.com.callproject.SetStatusActivity;
-import test.myprojects.com.callproject.SetStatusActivity.Status;
-import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 
 /**
