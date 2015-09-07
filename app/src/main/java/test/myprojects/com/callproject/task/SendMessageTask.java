@@ -24,6 +24,9 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
     public static final String UPDATE_STATUS = "UpdateStatus";
     public static final String REQUEST_STATUS_INFO = "RequestStatusInfo";
+    public static final String UPDATE_ACCOUNT = "UpdateAccount";
+    public static final String SET_DEFAULT_TEXT = "SetDefaultText";
+    public static final String GET_DEFAULT_TEXT = "GetDefaultText";
 
 
     public static final String NAMESPACE = "http://tempuri.org/";
@@ -69,7 +72,6 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
             e.printStackTrace();
         }
 
-
         return null;
     }
 
@@ -78,7 +80,8 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         super.onPostExecute(result);
         Log.i(TAG, "result " + result + " methodName " + request.getName());
 
-        Log.d("dump Request: ", aht.requestDump);
+        if (aht != null)
+             Log.d("dump Request: ", aht.requestDump);
 
         if (messageInterface != null)
             messageInterface.responseToSendMessage(result, request.getName());

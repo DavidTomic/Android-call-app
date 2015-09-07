@@ -459,4 +459,5 @@ public class RecentFragment extends Fragment {
 
         }
     };
+
 }

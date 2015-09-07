@@ -331,4 +331,5 @@ public class FavoritFragment extends Fragment {
 
         }
     };
+
 }

@@ -13,6 +13,7 @@ import java.util.Random;
 
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
+import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
 
 /**
@@ -26,7 +27,7 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String language;
+    private Language language;
     private boolean loggedIn;
 
     private SetStatusActivity.Status status;
@@ -115,11 +116,11 @@ public class User {
         this.password = password;
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(Language language) {
         this.language = language;
     }
 
