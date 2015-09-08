@@ -41,6 +41,7 @@ import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
@@ -60,20 +61,6 @@ public class FavoritFragment extends Fragment {
         // Required empty public constructor
     }
 
-//    @Bind(R.id.tvStatusText)
-//    TextView tvStatusText;
-//    @Bind(R.id.vStatusColor)
-//    View vStatusColor;
-
-//    @OnClick(R.id.llStatus)
-//    public void setStatus() {
-//        Log.i(TAG, "click");
-//     //   for (int i=0; i<favoritList.size();i++)
-//    //        swipeMenuListView.smoothOpenMenu(i);
-//
-//        swipeMenuListView.smoothOpenMenu(0);
-//
-//    }
 
     @Bind(R.id.bEdit) Button bEdit;
 
@@ -254,6 +241,9 @@ public class FavoritFragment extends Fragment {
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
                 holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
+                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -311,7 +301,31 @@ public class FavoritFragment extends Fragment {
                 holder.statusText.setVisibility(View.GONE);
             }
 
-            Log.i(TAG, "status " + contact.getStatus());
+            Status status = contact.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case RED_STATUS:
+                        holder.vStatusRed.setSelected(true);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case YELLOW_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(true);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case GREEN_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(true);
+                        break;
+                }
+            } else {
+                holder.vStatusRed.setSelected(false);
+                holder.vStatusYellow.setSelected(false);
+                holder.vStatusGreen.setSelected(false);
+            }
 
             return convertView;
         }
@@ -324,6 +338,9 @@ public class FavoritFragment extends Fragment {
             TextView tvProfile;
             Button bDelete;
             LinearLayout vStatus;
+            View vStatusRed;
+            View vStatusYellow;
+            View vStatusGreen;
         }
     }
 

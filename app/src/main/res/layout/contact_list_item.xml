@@ -46,27 +46,31 @@
             android:layout_marginRight="70dp">
 
             <View
+                android:id="@+id/vStatusRed"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
-                android:background="@drawable/red_circle">
+                android:background="@drawable/status_red_selector">
 
             </View>
 
             <View
+                android:id="@+id/vStatusYellow"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:layout_marginLeft="5dp"
-                android:background="@drawable/yellow_circle">
+                android:background="@drawable/status_yellow_selector">
 
             </View>
 
             <View
+                android:id="@+id/vStatusGreen"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
                 android:layout_marginLeft="5dp"
-                android:background="@drawable/green_circle">
-
+                android:background="@drawable/status_green_selector">
             </View>
+
+
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

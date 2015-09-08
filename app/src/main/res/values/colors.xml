@@ -20,4 +20,12 @@
     <color name="red">#fd7a68</color>
 
 
+    <color name="status_red_enabled">#FF0000</color>
+    <color name="status_red_disabled">#FF7F7F</color>
+    <color name="status_green_enabled">#008000</color>
+    <color name="status_green_disabled">#7fbf7f</color>
+    <color name="status_yellow_enabled">#FFFF00</color>
+    <color name="status_yellow_disabled">#ffff99</color>
+
+
 </resources>

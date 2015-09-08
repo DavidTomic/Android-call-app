@@ -65,4 +65,11 @@
     <string name="add">Add</string>
     <string name="add_new_text">Add new text</string>
     <string name="edit_text">Edit text</string>
+    <string name="title_activity_add_contacts">AddContactsActivity</string>
+    <string name="add_contacts">Add Contacts</string>
+    <string name="contact_added">Contact added</string>
+    <string name="contact_deleted">Contact deleted</string>
+    <string name="my_number">My number</string>
+    <string name="manage_contacts">Manage contacts</string>
+    <string name="add_some_default_text">Please go to settings to add default texts</string>
 </resources>

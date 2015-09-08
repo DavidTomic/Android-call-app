@@ -65,26 +65,28 @@
         android:layout_toLeftOf="@+id/ibInfo">
 
         <View
+            android:id="@+id/vStatusRed"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:background="@drawable/red_circle">
+            android:background="@drawable/status_red_selector">
 
         </View>
 
         <View
+            android:id="@+id/vStatusYellow"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_marginLeft="5dp"
-            android:background="@drawable/yellow_circle">
+            android:background="@drawable/status_yellow_selector">
 
         </View>
 
         <View
+            android:id="@+id/vStatusGreen"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_marginLeft="5dp"
-            android:background="@drawable/green_circle">
-
+            android:background="@drawable/status_green_selector">
         </View>
     </LinearLayout>
 
@@ -103,10 +105,10 @@
 
     <Button
         android:id="@+id/bDelete"
-        android:layout_width="100dp"
+        android:layout_width="110dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:background="@color/red"
+        android:background="@color/status_red_enabled"
         android:text="@string/delete"
         android:textColor="@color/white"
         android:textSize="18sp"

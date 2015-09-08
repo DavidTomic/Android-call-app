@@ -12,6 +12,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import test.myprojects.com.callproject.AddContactsActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsDetailActivity;
@@ -84,6 +85,10 @@ public class SettingsFragment extends Fragment {
         startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
+    @OnClick(R.id.rlManageContacts)
+    public void manageContactClicked() {
+        startActivity(new Intent(getActivity(), AddContactsActivity.class));
+    }
 
     public SettingsFragment() {
         // Required empty public constructor

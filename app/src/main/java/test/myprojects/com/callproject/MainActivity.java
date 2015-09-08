@@ -1,6 +1,9 @@
 package test.myprojects.com.callproject;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +42,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class MainActivity extends FragmentActivity implements MessageInterface {
 
     public static final String BROADCAST_STATUS_APDATE_ACTION = "status_update_action";
+    public static final String BROADCAST_REFRESH_STATUS_ACTION = "refresh_status_action";
     private String TAG = "MainActivity";
 
     private FragmentTabHost mTabHost;
@@ -63,14 +67,23 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume");
-        mPollHandler.postDelayed(mPollRunnable, 500);
-        callCheckPhoneNumbers();
+        mPollHandler.postDelayed(mPollRunnable, 50);
+
+        registerReceiver(refreshStatusBroadcastReceiver,
+                new IntentFilter(MainActivity.BROADCAST_REFRESH_STATUS_ACTION));
     }
     @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
         mPollHandler.removeCallbacks(mPollRunnable);
+
+        try {
+            unregisterReceiver(refreshStatusBroadcastReceiver);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 
@@ -135,42 +148,31 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                 if (resultStatus == 2) {
 
-                    List<Contact> pomList = new ArrayList<Contact>();
+                    List<Contact> contactList = User.getInstance(this).getContactList();
 
                     SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
 
                     for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
                         SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
-                        Log.i(TAG, "text " + csUserStatusSoapObject.getProperty(i));
-                        Contact contact = new Contact();
 
+                        String pohoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
+                        Log.i(TAG, "pohoneNumber " + pohoneNumber);
 
-                        pomList.add(contact);
-                    }
+                        for (Contact c : contactList){
+                            if (c.getPhoneNumber().contentEquals(pohoneNumber)){
+                                c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
 
-                    //temp
-                    Contact c1 = new Contact();
-                    c1.setPhoneNumber("38594000111");
-                    c1.setStatus(Status.GREEN_STATUS);
-                    c1.setStatusText("Hello");
-                    pomList.add(c1);
+                                String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
+                                if (statusText.contentEquals("anyType{}")){
+                                    statusText = "";
+                                }
 
-                    c1 = new Contact();
-                    c1.setPhoneNumber("38594000444");
-                    c1.setStatus(Status.RED_STATUS);
-                    c1.setStatusText("How are you");
-                    pomList.add(c1);
-
-                    List<Contact> contactList = User.getInstance(MainActivity.this).getContactList();
-
-                    for (Contact pomContact : pomList){
-                        for (Contact contact : contactList){
-                            if (contact.getPhoneNumber().contentEquals(pomContact.getPhoneNumber())){
-                                contact.setStatus(pomContact.getStatus());
-                                contact.setStatusText(pomContact.getStatusText());
+                                c.setStatusText(statusText);
+                                c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
                                 break;
                             }
                         }
+
                     }
 
                     Intent returnIntent = new Intent(BROADCAST_STATUS_APDATE_ACTION);
@@ -184,9 +186,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 e.printStackTrace();
                 Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
             }
-        } else if (methodName.contentEquals(SendMessageTask.CHECK_PHONE_NUMBERS)) {
-
-        } else if (methodName.contentEquals(SendMessageTask.CHECK_PHONE_NUMBERS)) {
+        } else if (methodName.contentEquals(SendMessageTask.GET_DEFAULT_TEXT)) {
             try {
                 int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
@@ -253,45 +253,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         mPollHandler.postDelayed(mPollRunnable, 50);
     }
 
-
-    public void callCheckPhoneNumbers() {
-        SendMessageTask sTask = new SendMessageTask(MainActivity.this, getCheckPhoneParams());
-        sTask.execute();
-    }
-
-    private SoapObject getCheckPhoneParams() {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
-
-        List<Contact> cList = User.getInstance(this).getContactList();
-
-        for (Contact contact : cList) {
-            PropertyInfo piPhoneNumber = new PropertyInfo();
-            piPhoneNumber.setName("string");
-            piPhoneNumber.setValue(contact.getPhoneNumber());
-            piPhoneNumber.setType(String.class);
-            phoneNumbersSoapObject.addProperty(piPhoneNumber);
-        }
-
-        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
-
-        return request;
-    }
-
     private SoapObject getDefaultTextParams() {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_DEFAULT_TEXT);
 
@@ -311,5 +272,14 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         return request;
     }
 
+
+    private BroadcastReceiver refreshStatusBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Log.i(TAG, "refreshStatusBroadcastReceiver");
+            refreshStatuses();
+        }
+    };
 
 }

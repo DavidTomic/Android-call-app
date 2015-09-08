@@ -24,6 +24,7 @@ import org.ksoap2.serialization.SoapObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -60,6 +61,24 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     @OnClick(R.id.bConfirm)
     public void confirm() {
+
+        List<String> defaultTextList = Prefs.getDefaultTexts(this);
+
+        if (etStatus.getText() != null && etStatus.getText().toString().length() > 0) {
+            String currentText = etStatus.getText().toString();
+
+            if (!defaultTextList.contains(currentText)) {
+
+                defaultTextList.add(currentText);
+
+                Prefs.saveDefaultTexts(this, defaultTextList);
+
+                SendMessageTask task = new SendMessageTask(this, getDefaultTextParams());
+                task.execute();
+            }
+        }
+
+
         SendMessageTask task = new SendMessageTask(this, getUpdateStatusParams());
         task.execute();
     }
@@ -88,33 +107,35 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
         if (result == null)
             return;
+        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
+            try {
 
-        try {
 
-            int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
-            if (resultStatus == 2) {
+                if (resultStatus == 2) {
 
-                User.getInstance(this).setStatus(currentStatus);
-                User.getInstance(this).setStatusText(etStatus.getText().toString());
-                Prefs.setUserData(this, User.getInstance(this));
+                    User.getInstance(this).setStatus(currentStatus);
+                    User.getInstance(this).setStatusText(etStatus.getText().toString());
+                    Prefs.setUserData(this, User.getInstance(this));
 
-                Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
-                        Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
+                            Toast.LENGTH_SHORT).show();
 
-            } else {
-                Toast.makeText(SetStatusActivity.this, getString(R.string.status_not_updated),
-                        Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_not_updated),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
             }
 
-
-        } catch (NullPointerException ne) {
-            ne.printStackTrace();
+            finish();
         }
 
-        finish();
     }
-
 
     private Status currentStatus;
 
@@ -162,20 +183,31 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
     }
 
     private void showStatusTextDialog() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        final CharSequence items[] = new CharSequence[]{"First", "Second", "Third"};
-        adb.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface d, int n) {
-                etStatus.setText(items[n]);
-                d.dismiss();
-            }
+        List<String> itemList = Prefs.getDefaultTexts(this);
 
-        });
-        adb.setNegativeButton("Cancel", null);
-        adb.setTitle("Choose status");
-        adb.show();
+        if (itemList.size() > 0) {
+
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+
+            final CharSequence items[] = itemList.toArray(new CharSequence[itemList.size()]);
+            adb.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface d, int n) {
+                    etStatus.setText(items[n]);
+                    d.dismiss();
+                }
+
+            });
+            adb.setNegativeButton("Cancel", null);
+            adb.setTitle("Choose status");
+            adb.show();
+        } else {
+            Toast.makeText(this, getString(R.string.add_some_default_text),
+                    Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private SoapObject getUpdateStatusParams() {
@@ -235,5 +267,38 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
                 break;
         }
+    }
+
+    private SoapObject getDefaultTextParams() {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.SET_DEFAULT_TEXT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        SoapObject piDefaultTextSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "DefaultText");
+
+        List<String> list = Prefs.getDefaultTexts(this);
+
+        for (String text : list) {
+            PropertyInfo piDefaultText = new PropertyInfo();
+            piDefaultText.setName("string");
+            piDefaultText.setValue(text);
+            piDefaultText.setType(String.class);
+            piDefaultTextSoapObject.addProperty(piDefaultText);
+        }
+
+        request.addProperty("DefaultText", piDefaultTextSoapObject);
+
+        return request;
     }
 }

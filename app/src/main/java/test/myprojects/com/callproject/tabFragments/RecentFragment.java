@@ -46,6 +46,7 @@ import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 
 /**
@@ -64,10 +65,7 @@ public class RecentFragment extends Fragment {
     @Bind(R.id.bAllMissed)
     Button bAllMissed;
     private boolean editEnabled;
- //   @Bind(R.id.tvStatusText)
- //   TextView tvStatusText;
-  //  @Bind(R.id.vStatusColor)
-  //  View vStatusColor;
+
 
     @OnClick(R.id.bAllMissed)
     public void AllMissedClicked() {
@@ -80,7 +78,7 @@ public class RecentFragment extends Fragment {
             String AllMissedText = getString(R.string.All_Missed);
             SpannableString spannablecontent = new SpannableString(AllMissedText);
             spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.white)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    (R.color.black)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
                     (R.color.blue_default)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -96,7 +94,7 @@ public class RecentFragment extends Fragment {
                     (R.color.blue_default)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.white)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    (R.color.black)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             bAllMissed.setText(spannablecontent);
         }
@@ -122,10 +120,6 @@ public class RecentFragment extends Fragment {
         recentAdapter.notifyDataSetChanged();
     }
 
-//    @OnClick(R.id.llStatus)
-//    public void setStatus() {
-//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-//    }
 
     private RecentAdapter recentAdapter;
 
@@ -245,6 +239,9 @@ public class RecentFragment extends Fragment {
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
                 holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
+                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -259,7 +256,7 @@ public class RecentFragment extends Fragment {
             if (showAllContacts) {
 
                 if (contact.getContactType() == Contact.ContactType.MISSED) {
-                    holder.name.setTextColor(getResources().getColor(R.color.red));
+                    holder.name.setTextColor(getResources().getColor(R.color.status_red_enabled));
                 } else {
                     holder.name.setTextColor(getResources().getColor(R.color.black));
                 }
@@ -272,7 +269,7 @@ public class RecentFragment extends Fragment {
 
 
             } else {
-                holder.name.setTextColor(getResources().getColor(R.color.red));
+                holder.name.setTextColor(getResources().getColor(R.color.status_red_enabled));
                 holder.image.setVisibility(View.GONE);
             }
 
@@ -322,6 +319,32 @@ public class RecentFragment extends Fragment {
 
             Log.i(TAG, "status " + contact.getStatus());
 
+            Status status = contact.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case RED_STATUS:
+                        holder.vStatusRed.setSelected(true);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case YELLOW_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(true);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case GREEN_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(true);
+                        break;
+                }
+            } else {
+                holder.vStatusRed.setSelected(false);
+                holder.vStatusYellow.setSelected(false);
+                holder.vStatusGreen.setSelected(false);
+            }
+
             return convertView;
         }
 
@@ -333,6 +356,9 @@ public class RecentFragment extends Fragment {
             ImageView image;
             Button bDelete;
             LinearLayout vStatus;
+            View vStatusRed;
+            View vStatusYellow;
+            View vStatusGreen;
         }
     }
 

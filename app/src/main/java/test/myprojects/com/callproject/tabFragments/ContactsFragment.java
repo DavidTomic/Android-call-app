@@ -14,9 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,34 +35,80 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
-import test.myprojects.com.callproject.SetStatusActivity;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
+import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment implements MessageInterface {
 
     private static final String TAG = "ContactsFragment";
     private View rootView;
     private List<Contact> contactList = new ArrayList<Contact>();
     private StickyAdapter adapter;
 
-//    @Bind(R.id.tvStatusText)
-//    TextView tvStatusText;
-//    @Bind(R.id.vStatusColor)
-//    View vStatusColor;
+    @Bind(R.id.ibRefresh) ImageButton ibRefresh;
+    @Bind(R.id.pbProgressBar)
+    ProgressBar progressBar;
+
+    @Bind(R.id.tvPhoneNumber) TextView tvPhoneNumber;
+
+    private int currentStatus;
+
+    @Bind(R.id.bStatusRed) ImageView bStatusRed;
+    @Bind(R.id.bStatusYellow)
+    ImageView bStatusYellow;
+    @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
+
+    @OnClick(R.id.bStatusRed)
+    public void bStatusRedClicked(){
+
+        Log.i(TAG, "clicked red");
+
+        bStatusRed.setSelected(true);
+        bStatusYellow.setSelected(false);
+        bStatusGreen.setSelected(false);
+
+        currentStatus = 0;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+    @OnClick(R.id.bStatusYellow)
+    public void bStatusYellowClicked(){
+        bStatusRed.setSelected(false);
+        bStatusYellow.setSelected(true);
+        bStatusGreen.setSelected(false);
+
+        currentStatus = 2;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+    @OnClick(R.id.bStatusGreen)
+    public void bStatusGreenClicked(){
+        bStatusRed.setSelected(false);
+        bStatusYellow.setSelected(false);
+        bStatusGreen.setSelected(true);
+
+        currentStatus = 1;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
+
     @OnClick(R.id.ibAddContact)
     public void addContact() {
         Log.i(TAG, "here");
+
+        User.getInstance(getActivity()).setContactEdited(true);
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
@@ -63,10 +116,12 @@ public class ContactsFragment extends Fragment {
         getActivity().startActivity(intent);
     }
 
-//    @OnClick(R.id.llStatus)
-//    public void setStatus() {
-//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-//    }
+    @OnClick(R.id.ibRefresh)
+    public void refreshClicked(){
+        ibRefresh.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).refreshStatuses();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,19 +166,22 @@ public class ContactsFragment extends Fragment {
 
         return rootView;
     }
-
     @Override
     public void onResume() {
         super.onResume();
 
+        refreshStatusUI();
+
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
                 new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
 
-        refreshMyStatusUI();
 
         if (User.getInstance(getActivity()).isContactEdited()) {
             User.getInstance(getActivity()).setContactEdited(false);
+
+            Prefs.setLastCallTime(getActivity(), 0);
             User.getInstance(getActivity()).loadContactsToList(getActivity());
+
         }
 
         adapter.notifyDataSetChanged();
@@ -138,7 +196,11 @@ public class ContactsFragment extends Fragment {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        ibRefresh.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
+
 
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
@@ -178,6 +240,9 @@ public class ContactsFragment extends Fragment {
                 holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
                 holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
+                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -188,11 +253,38 @@ public class ContactsFragment extends Fragment {
             holder.tvTitle.setText(contact.getName());
 
             String statusText = contact.getStatusText();
-            if (statusText!=null){
+            if (statusText != null) {
                 holder.tvStatusText.setText(contact.getStatusText());
-            }else {
+            } else {
                 holder.tvStatusText.setText("");
             }
+
+            Status status = contact.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case RED_STATUS:
+                        holder.vStatusRed.setSelected(true);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case YELLOW_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(true);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
+                    case GREEN_STATUS:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(true);
+                        break;
+                }
+            } else {
+                holder.vStatusRed.setSelected(false);
+                holder.vStatusYellow.setSelected(false);
+                holder.vStatusGreen.setSelected(false);
+            }
+
 
             Log.i(TAG, "status " + contact.getStatus());
 
@@ -231,23 +323,11 @@ public class ContactsFragment extends Fragment {
             TextView tvTitle;
             TextView tvStatusText;
             LinearLayout vStatus;
+            View vStatusRed;
+            View vStatusYellow;
+            View vStatusGreen;
         }
 
-    }
-
-    private void refreshMyStatusUI() {
-
-        String statusText = User.getInstance(getActivity()).getStatusText();
-
-//        if (statusText == null || statusText.length() < 1) {
-//            tvStatusText.setVisibility(View.GONE);
-//        } else {
-//            tvStatusText.setText(statusText);
-//            tvStatusText.setVisibility(View.VISIBLE);
-//        }
-//
-//        vStatusColor.setBackgroundDrawable(getResources().
-//                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
@@ -255,8 +335,111 @@ public class ContactsFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
+            ibRefresh.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             adapter.notifyDataSetChanged();
         }
     };
+
+    private SoapObject getUpdateStatusParams(int status) {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
+
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(getActivity()).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Status");
+        pi.setValue(status);
+        pi.setType(Integer.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("EndTime");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Text");
+        pi.setValue(User.getInstance(getActivity()).getStatusText());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        return request;
+    }
+    @Override
+    public void responseToSendMessage(SoapObject result, String methodName) {
+
+        if (result == null){
+            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        try {
+
+            int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+            if (resultStatus == 2) {
+
+                User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
+                Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
+
+                Toast.makeText(getActivity(), getString(R.string.status_updated),
+                        Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.status_not_updated),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
+            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void refreshStatusUI(){
+        tvPhoneNumber.setText(getString(R.string.my_number) + ": " +
+                User.getInstance(getActivity()).getPhoneNumber());
+
+        Status status = User.getInstance(getActivity()).getStatus();
+
+        Log.i(TAG, "myStatus " + status);
+
+        if (status != null) {
+            switch (status) {
+                case RED_STATUS:
+                    bStatusRed.setSelected(true);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case YELLOW_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(true);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case GREEN_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    break;
+            }
+        }
+    }
 
 }

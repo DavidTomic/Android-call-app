@@ -1,6 +1,7 @@
 package test.myprojects.com.callproject.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.Util.Language;
@@ -184,6 +186,13 @@ public class User {
             contactList.add(contact);
         }
         phones.close();
+
+        if (context instanceof MainActivity){
+            Log.i(TAG, "instanceof");
+            Intent returnIntent = new Intent(MainActivity.BROADCAST_REFRESH_STATUS_ACTION);
+            context.sendBroadcast(returnIntent);
+        }
+
     }
 
     public static int getContactIDFromNumber(String contactNumber, Context context) {
