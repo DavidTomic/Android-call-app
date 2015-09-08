@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
 
     <application
         android:name=".MyApplication"
@@ -52,6 +56,17 @@
             android:name=".AddContactsActivity"
             android:label="@string/title_activity_add_contacts" >
         </activity>
+
+        <receiver android:name="test.myprojects.com.callproject.receiver.CallReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".service.UpdateStatusIntentService" />
     </application>
 
 </manifest>

@@ -35,22 +35,35 @@ public class User {
     private Status status;
     private String statusText;
 
+
+    private String endTime;
+
     private List<Contact> contactList = new ArrayList<Contact>();
+    private List<String> checkPhoneNumberList = new ArrayList<String>();
 
 
-    private boolean contactEdited;
+
+    private boolean needRefreshStatus;
 
     public User() {
 
     }
 
 
-    public boolean isContactEdited() {
-        return contactEdited;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setContactEdited(boolean contactEdited) {
-        this.contactEdited = contactEdited;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public boolean isNeedRefreshStatus() {
+        return needRefreshStatus;
+    }
+
+    public void setNeedRefreshStatus(boolean needRefreshStatus) {
+        this.needRefreshStatus = needRefreshStatus;
     }
 
     public String getStatusText() {
@@ -189,8 +202,11 @@ public class User {
 
         if (context instanceof MainActivity){
             Log.i(TAG, "instanceof");
-            Intent returnIntent = new Intent(MainActivity.BROADCAST_REFRESH_STATUS_ACTION);
-            context.sendBroadcast(returnIntent);
+//            Intent returnIntent = new Intent(MainActivity.BROADCAST_REFRESH_STATUS_ACTION);
+//            context.sendBroadcast(returnIntent);
+
+            ((MainActivity)context).refreshStatuses();
+            ((MainActivity)context).refreshCheckPhoneNumbers();
         }
 
     }
@@ -239,6 +255,10 @@ public class User {
         }
 
         return R.drawable.green_circle;
+    }
+
+    public List<String> getCheckPhoneNumberList() {
+        return checkPhoneNumberList;
     }
 
 }

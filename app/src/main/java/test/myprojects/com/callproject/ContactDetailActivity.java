@@ -7,25 +7,36 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
+import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.task.SendMessageTask;
+
 
 /**
  * Created by dtomic on 01/09/15.
  */
-public class ContactDetailActivity extends Activity {
+public class ContactDetailActivity extends Activity implements MessageInterface {
 
     private static final String TAG = "ContactDetailActivity";
     private Contact contact;
@@ -39,6 +50,30 @@ public class ContactDetailActivity extends Activity {
     TextView tvProfile;
     @Bind(R.id.ibFavorit)
     ImageButton ibFavorit;
+
+    @Bind(R.id.bConfirm)
+    Button bConfirm;
+
+    @OnClick(R.id.bConfirm)
+    public void confimrClicked(){
+
+        String text = bConfirm.getText().toString();
+
+        if (text.contentEquals(getString(R.string.invite))){
+
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(contact.getPhoneNumber(), null,
+                    getString(R.string.invite_user_text), null, null);
+
+        }else if (text.contentEquals(getString(R.string.add_contact))){
+
+            new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
+
+        }else if (text.contentEquals(getString(R.string.set_notification))){
+
+        }
+
+    }
 
     @OnClick(R.id.bEdit)
     public void edit() {
@@ -147,6 +182,25 @@ public class ContactDetailActivity extends Activity {
                 ivProfile.setVisibility(View.INVISIBLE);
                 tvProfile.setVisibility(View.VISIBLE);
             }
+
+            List<String> checkPhoneList = User.getInstance(this).getCheckPhoneNumberList();
+
+            if (checkPhoneList.contains(contact.getPhoneNumber())){
+
+                if (contact.getStatus()==null){
+                    bConfirm.setText(getString(R.string.add_contact));
+                }else {
+                    if (contact.getStatus() != Status.GREEN_STATUS){
+                        bConfirm.setText(getString(R.string.set_notification));
+                    }else {
+                        bConfirm.setVisibility(View.GONE);
+                    }
+                }
+
+            }else {
+                bConfirm.setText(getString(R.string.invite));
+            }
+
         }
     }
 
@@ -207,9 +261,128 @@ public class ContactDetailActivity extends Activity {
 
                 phones.close();
 
-                User.getInstance(this).setContactEdited(true);
+                User.getInstance(this).setNeedRefreshStatus(true);
                 refreshUI();
             }
         }
+    }
+
+
+    private SoapObject getAddContactsParams(String number) {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("ContactsPhoneNumber");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
+        pi = new PropertyInfo();
+        pi.setName("Name");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Noter");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Number");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("URL");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Adress");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Birthsday");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("pDate");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Favorites");
+        pi.setValue(false);
+        pi.setType(Boolean.class);
+        request.addProperty(pi);
+
+        return request;
+    }
+
+    @Override
+    public void responseToSendMessage(SoapObject result, String methodName) {
+        if (result == null) {
+            showErrorTryAgain();
+            return;
+        }
+
+        if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
+
+            try {
+
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+                    Toast.makeText(this, getString(R.string.contact_added), Toast.LENGTH_SHORT).show();
+
+                    if (contact.getStatus() != null && contact.getStatus() != Status.GREEN_STATUS){
+                        bConfirm.setText(getString(R.string.set_notification));
+                    }else {
+                        bConfirm.setVisibility(View.GONE);
+                    }
+
+                    User.getInstance(this).setNeedRefreshStatus(true);
+
+                } else {
+                    showErrorTryAgain();
+                }
+
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+                showErrorTryAgain();
+            }
+
+
+        }
+    }
+
+
+
+    private void showErrorTryAgain() {
+        Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
     }
 }

@@ -72,4 +72,9 @@
     <string name="my_number">My number</string>
     <string name="manage_contacts">Manage contacts</string>
     <string name="add_some_default_text">Please go to settings to add default texts</string>
+    <string name="invite">Invite</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="set_notification">Set notification</string>
+    <string name="invite_user_text">Hi, check this app, I use it every day, When2Call</string>
+    <string name="no_contact_using_app">You don\'t have contacts yet, go to contact tab and add them</string>
 </resources>

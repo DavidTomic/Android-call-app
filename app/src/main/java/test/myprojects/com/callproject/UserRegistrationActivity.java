@@ -190,7 +190,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
     }
 
     private SoapObject getLogInParams() {
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.LOGIN);
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_ACCOUNT_SETUP);
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
@@ -288,7 +288,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         }
 
 
-        if (methodName.contentEquals(SendMessageTask.LOGIN)) {
+        if (methodName.contentEquals(SendMessageTask.GET_ACCOUNT_SETUP)) {
 
             try {
 

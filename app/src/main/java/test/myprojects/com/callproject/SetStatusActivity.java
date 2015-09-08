@@ -15,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
@@ -38,6 +40,10 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class SetStatusActivity extends Activity implements View.OnClickListener, MessageInterface {
 
     private static final String TAG = "SetStatusActivity";
+
+    private long selectedTime;
+    @Bind(R.id.tvTime)
+    TextView tvTime;
 
     @Bind(R.id.etStatus)
     EditText etStatus;
@@ -117,6 +123,10 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     User.getInstance(this).setStatus(currentStatus);
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
+
+                    String endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
+                            (new java.util.Date(selectedTime));
+                    User.getInstance(this).setEndTime(endTime);
                     Prefs.setUserData(this, User.getInstance(this));
 
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
@@ -173,8 +183,10 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                         timePicker.getCurrentHour(),
                         timePicker.getCurrentMinute());
 
-                long time = calendar.getTimeInMillis();
-                Log.i(TAG, "time " + time);
+                selectedTime = calendar.getTimeInMillis();
+
+                Log.i(TAG, "time " + (selectedTime - System.currentTimeMillis()));
+                tvTime.setText(selectedTime+"");
                 alertDialog.dismiss();
             }
         });
@@ -233,9 +245,20 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         pi.setType(Integer.class);
         request.addProperty(pi);
 
+        String endTime;
+        if (selectedTime - System.currentTimeMillis() <= 0) {
+            endTime = "2000-01-01T00:00:00";
+
+        } else {
+            endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
+                    (new java.util.Date(selectedTime));
+        }
+
+        Log.i(TAG, "endTime " + endTime);
+
         pi = new PropertyInfo();
         pi.setName("EndTime");
-        pi.setValue("2000-01-01T00:00:00");
+        pi.setValue(endTime);
         pi.setType(String.class);
         request.addProperty(pi);
 

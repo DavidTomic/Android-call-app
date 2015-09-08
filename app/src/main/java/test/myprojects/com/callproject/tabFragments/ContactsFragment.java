@@ -54,6 +54,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private List<Contact> contactList = new ArrayList<Contact>();
     private StickyAdapter adapter;
 
+    private boolean refreshContactsFromPhoneBook;
+
     @Bind(R.id.ibRefresh) ImageButton ibRefresh;
     @Bind(R.id.pbProgressBar)
     ProgressBar progressBar;
@@ -108,7 +110,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     public void addContact() {
         Log.i(TAG, "here");
 
-        User.getInstance(getActivity()).setContactEdited(true);
+        refreshContactsFromPhoneBook = true;
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
@@ -173,15 +175,23 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         refreshStatusUI();
 
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
-                new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
+                new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
 
 
-        if (User.getInstance(getActivity()).isContactEdited()) {
-            User.getInstance(getActivity()).setContactEdited(false);
+        if (User.getInstance(getActivity()).isNeedRefreshStatus()) {
+            User.getInstance(getActivity()).setNeedRefreshStatus(false);
+
+            ibRefresh.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
 
             Prefs.setLastCallTime(getActivity(), 0);
-            User.getInstance(getActivity()).loadContactsToList(getActivity());
+            ((MainActivity)getActivity()).refreshStatuses();
 
+        }
+
+        if (refreshContactsFromPhoneBook){
+            refreshContactsFromPhoneBook=false;
+            User.getInstance(getActivity()).loadContactsToList(getActivity());
         }
 
         adapter.notifyDataSetChanged();
@@ -278,6 +288,11 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         holder.vStatusYellow.setSelected(false);
                         holder.vStatusGreen.setSelected(true);
                         break;
+                    case ON_PHONE:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(false);
+                        break;
                 }
             } else {
                 holder.vStatusRed.setSelected(false);
@@ -366,7 +381,14 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
-        pi.setValue("2000-01-01T00:00:00");
+
+        String endTime = User.getInstance(getActivity()).getEndTime();
+
+        if (endTime ==null || endTime.length() == 0){
+            endTime = "2000-01-01T00:00:00";
+        }
+
+        pi.setValue(endTime);
         pi.setType(String.class);
         request.addProperty(pi);
 

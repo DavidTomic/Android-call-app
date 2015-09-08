@@ -84,7 +84,7 @@ public class FavoritFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
-                new IntentFilter(MainActivity.BROADCAST_STATUS_APDATE_ACTION));
+                new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
         refreshFavorits();
         refreshMyStatusUI();
     }
@@ -319,6 +319,11 @@ public class FavoritFragment extends Fragment {
                         holder.vStatusRed.setSelected(false);
                         holder.vStatusYellow.setSelected(false);
                         holder.vStatusGreen.setSelected(true);
+                        break;
+                    case ON_PHONE:
+                        holder.vStatusRed.setSelected(false);
+                        holder.vStatusYellow.setSelected(false);
+                        holder.vStatusGreen.setSelected(false);
                         break;
                 }
             } else {

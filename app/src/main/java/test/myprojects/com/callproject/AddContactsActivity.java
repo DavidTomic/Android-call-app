@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.ksoap2.serialization.PropertyInfo;
@@ -36,6 +37,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
     private Button bDone;
     private ProgressBar progressBar;
     private ListView listview;
+    private TextView textView;
 
     private int currentPosition;
     private boolean cameFromCreateAccount;
@@ -54,6 +56,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
 
         bDone = (Button) findViewById(R.id.bDone);
         progressBar = (ProgressBar) findViewById(R.id.pbProgressBar);
+        textView = (TextView)findViewById(R.id.tvNoContacts);
 
         bDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,9 +64,6 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
 
                 if (cameFromCreateAccount) {
                     startActivity(new Intent(AddContactsActivity.this, MainActivity.class));
-                }else {
-                    Prefs.setLastCallTime(AddContactsActivity.this, 0);
-                    User.getInstance(AddContactsActivity.this).loadContactsToList(AddContactsActivity.this);
                 }
 
                 finish();
@@ -280,6 +280,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
                 if (resultStatus == 2) {
                     Toast.makeText(this, getString(R.string.contact_added), Toast.LENGTH_SHORT).show();
                     listview.setItemChecked(currentPosition, true);
+                    Prefs.setLastCallTime(AddContactsActivity.this, 0);
                 } else {
                     showErrorTryAgain();
                 }
@@ -300,6 +301,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
                 if (resultStatus == 2) {
                     Toast.makeText(this, getString(R.string.contact_deleted), Toast.LENGTH_SHORT).show();
                     listview.setItemChecked(currentPosition, false);
+                    Prefs.setLastCallTime(AddContactsActivity.this, 0);
                 } else {
                     showErrorTryAgain();
                 }
@@ -319,6 +321,18 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
                 if (resultStatus == 2) {
 
                     SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
+
+                    if (phoneNumbersSoapObject.getPropertyCount()==0){
+                        if (cameFromCreateAccount) {
+                            startActivity(new Intent(AddContactsActivity.this, MainActivity.class));
+                            Toast.makeText(AddContactsActivity.this,
+                                    getString(R.string.no_contact_using_app), Toast.LENGTH_SHORT).show();
+                        }else {
+                            textView.setVisibility(View.VISIBLE);
+                        }
+
+                        return;
+                    }
 
                     for (int i = 0; i < phoneNumbersSoapObject.getPropertyCount(); i++) {
                         Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));

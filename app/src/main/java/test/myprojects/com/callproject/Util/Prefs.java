@@ -106,4 +106,24 @@ public class Prefs {
 
         return list;
     }
+
+    public void delteUserSettings(Context context){
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putString(PREFS_USER_PHONE_NUMBER, "");
+        editor.putString(PREFS_USER_NAME, "");
+        editor.putString(PREFS_USER_EMAIL, "");
+        editor.putString(PREFS_USER_PASSWORD, "");
+        editor.putInt(PREFS_USER_LANGUAGE, 1);
+        editor.putString(PREFS_USER_STATUS_TEXT, "");
+        editor.putInt(PREFS_USER_STATUS, 1);
+        editor.putBoolean(PREFS_USER_LOGED_IN, false);
+
+        editor.putLong(PREFS_LAST_CALL_TIME, 0);
+
+        editor.putInt("DefaultText_size", 0);
+
+        editor.commit();
+    }
 }
