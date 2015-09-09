@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -42,6 +43,9 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
     private static final String TAG = "SetStatusActivity";
 
     private long selectedTime;
+
+    @Bind(R.id.rlTime)
+    LinearLayout rlTime;
     @Bind(R.id.tvTime)
     TextView tvTime;
 
@@ -186,7 +190,22 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 selectedTime = calendar.getTimeInMillis();
 
                 Log.i(TAG, "time " + (selectedTime - System.currentTimeMillis()));
-                tvTime.setText(selectedTime+"");
+
+                if (selectedTime - System.currentTimeMillis() > 0) {
+                    int minutes = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60)) % 60);
+                    int hours = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60 * 60)) % 24);
+
+                    if (hours == 0) {
+                        tvTime.setText((minutes+1) + " min");
+                    } else {
+                        tvTime.setText(String.format("%02d", hours) + ":"
+                                + String.format("%02d", (minutes+1)) + " min");
+                    }
+                }else {
+                    tvTime.setText("");
+                }
+
+
                 alertDialog.dismiss();
             }
         });
@@ -278,16 +297,19 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
+                rlTime.setVisibility(View.VISIBLE);
                 break;
             case YELLOW_STATUS:
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
+                rlTime.setVisibility(View.VISIBLE);
                 break;
             case GREEN_STATUS:
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
+                rlTime.setVisibility(View.GONE);
                 break;
         }
     }

@@ -242,6 +242,7 @@ public class RecentFragment extends Fragment {
                 holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
                 holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
                 holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -321,6 +322,9 @@ public class RecentFragment extends Fragment {
 
             Status status = contact.getStatus();
 
+            holder.vStatus.setVisibility(View.VISIBLE);
+            holder.tvOnPhone.setVisibility(View.GONE);
+
             if (status != null) {
                 switch (status) {
                     case RED_STATUS:
@@ -339,9 +343,8 @@ public class RecentFragment extends Fragment {
                         holder.vStatusGreen.setSelected(true);
                         break;
                     case ON_PHONE:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(false);
+                        holder.vStatus.setVisibility(View.GONE);
+                        holder.tvOnPhone.setVisibility(View.VISIBLE);
                         break;
                 }
             } else {
@@ -364,6 +367,7 @@ public class RecentFragment extends Fragment {
             View vStatusRed;
             View vStatusYellow;
             View vStatusGreen;
+            TextView tvOnPhone;
         }
     }
 

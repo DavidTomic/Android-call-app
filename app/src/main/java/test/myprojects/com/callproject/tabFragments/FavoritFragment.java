@@ -86,7 +86,6 @@ public class FavoritFragment extends Fragment {
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
                 new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
         refreshFavorits();
-        refreshMyStatusUI();
     }
 
     @Override
@@ -100,23 +99,12 @@ public class FavoritFragment extends Fragment {
         }
     }
 
-    private void refreshMyStatusUI() {
-
-        String statusText = User.getInstance(getActivity()).getStatusText();
-
-//        if (statusText == null || statusText.length() < 1) {
-//            tvStatusText.setVisibility(View.GONE);
-//        } else {
-//            tvStatusText.setText(statusText);
-//            tvStatusText.setVisibility(View.VISIBLE);
-//        }
-//
-//        vStatusColor.setBackgroundDrawable(getResources().
-//                getDrawable(User.getInstance(getActivity()).getStatusColor()));
-    }
 
     private void refreshFavorits() {
         favoritList.clear();
+
+        Log.i(TAG, "refreshFavorits getContactList() " + User.getInstance(getActivity()).getContactList().size());
+
         for (Contact c : User.getInstance(getActivity()).getContactList()) {
             if (c.isFavorit()) {
                 favoritList.add(c);
@@ -244,6 +232,7 @@ public class FavoritFragment extends Fragment {
                 holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
                 holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
                 holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -303,6 +292,9 @@ public class FavoritFragment extends Fragment {
 
             Status status = contact.getStatus();
 
+            holder.vStatus.setVisibility(View.VISIBLE);
+            holder.tvOnPhone.setVisibility(View.GONE);
+
             if (status != null) {
                 switch (status) {
                     case RED_STATUS:
@@ -321,9 +313,8 @@ public class FavoritFragment extends Fragment {
                         holder.vStatusGreen.setSelected(true);
                         break;
                     case ON_PHONE:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(false);
+                        holder.vStatus.setVisibility(View.GONE);
+                        holder.tvOnPhone.setVisibility(View.VISIBLE);
                         break;
                 }
             } else {
@@ -346,6 +337,7 @@ public class FavoritFragment extends Fragment {
             View vStatusRed;
             View vStatusYellow;
             View vStatusGreen;
+            TextView tvOnPhone;
         }
     }
 

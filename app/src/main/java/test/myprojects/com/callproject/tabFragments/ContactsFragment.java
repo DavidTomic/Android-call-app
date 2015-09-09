@@ -8,12 +8,18 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,12 +48,13 @@ import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
+import test.myprojects.com.callproject.view.LinearLayoutThatDetectsSoftKeyboard;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ContactsFragment extends Fragment implements MessageInterface {
+public class ContactsFragment extends Fragment implements MessageInterface, LinearLayoutThatDetectsSoftKeyboard.Listener {
 
     private static final String TAG = "ContactsFragment";
     private View rootView;
@@ -55,6 +62,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private StickyAdapter adapter;
 
     private boolean refreshContactsFromPhoneBook;
+
+    @Bind(R.id.inputSearch)
+    EditText inputSearch;
 
     @Bind(R.id.ibRefresh) ImageButton ibRefresh;
     @Bind(R.id.pbProgressBar)
@@ -158,6 +168,42 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             /** indexable listview */
             indexView.init(stlist);
 
+            LinearLayoutThatDetectsSoftKeyboard mainLayout = (LinearLayoutThatDetectsSoftKeyboard) rootView.findViewById(R.id.llRoot);
+            mainLayout.setListener(this);
+
+            inputSearch.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                    // When user changed the Text
+                    adapter.getFilter().filter(cs);
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable arg0) {
+                    // TODO Auto-generated method stub
+                }
+            });
+
+            inputSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+
+                  //  Log.i(TAG, "hasFocus " + hasFocus);
+
+                    if (hasFocus){
+                        inputSearch.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+                    }
+                }
+            });
+
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (parent != null) {
@@ -211,11 +257,26 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         progressBar.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onSoftKeyboardShown(boolean isShowing) {
+       // Log.i(TAG, "showing " + isShowing);
+        if (isShowing){
+            inputSearch.requestFocus();
+        }else {
+            if (inputSearch.getText() != null && inputSearch.getText().toString().length() == 0){
+                inputSearch.clearFocus();
+                inputSearch.setGravity(Gravity.CENTER);
+            }
 
-    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+        }
+    }
+
+
+    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable{
 
 
         private LayoutInflater inflater;
+        List<Contact> mOriginalValues;
 
         public StickyAdapter(Context context) {
             inflater = LayoutInflater.from(context);
@@ -253,6 +314,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                 holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
                 holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
                 holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -270,6 +332,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             }
 
             Status status = contact.getStatus();
+
+            holder.vStatus.setVisibility(View.VISIBLE);
+            holder.tvOnPhone.setVisibility(View.GONE);
 
             if (status != null) {
                 switch (status) {
@@ -289,9 +354,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         holder.vStatusGreen.setSelected(true);
                         break;
                     case ON_PHONE:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(false);
+                        holder.vStatus.setVisibility(View.GONE);
+                        holder.tvOnPhone.setVisibility(View.VISIBLE);
                         break;
                 }
             } else {
@@ -330,6 +394,52 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             return ((Contact) contactList.get(position)).getName().subSequence(0, 1).charAt(0);
         }
 
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults results = new FilterResults();        // Holds the results of a filtering operation in values
+                    List<Contact> filteredArrList = new ArrayList<Contact>();
+
+                    if (mOriginalValues == null) {
+                        mOriginalValues = new ArrayList<Contact>(contactList); // saves the original data in mOriginalValues
+                    }
+
+                    if (constraint == null || constraint.length() == 0) {
+                        Log.i(TAG, "constraint length 0");
+                        results.count = mOriginalValues.size();
+                        results.values = mOriginalValues;
+                    }else {
+                        constraint = constraint.toString().toLowerCase();
+                        for (int i = 0; i < mOriginalValues.size(); i++) {
+                            String data = mOriginalValues.get(i).getName();
+                            if (data.toLowerCase().startsWith(constraint.toString())) {
+                                filteredArrList.add(mOriginalValues.get(i));
+                            }
+                        }
+
+                        results.count = filteredArrList.size();
+                        results.values = filteredArrList;
+                    }
+
+                    Log.i(TAG, "filteredArrList " + filteredArrList.size());
+                    Log.i(TAG, "contactList " + contactList.size());
+                    Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
+
+
+
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    contactList = (List<Contact>) results.values;
+                    adapter.notifyDataSetChanged();
+                }
+            };
+        }
+
         class HeaderViewHolder {
             TextView text;
         }
@@ -341,6 +451,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             View vStatusRed;
             View vStatusYellow;
             View vStatusGreen;
+            TextView tvOnPhone;
         }
 
     }

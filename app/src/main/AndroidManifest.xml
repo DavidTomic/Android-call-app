@@ -30,6 +30,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan|adjustResize"
             android:screenOrientation="portrait" />
         <activity
             android:name=".UserRegistrationActivity"
@@ -57,12 +58,9 @@
             android:label="@string/title_activity_add_contacts" >
         </activity>
 
-        <receiver android:name="test.myprojects.com.callproject.receiver.CallReceiver" >
+        <receiver android:name="test.myprojects.com.callproject.receiver.CallStateReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
 

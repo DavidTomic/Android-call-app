@@ -37,7 +37,6 @@ import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
-import test.myprojects.com.callproject.receiver.PhonecallReceiver;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;

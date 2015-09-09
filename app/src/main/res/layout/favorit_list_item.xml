@@ -91,6 +91,18 @@
         </View>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvOnPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="50dp"
+        android:visibility="gone"
+        android:textSize="10sp"
+        android:text="@string/on_phone"
+        android:textColor="@color/black" />
+
     <ImageButton
         android:id="@+id/ibInfo"
         android:layout_width="50dp"

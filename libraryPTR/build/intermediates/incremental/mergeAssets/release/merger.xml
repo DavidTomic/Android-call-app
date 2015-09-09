@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/davidtomic/Documents/developer/android/call-application-android/libraryPTR/src/main/assets"/></dataSet><dataSet config="release"><source path="/Users/davidtomic/Documents/developer/android/call-application-android/libraryPTR/src/release/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/dtomic/Documents/test_projects/mobile/android/CallProject/libraryPTR/src/main/assets"/></dataSet><dataSet config="release"><source path="/Users/dtomic/Documents/test_projects/mobile/android/CallProject/libraryPTR/src/release/assets"/></dataSet></merger>

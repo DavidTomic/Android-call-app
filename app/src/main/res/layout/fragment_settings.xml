@@ -319,7 +319,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="@string/manage_contacts"
+                android:text="@string/add_contacts"
                 android:textColor="@color/black" />
 
 
