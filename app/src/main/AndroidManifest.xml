@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".MyApplication"
@@ -46,7 +47,7 @@
             android:label="@string/title_activity_settings_detail" >
         </activity>
         <activity
-            android:name=".view.DefaultTextActivity"
+            android:name=".DefaultTextActivity"
             android:label="@string/title_activity_default_text" >
         </activity>
         <activity
@@ -65,6 +66,13 @@
         </receiver>
 
         <service android:name=".service.UpdateStatusIntentService" />
+        <service android:name=".service.ImALiveService" />
+
+        <receiver android:name=".receiver.BootCompleteReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

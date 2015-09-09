@@ -115,8 +115,12 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
-        if (result == null)
+        if (result == null){
+            Toast.makeText(SetStatusActivity.this, getString(R.string.status_not_updated),
+                    Toast.LENGTH_SHORT).show();
             return;
+        }
+
         if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
             try {
 

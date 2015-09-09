@@ -1,23 +1,18 @@
-package test.myprojects.com.callproject.view;
+package test.myprojects.com.callproject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -30,13 +25,8 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
-import test.myprojects.com.callproject.DefaultTextDetailActivity;
-import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.User;
-import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
 public class DefaultTextActivity extends Activity {

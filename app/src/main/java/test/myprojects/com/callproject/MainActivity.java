@@ -1,34 +1,23 @@
 package test.myprojects.com.callproject;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.CallLog;
-import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 import test.myprojects.com.callproject.Util.InternetStatus;
@@ -37,6 +26,7 @@ import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.service.ImALiveService;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
@@ -66,6 +56,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         new SendMessageTask(this, getDefaultTextParams()).execute();
 
+        Intent pushIntent = new Intent(this, ImALiveService.class);
+        startService(pushIntent);
 
     }
     @Override
@@ -76,6 +68,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         if (InternetStatus.isOnline(this)){
             new SendMessageTask(this, getLogInParams()).execute();
+        }else {
+            Toast.makeText(this, getString(R.string.please_enable_internet), Toast.LENGTH_LONG).show();
         }
         
         mPollHandler.postDelayed(mPollRunnable, 50);
@@ -252,6 +246,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                     user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
                     user.setEndTime("" + result.getProperty("EndTimeStatus"));
+                    user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
                     String statusText = "" + result.getProperty("StatusText");
                     if (statusText.contentEquals("anyType{}")){

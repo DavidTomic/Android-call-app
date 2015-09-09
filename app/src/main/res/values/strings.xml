@@ -78,4 +78,5 @@
     <string name="no_contact_using_app">You don\'t have contacts yet, go to contact tab and add them</string>
     <string name="on_phone">ON PHONE</string>
     <string name="search">Search</string>
+    <string name="please_enable_internet">Please enable internet on your phone so you can see others status</string>
 </resources>

@@ -23,6 +23,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
@@ -109,6 +110,14 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         refreshUI();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!InternetStatus.isOnline(this)) {
+            Toast.makeText(this, getString(R.string.please_enable_internet), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void refreshUI() {
@@ -301,7 +310,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                     List<String> list = new ArrayList<String>();
                     for (int i = 0; i < textSoapObject.getPropertyCount(); i++) {
-                        list.add(""+textSoapObject.getProperty(i));
+                        list.add("" + textSoapObject.getProperty(i));
                         Log.i(TAG, "text " + textSoapObject.getProperty(i));
                     }
 

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="test.myprojects.com.callproject.view.DefaultTextActivity">
+    tools:context="test.myprojects.com.callproject.DefaultTextActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

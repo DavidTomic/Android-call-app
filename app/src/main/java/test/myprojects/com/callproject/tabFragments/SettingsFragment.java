@@ -17,7 +17,7 @@ import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsDetailActivity;
 import test.myprojects.com.callproject.model.User;
-import test.myprojects.com.callproject.view.DefaultTextActivity;
+import test.myprojects.com.callproject.DefaultTextActivity;
 
 /**
  * A simple {@link Fragment} subclass.

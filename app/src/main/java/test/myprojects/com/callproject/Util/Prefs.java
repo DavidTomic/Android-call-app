@@ -25,6 +25,7 @@ public class Prefs {
     public static final String PREFS_USER_STATUS_TEXT = "user_status_text";
     public static final String PREFS_USER_STATUS = "user_status";
     public static final String PREFS_USER_LOGED_IN = "user_loged_in";
+    public static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
 
@@ -41,6 +42,7 @@ public class Prefs {
         editor.putString(PREFS_USER_STATUS_TEXT, user.getStatusText());
         editor.putInt(PREFS_USER_STATUS, user.getStatus().getValue());
         editor.putBoolean(PREFS_USER_LOGED_IN, user.isLogedIn());
+        editor.putInt(PREFS_I_AM_LIVE_SECONS, user.getiAmLiveSeconds());
         editor.commit();
     }
 
@@ -57,6 +59,7 @@ public class Prefs {
         user.setStatusText(prefs.getString(PREFS_USER_STATUS_TEXT, ""));
         user.setStatus(Status.values()[prefs.getInt(PREFS_USER_STATUS, 1)]);
         user.setLogedIn(prefs.getBoolean(PREFS_USER_LOGED_IN, false));
+        user.setiAmLiveSeconds(prefs.getInt(PREFS_I_AM_LIVE_SECONS, 240));
     }
 
     public static void setLastCallTime(Context context, long time) {

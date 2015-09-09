@@ -35,6 +35,8 @@ public class User {
     private Status status;
     private String statusText;
 
+    private int iAmLiveSeconds;
+
 
     private String endTime;
 
@@ -202,9 +204,6 @@ public class User {
 
         if (context instanceof MainActivity){
             Log.i(TAG, "instanceof");
-//            Intent returnIntent = new Intent(MainActivity.BROADCAST_REFRESH_STATUS_ACTION);
-//            context.sendBroadcast(returnIntent);
-
             ((MainActivity)context).refreshStatuses();
             ((MainActivity)context).refreshCheckPhoneNumbers();
         }
@@ -261,4 +260,11 @@ public class User {
         return checkPhoneNumberList;
     }
 
+    public int getiAmLiveSeconds() {
+        return iAmLiveSeconds;
+    }
+
+    public void setiAmLiveSeconds(int iAmLiveSeconds) {
+        this.iAmLiveSeconds = iAmLiveSeconds;
+    }
 }

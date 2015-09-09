@@ -31,6 +31,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String DELETE_CONTACT = "DeleteContact";
     public static final String GET_CONTACT = "GetContact";
     public static final String LOG_IN = "Login";
+    public static final String I_AM_LIVE = "ImALive";
 
 
     public static final String NAMESPACE = "http://tempuri.org/";
@@ -84,10 +85,15 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         super.onPostExecute(result);
         Log.i(TAG, "result " + result + " methodName " + request.getName());
 
-        if (aht != null){
-            Log.d("dump Request: ", aht.requestDump);
-            Log.w("dump Response: ", aht.responseDump);
+        try {
+            if (aht != null){
+                Log.d("dump Request: ", aht.requestDump);
+                Log.w("dump Response: ", aht.responseDump);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
         if (messageInterface != null)
             messageInterface.responseToSendMessage(result, request.getName());
