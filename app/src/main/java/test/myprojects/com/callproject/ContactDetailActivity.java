@@ -26,10 +26,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.service.ImALiveService;
+import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
 
@@ -66,11 +70,17 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                     getString(R.string.invite_user_text), null, null);
 
         }else if (text.contentEquals(getString(R.string.add_contact))){
-
             new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
 
         }else if (text.contentEquals(getString(R.string.set_notification))){
+            bConfirm.setText(getString(R.string.notification_already_added));
 
+            DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
+                    contact.getName(), contact.getPhoneNumber(), contact.getStatus().getValue());
+            bConfirm.setEnabled(false);
+
+            Intent pushIntent = new Intent(this, NotificationService.class);
+            startService(pushIntent);
         }
 
     }
@@ -190,11 +200,26 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                 if (contact.getStatus()==null){
                     bConfirm.setText(getString(R.string.add_contact));
                 }else {
-                    if (contact.getStatus() != Status.GREEN_STATUS){
-                        bConfirm.setText(getString(R.string.set_notification));
-                    }else {
-                        bConfirm.setVisibility(View.GONE);
+
+                    List<Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
+                            getInstance(this).getWritableDatabase());
+
+                    boolean contains = false;
+
+                    for (Notification notification : nList){
+                     if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())){
+                         contains = true;
+                         break;
+                     }
                     }
+
+                    if (contains){
+                        bConfirm.setText(getString(R.string.notification_already_added));
+                        bConfirm.setEnabled(false);
+                    }else {
+                        bConfirm.setText(getString(R.string.set_notification));
+                    }
+
                 }
 
             }else {

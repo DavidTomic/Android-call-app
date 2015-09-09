@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
@@ -31,8 +31,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity
             android:name=".UserRegistrationActivity"
             android:screenOrientation="portrait" />
@@ -59,7 +59,7 @@
             android:label="@string/title_activity_add_contacts" >
         </activity>
 
-        <receiver android:name="test.myprojects.com.callproject.receiver.CallStateReceiver" >
+        <receiver android:name=".receiver.CallStateReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -67,12 +67,18 @@
 
         <service android:name=".service.UpdateStatusIntentService" />
         <service android:name=".service.ImALiveService" />
+        <service android:name=".service.NotificationService" />
 
         <receiver android:name=".receiver.BootCompleteReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".EditNotificationsActivity"
+            android:label="@string/title_activity_edit_notifications" >
+        </activity>
     </application>
 
 </manifest>

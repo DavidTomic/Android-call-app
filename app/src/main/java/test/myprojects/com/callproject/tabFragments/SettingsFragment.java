@@ -13,6 +13,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.AddContactsActivity;
+import test.myprojects.com.callproject.EditNotificationsActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsDetailActivity;
@@ -88,6 +89,11 @@ public class SettingsFragment extends Fragment {
     @OnClick(R.id.rlManageContacts)
     public void manageContactClicked() {
         startActivity(new Intent(getActivity(), AddContactsActivity.class));
+    }
+
+    @OnClick(R.id.rlNotification)
+    public void notificationClicked(){
+        startActivity(new Intent(getActivity(), EditNotificationsActivity.class));
     }
 
     public SettingsFragment() {

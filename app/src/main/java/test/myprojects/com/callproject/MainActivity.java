@@ -47,6 +47,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i(TAG, "onCreate");
+
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
@@ -237,6 +239,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 if (resultStatus == 0 || resultStatus == 1) {
 
                     User.empty();
+                    Prefs.deleteUserSettings(this);
                     Intent i = new Intent(this, StartActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);

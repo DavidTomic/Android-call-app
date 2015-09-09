@@ -31,7 +31,7 @@ public class ImALiveService extends Service {
     private int Iamliveseconds = 240;
 
     @Override
-    public void onCreate() {
+         public void onCreate() {
         Log.i(TAG, "onStartCommand ");
         // TODO Auto-generated method stub
         super.onCreate();

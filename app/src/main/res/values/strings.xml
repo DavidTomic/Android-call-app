@@ -79,4 +79,13 @@
     <string name="on_phone">ON PHONE</string>
     <string name="search">Search</string>
     <string name="please_enable_internet">Please enable internet on your phone so you can see others status</string>
+    <string name="notification_already_added">Notification added</string>
+    <string name="changed_status_to">Changed status to:</string>
+    <string name="user_changed_statuses">Users changed their status</string>
+    <string name="busy">busy</string>
+    <string name="online">online</string>
+    <string name="not_available">not available</string>
+    <string name="speaking">speaking</string>
+    <string name="edit_notifications">Edit notifications</string>
+    <string name="title_activity_edit_notifications">EditNotificationsActivity</string>
 </resources>

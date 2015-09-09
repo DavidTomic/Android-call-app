@@ -110,7 +110,8 @@ public class Prefs {
         return list;
     }
 
-    public void delteUserSettings(Context context){
+
+    public static void deleteUserSettings(Context context){
         SharedPreferences.Editor editor = context.getSharedPreferences(
                 PREFS_FILE, 0).edit();
 

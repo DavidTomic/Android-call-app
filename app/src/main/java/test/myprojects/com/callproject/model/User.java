@@ -204,6 +204,7 @@ public class User {
 
         if (context instanceof MainActivity){
             Log.i(TAG, "instanceof");
+
             ((MainActivity)context).refreshStatuses();
             ((MainActivity)context).refreshCheckPhoneNumbers();
         }
