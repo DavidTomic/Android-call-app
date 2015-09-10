@@ -25,7 +25,6 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:cursorVisible="true"
-                android:editable="true"
                 android:focusableInTouchMode="true"
                 android:freezesText="true"
                 android:gravity="center"
@@ -84,7 +83,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text=" "
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -116,7 +114,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ABC"
+                            android:text="@string/ph_abc"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -147,7 +145,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="DEF"
+                            android:text="@string/ph_def"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -185,7 +183,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="GHI"
+                            android:text="@string/ph_ghi"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -216,7 +214,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="JKL"
+                            android:text="@string/ph_jkl"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -247,7 +245,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MNO"
+                            android:text="@string/ph_mno"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -285,7 +283,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="PQRS"
+                            android:text="@string/ph_pqrs"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -316,7 +314,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="TUV"
+                            android:text="@string/ph_tuv"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -347,7 +345,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="WXYZ"
+                            android:text="@string/ph_wxyz"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -400,7 +398,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="*"
+                            android:text="@string/ph_star"
                             android:textColor="@color/gray_light" />
 
                     </LinearLayout>
@@ -429,7 +427,8 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/call_icon" />
 
         </LinearLayout>

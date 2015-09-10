@@ -15,20 +15,11 @@ public class InternetStatus {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public boolean isOnline() {
-        // test for connection
-        final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public static boolean isOnline(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
         if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
             return false;
         } else {

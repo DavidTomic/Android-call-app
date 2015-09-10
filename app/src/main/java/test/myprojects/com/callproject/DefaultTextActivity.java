@@ -39,7 +39,7 @@ public class DefaultTextActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_text);
 
-        ((Button)findViewById(R.id.bAdd)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.bAdd)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DefaultTextActivity.this, DefaultTextDetailActivity.class);

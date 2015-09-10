@@ -37,8 +37,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class NotificationService extends Service {
 
     private static final String TAG = "NotificationService";
-    Calendar cur_cal = Calendar.getInstance();
-    private int interval = 30;
+    private Calendar cur_cal = Calendar.getInstance();
     private long lastTimeChecked;
 
     @Override
@@ -71,6 +70,7 @@ public class NotificationService extends Service {
         cur_cal.setTimeInMillis(System.currentTimeMillis());
 
 
+        int interval = 30;
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis(),
                 interval * 1000, pintent);
 
@@ -122,7 +122,7 @@ public class NotificationService extends Service {
                             return null;
 
 
-                        List<test.myprojects.com.callproject.model.Notification> matchList = new ArrayList<test.myprojects.com.callproject.model.Notification>();
+                        List<test.myprojects.com.callproject.model.Notification> matchList = new ArrayList<>();
 
                         for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
                             SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);

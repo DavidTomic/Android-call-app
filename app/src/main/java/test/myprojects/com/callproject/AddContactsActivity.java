@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
@@ -30,9 +31,9 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
 
     private static final String TAG = "AddContactsActivity";
 
-    private List<String> numbers = new ArrayList<String>();
-    private List<Contact> contacts = new ArrayList<Contact>();
-    private List<String> names = new ArrayList<String>();
+    private final List<String> numbers = new ArrayList<>();
+    private List<Contact> contacts = new ArrayList<>();
+    private final List<String> names = new ArrayList<>();
 
     private Button bDone;
     private ProgressBar progressBar;
@@ -70,8 +71,9 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
             }
         });
 
+
         listview = getListView();
-        listview.setChoiceMode(listview.CHOICE_MODE_MULTIPLE);
+        listview.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
         //--	text filtering
         listview.setTextFilterEnabled(true);

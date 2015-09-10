@@ -1,7 +1,6 @@
 package test.myprojects.com.callproject.model;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -10,11 +9,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
-import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
 
@@ -40,14 +37,14 @@ public class User {
 
     private String endTime;
 
-    private List<Contact> contactList = new ArrayList<Contact>();
-    private List<String> checkPhoneNumberList = new ArrayList<String>();
+    private List<Contact> contactList = new ArrayList<>();
+    private List<String> checkPhoneNumberList = new ArrayList<>();
 
 
 
     private boolean needRefreshStatus;
 
-    public User() {
+    private User() {
 
     }
 
@@ -88,7 +85,7 @@ public class User {
         instance = null;
     }
 
-    public static void initInstance(Context context) {
+    private static void initInstance(Context context) {
         if (instance == null) {
             instance = new User();
             Prefs.loadUserData(context);
@@ -162,7 +159,7 @@ public class User {
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
                 ContactsContract.CommonDataKinds.Phone.STARRED,
                 ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
         };
@@ -186,9 +183,9 @@ public class User {
 
             contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
 
-            int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
+            int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID);
             if (colPhotoIndex != -1) {
-                contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
+                contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID)));
             }
 
 

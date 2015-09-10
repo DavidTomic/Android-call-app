@@ -8,15 +8,10 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CallLog;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +28,6 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.fortysevendeg.swipelistview.SwipeListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +38,6 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
-import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
@@ -57,51 +50,39 @@ public class RecentFragment extends Fragment {
 
     private static final String TAG = "RecentFragment";
     private View rootView;
-    private List<Contact> recentList = new ArrayList<Contact>();
-    private boolean showAllContacts;
+    private List<Contact> recentList = new ArrayList<>();
+    private boolean showAllContacts = true;
 
     @Bind(R.id.swipeMenuListView)
     SwipeMenuListView swipeMenuListView;
-    @Bind(R.id.bAllMissed)
-    Button bAllMissed;
+
+    @Bind(R.id.bAll) Button bAll;
+    @Bind(R.id.bUnanswer) Button bUnanswer;
+
     private boolean editEnabled;
 
-
-    @OnClick(R.id.bAllMissed)
-    public void AllMissedClicked() {
-
-        Log.i(TAG, "clicked");
-
-        if (showAllContacts) {
-            showAllContacts = false;
-
-            String AllMissedText = getString(R.string.All_Missed);
-            SpannableString spannablecontent = new SpannableString(AllMissedText);
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.black)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.blue_default)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            bAllMissed.setText(spannablecontent);
-
-        } else {
-            showAllContacts = true;
-
-            String AllMissedText = getString(R.string.All_Missed);
-            SpannableString spannablecontent = new SpannableString(AllMissedText);
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.blue_default)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.black)), AllMissedText.indexOf("/"), AllMissedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            bAllMissed.setText(spannablecontent);
-        }
+    @OnClick(R.id.bAll)
+    public void bAllClicked(){
+        bAll.setBackgroundDrawable(getResources().getDrawable(R.drawable.all_contacts_bg_full));
+        bAll.setTextColor(getResources().getColor(R.color.black));
+        bUnanswer.setTextColor(getResources().getColor(R.color.nav_bar_button_color));
+        bUnanswer.setBackgroundDrawable(null);
+        showAllContacts = true;
 
         refreshRecents();
-
     }
+
+    @OnClick(R.id.bUnanswer)
+    public void bUnanswerClicked(){
+        bAll.setBackgroundDrawable(null);
+        bUnanswer.setBackgroundDrawable(getResources().getDrawable(R.drawable.unanswer_bg_full));
+        bAll.setTextColor(getResources().getColor(R.color.nav_bar_button_color));
+        bUnanswer.setTextColor(getResources().getColor(R.color.black));
+        showAllContacts = false;
+
+        refreshRecents();
+    }
+
 
     @Bind(R.id.bEdit) Button bEdit;
 
@@ -139,14 +120,6 @@ public class RecentFragment extends Fragment {
             ButterKnife.bind(this, rootView);
             recentAdapter = new RecentAdapter(getActivity());
             swipeMenuListView.setAdapter(recentAdapter);
-
-            String AllMissedText = getString(R.string.All_Missed);
-            SpannableString spannablecontent = new SpannableString(AllMissedText);
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                    (R.color.blue_default)), 0, AllMissedText.indexOf("/"), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            bAllMissed.setText(spannablecontent);
-            showAllContacts = true;
 
             swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -239,9 +212,9 @@ public class RecentFragment extends Fragment {
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
                 holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
-                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
-                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
-                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.vStatusRed = convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
@@ -263,8 +236,12 @@ public class RecentFragment extends Fragment {
                 }
 
                 if (contact.getContactType() == Contact.ContactType.OUTGOING) {
+                    holder.image.setImageDrawable(getResources().getDrawable(R.drawable.outcoming_call_icon));
                     holder.image.setVisibility(View.VISIBLE);
-                } else {
+                } else if (contact.getContactType() == Contact.ContactType.INCOMING){
+                    holder.image.setImageDrawable(getResources().getDrawable(R.drawable.incoming_call_icon));
+                    holder.image.setVisibility(View.VISIBLE);
+                }else {
                     holder.image.setVisibility(View.INVISIBLE);
                 }
 
@@ -377,7 +354,6 @@ public class RecentFragment extends Fragment {
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
                 new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
         refreshRecents();
-        refreshMyStatusUI();
     }
 
     @Override
@@ -466,7 +442,7 @@ public class RecentFragment extends Fragment {
     }
 
 
-    public void DeleteCallById(String idd) {
+    private void DeleteCallById(String idd) {
         try {
             getActivity().getContentResolver().delete(CallLog.Calls.CONTENT_URI, CallLog.Calls._ID + " = ? ",
                     new String[]{String.valueOf(idd)});
@@ -484,21 +460,6 @@ public class RecentFragment extends Fragment {
             startActivity(new Intent(Intent.ACTION_CALL,
                     Uri.parse("tel:" + phoneNumber)));
         }
-    }
-
-    private void refreshMyStatusUI() {
-
-        String statusText = User.getInstance(getActivity()).getStatusText();
-
-//        if (statusText == null || statusText.length() < 1) {
-//            tvStatusText.setVisibility(View.GONE);
-//        } else {
-//            tvStatusText.setText(statusText);
-//            tvStatusText.setVisibility(View.VISIBLE);
-//        }
-//
-//        vStatusColor.setBackgroundDrawable(getResources().
-//                getDrawable(User.getInstance(getActivity()).getStatusColor()));
     }
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {

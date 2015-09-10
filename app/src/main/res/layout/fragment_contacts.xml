@@ -1,4 +1,4 @@
-<test.myprojects.com.callproject.view.LinearLayoutThatDetectsSoftKeyboard xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/llRoot"
     android:layout_width="match_parent"
@@ -16,11 +16,10 @@
             android:id="@+id/ibAddContact"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_centerVertical="true"
+            android:background="@null"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:background="@null"
-            android:padding="15dp"
+            android:padding="14dp"
             android:scaleType="fitCenter"
             android:src="@drawable/plus_icon" />
 
@@ -37,7 +36,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:background="@null"
             android:padding="15dp"
             android:scaleType="fitCenter"
@@ -56,7 +54,7 @@
 
     </RelativeLayout>
 
-    <EditText
+    <test.myprojects.com.callproject.view.SearchEditText
         android:id="@+id/inputSearch"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
@@ -80,7 +78,7 @@
             android:id="@+id/tvPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Number: 9123456789" />
+            android:text="@string/ph_my_number" />
 
         <LinearLayout
             android:id="@+id/vStatus"
@@ -120,7 +118,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <test.myprojects.com.callproject.view.PullToRefreshStickyList xmlns:app="http://schemas.android.com/apk/res-auto"
+        <test.myprojects.com.callproject.view.PullToRefreshStickyList
             android:id="@+id/stickSwipeList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -138,4 +136,4 @@
 
     </RelativeLayout>
 
-</test.myprojects.com.callproject.view.LinearLayoutThatDetectsSoftKeyboard>
+</LinearLayout>

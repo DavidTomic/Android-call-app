@@ -27,7 +27,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
  */
 public class ImALiveService extends Service {
     private static final String TAG = "ImALiveService";
-    Calendar cur_cal = Calendar.getInstance();
+    private Calendar cur_cal = Calendar.getInstance();
     private int Iamliveseconds = 240;
 
     @Override

@@ -6,9 +6,7 @@ import android.content.Intent;
 
 import test.myprojects.com.callproject.service.ImALiveService;
 
-/**
- * Created by dtomic on 09/09/15.
- */
+
 public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

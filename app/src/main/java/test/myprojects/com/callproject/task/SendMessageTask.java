@@ -8,7 +8,6 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import test.myprojects.com.callproject.model.PhoneNumbers;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 
 /**
@@ -37,10 +36,11 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String NAMESPACE = "http://tempuri.org/";
     public static final String URL = "http://call.celox.dk/wsCall.asmx";
     private String SOAP_ACTION;
+    public static final int SOAP_TIMEOUT = 10000;
 
     private MessageInterface messageInterface;
     private SoapObject request;
-    HttpTransportSE aht;
+    private HttpTransportSE aht;
 
     public SendMessageTask(MessageInterface messageInterface, SoapObject request) {
         this.messageInterface = messageInterface;
@@ -62,7 +62,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
 //        }
 
 
-        aht = new HttpTransportSE(URL);
+        aht = new HttpTransportSE(URL, SOAP_TIMEOUT);
         aht.debug = true;
 
         try {
@@ -88,8 +88,12 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         try {
             if (aht != null){
                 Log.d("dump Request: ", aht.requestDump);
+            }
+
+            if (result != null && aht!= null){
                 Log.w("dump Response: ", aht.responseDump);
             }
+
         }catch (Exception e){
             e.printStackTrace();
         }

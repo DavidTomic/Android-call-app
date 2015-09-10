@@ -1,7 +1,5 @@
 package test.myprojects.com.callproject.model;
 
-import test.myprojects.com.callproject.SetStatusActivity;
-
 /**
  * Created by dtomic on 25/08/15.
  */

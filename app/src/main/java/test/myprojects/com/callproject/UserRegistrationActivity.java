@@ -26,7 +26,6 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
-import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
@@ -52,11 +51,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
     @OnClick(R.id.bSignLog)
     public void titleClicked() {
-        if (isLogIn) {
-            isLogIn = false;
-        } else {
-            isLogIn = true;
-        }
+        isLogIn = !isLogIn;
 
         refreshUI();
     }
@@ -308,7 +303,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     SoapObject defaultTextSoapObject = (SoapObject) result.getProperty("DefaultText");
                     SoapObject textSoapObject = (SoapObject) defaultTextSoapObject.getProperty("Text");
 
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     for (int i = 0; i < textSoapObject.getPropertyCount(); i++) {
                         list.add("" + textSoapObject.getProperty(i));
                         Log.i(TAG, "text " + textSoapObject.getProperty(i));

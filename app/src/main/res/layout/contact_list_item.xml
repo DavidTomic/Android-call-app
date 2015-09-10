@@ -23,7 +23,7 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="data depan"
+                android:text="@string/ph_name_lastname"
                 android:textColor="@color/black" />
 
             <TextView
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="2dp"
-                android:text="This is my status"
+                android:text="@string/ph_my_status"
                 android:textColor="@color/gray_light"
                 android:textSize="10sp" />
 
@@ -48,16 +48,16 @@
 
             <View
                 android:id="@+id/vStatusRed"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:background="@drawable/status_red_selector">
 
             </View>
 
             <View
                 android:id="@+id/vStatusYellow"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:layout_marginLeft="5dp"
                 android:background="@drawable/status_yellow_selector">
 
@@ -65,8 +65,8 @@
 
             <View
                 android:id="@+id/vStatusGreen"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:layout_marginLeft="5dp"
                 android:background="@drawable/status_green_selector"></View>
 

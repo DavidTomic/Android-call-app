@@ -37,7 +37,7 @@
                 android:minWidth="0dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="10dp"
-                android:text="Edit"
+                android:text="@string/edit"
                 android:textAllCaps="false"
                 android:textColor="@color/blue_default" />
 
@@ -60,7 +60,7 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/blue_default_circle"
                 android:gravity="center"
-                android:text="AD"
+                android:text="@string/ph_ad"
                 android:textColor="@color/white" />
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -76,7 +76,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/ivProfile"
-                android:text="Test"
+                android:text="@string/ph_name_lastname"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
 
@@ -97,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Phone"
+            android:text="@string/phone"
             android:textColor="@color/blue_default"
             android:textSize="14sp" />
 
@@ -111,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="Phone"
+                android:text="@string/ph_number"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 
@@ -134,7 +134,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="30dp"
             android:background="@null"
-            android:text="Send message"
+            android:text="@string/send_message"
             android:textAllCaps="false"
             android:textColor="@color/blue_default"
             android:textSize="14sp" />
@@ -147,7 +147,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/blue_default"
-        android:text="Invite"
+        android:text="@string/invite"
         android:textColor="@color/white"
         android:textAllCaps="false"
         android:textSize="18sp"

@@ -15,17 +15,17 @@ import test.myprojects.com.callproject.model.User;
 public class Prefs {
 
     private static final String TAG = "Prefs";
-    public static final String PREFS_FILE = "my_prefs.xml";
+    private static final String PREFS_FILE = "my_prefs.xml";
 
-    public static final String PREFS_USER_PHONE_NUMBER = "user_phone_number";
-    public static final String PREFS_USER_NAME = "user_name";
-    public static final String PREFS_USER_EMAIL = "user_email";
-    public static final String PREFS_USER_PASSWORD = "user_password";
-    public static final String PREFS_USER_LANGUAGE = "user_language_v2";
-    public static final String PREFS_USER_STATUS_TEXT = "user_status_text";
-    public static final String PREFS_USER_STATUS = "user_status";
-    public static final String PREFS_USER_LOGED_IN = "user_loged_in";
-    public static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
+    private static final String PREFS_USER_PHONE_NUMBER = "user_phone_number";
+    private static final String PREFS_USER_NAME = "user_name";
+    private static final String PREFS_USER_EMAIL = "user_email";
+    private static final String PREFS_USER_PASSWORD = "user_password";
+    private static final String PREFS_USER_LANGUAGE = "user_language_v2";
+    private static final String PREFS_USER_STATUS_TEXT = "user_status_text";
+    private static final String PREFS_USER_STATUS = "user_status";
+    private static final String PREFS_USER_LOGED_IN = "user_loged_in";
+    private static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
 
@@ -99,7 +99,7 @@ public class Prefs {
         SharedPreferences prefs = context.getSharedPreferences(
                 PREFS_FILE, 0);
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int size = prefs.getInt("DefaultText_size", 0);
 
         for(int i=0;i<size;i++)

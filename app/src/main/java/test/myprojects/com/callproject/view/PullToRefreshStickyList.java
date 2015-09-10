@@ -90,37 +90,37 @@ protected StickyListHeadersListView createRefreshableView(Context context, Attri
 protected boolean isReadyForPullStart() {
 
     boolean result = false;
-    View v = getRefreshableView().getChildAt(0);
-    if (getRefreshableView().getFirstVisiblePosition() == 0) {
-        if (v != null) {
-            // getTop() and getBottom() are relative to the ListView,
-            // so if getTop() is negative, it is not fully visible
-            boolean isTopFullyVisible = v.getTop() >= 0;
+//    View v = getRefreshableView().getChildAt(0);
+//    if (getRefreshableView().getFirstVisiblePosition() == 0) {
+//        if (v != null) {
+//            // getTop() and getBottom() are relative to the ListView,
+//            // so if getTop() is negative, it is not fully visible
+//            boolean isTopFullyVisible = v.getTop() >= 0;
+//
+//            result = isTopFullyVisible;
+//        }
+//    }
 
-            result = isTopFullyVisible;
-        }
-    }
-    result = false;
     return result;
 }
 
 @Override
 protected boolean isReadyForPullEnd() {
     boolean result = false;
-    int last = getRefreshableView().getChildCount() - 1;
-    View v = getRefreshableView().getChildAt(last);
+//    int last = getRefreshableView().getChildCount() - 1;
+//    View v = getRefreshableView().getChildAt(last);
+//
+//    int firstVisiblePosition = getRefreshableView().getFirstVisiblePosition();
+//    int visibleItemCount = getRefreshableView().getChildCount();
+//    int itemCount = getRefreshableView().getAdapter().getCount();
+//    if (firstVisiblePosition + visibleItemCount >= itemCount) {
+//        if (v != null) {
+//            boolean isLastFullyVisible = v.getBottom() <= getRefreshableView().getHeight();
+//
+//            result = isLastFullyVisible;
+//        }
+//    }
 
-    int firstVisiblePosition = getRefreshableView().getFirstVisiblePosition();
-    int visibleItemCount = getRefreshableView().getChildCount();
-    int itemCount = getRefreshableView().getAdapter().getCount();
-    if (firstVisiblePosition + visibleItemCount >= itemCount) {
-        if (v != null) {
-            boolean isLastFullyVisible = v.getBottom() <= getRefreshableView().getHeight();
-
-            result = isLastFullyVisible;
-        }
-    }
-    result = false;
     return result;
 }
 

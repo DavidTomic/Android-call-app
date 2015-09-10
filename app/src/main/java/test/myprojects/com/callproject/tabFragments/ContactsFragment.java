@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -48,23 +47,23 @@ import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
-import test.myprojects.com.callproject.view.LinearLayoutThatDetectsSoftKeyboard;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
+import test.myprojects.com.callproject.view.SearchEditText;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ContactsFragment extends Fragment implements MessageInterface, LinearLayoutThatDetectsSoftKeyboard.Listener {
+public class ContactsFragment extends Fragment implements MessageInterface {
 
     private static final String TAG = "ContactsFragment";
     private View rootView;
-    private List<Contact> contactList = new ArrayList<Contact>();
+    private List<Contact> contactList = new ArrayList<>();
     private StickyAdapter adapter;
 
     private boolean refreshContactsFromPhoneBook;
 
     @Bind(R.id.inputSearch)
-    EditText inputSearch;
+    SearchEditText inputSearch;
 
     @Bind(R.id.ibRefresh) ImageButton ibRefresh;
     @Bind(R.id.pbProgressBar)
@@ -168,8 +167,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
             /** indexable listview */
             indexView.init(stlist);
 
-            LinearLayoutThatDetectsSoftKeyboard mainLayout = (LinearLayoutThatDetectsSoftKeyboard) rootView.findViewById(R.id.llRoot);
-            mainLayout.setListener(this);
 
             inputSearch.addTextChangedListener(new TextWatcher() {
 
@@ -196,10 +193,20 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
 
-                  //  Log.i(TAG, "hasFocus " + hasFocus);
+                    Log.i(TAG, "hasFocus " + hasFocus);
 
-                    if (hasFocus){
+                    if (hasFocus) {
                         inputSearch.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+                    }
+                }
+            });
+
+            inputSearch.setOnEditTextImeBackListener(new SearchEditText.EditTextImeBackListener() {
+                @Override
+                public void onImeBack(SearchEditText ctrl, String text) {
+                    if (inputSearch.getText() != null && inputSearch.getText().toString().length() == 0){
+                        inputSearch.clearFocus();
+                        inputSearch.setGravity(Gravity.CENTER);
                     }
                 }
             });
@@ -257,20 +264,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
         progressBar.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onSoftKeyboardShown(boolean isShowing) {
-       // Log.i(TAG, "showing " + isShowing);
-        if (isShowing){
-            inputSearch.requestFocus();
-        }else {
-            if (inputSearch.getText() != null && inputSearch.getText().toString().length() == 0){
-                inputSearch.clearFocus();
-                inputSearch.setGravity(Gravity.CENTER);
-            }
-
-        }
-    }
-
 
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable{
 
@@ -311,9 +304,9 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
                 holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
                 holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
-                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
-                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
-                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.vStatusRed = convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
@@ -383,7 +376,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text first char
-            String headerText = "" + ((Contact) contactList.get(position)).getName().subSequence(0, 1).charAt(0);
+            String headerText = "" + contactList.get(position).getName().subSequence(0, 1).charAt(0);
             holder.text.setText(headerText);
             return convertView;
         }
@@ -391,7 +384,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
         @Override
         public long getHeaderId(int position) {
             //return the first character of the country as ID because this is what headers are based upon
-            return ((Contact) contactList.get(position)).getName().subSequence(0, 1).charAt(0);
+            return contactList.get(position).getName().subSequence(0, 1).charAt(0);
         }
 
         @Override
@@ -403,7 +396,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
                     List<Contact> filteredArrList = new ArrayList<Contact>();
 
                     if (mOriginalValues == null) {
-                        mOriginalValues = new ArrayList<Contact>(contactList); // saves the original data in mOriginalValues
+                        mOriginalValues = new ArrayList<>(contactList); // saves the original data in mOriginalValues
                     }
 
                     if (constraint == null || constraint.length() == 0) {
@@ -570,6 +563,12 @@ public class ContactsFragment extends Fragment implements MessageInterface, Line
                     bStatusRed.setSelected(false);
                     bStatusYellow.setSelected(false);
                     bStatusGreen.setSelected(true);
+                    break;
+                case ON_PHONE:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
                     break;
             }
         }

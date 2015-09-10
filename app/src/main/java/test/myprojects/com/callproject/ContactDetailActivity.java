@@ -1,12 +1,15 @@
 package test.myprojects.com.callproject;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +23,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.Bind;
@@ -44,10 +48,10 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
     private static final String TAG = "ContactDetailActivity";
     private Contact contact;
-    @Bind(R.id.tvName)
-    TextView tvName;
-    @Bind(R.id.tvPhoneNumber)
-    TextView tvPhoneNumber;
+
+    @Bind(R.id.tvName) TextView tvName;
+    @Bind(R.id.tvPhoneNumber) TextView tvPhoneNumber;
+
     @Bind(R.id.ivProfile)
     CircleImageView ivProfile;
     @Bind(R.id.tvProfile)
@@ -180,10 +184,9 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
             }
 
 
-            if (contact.getImage() != null) {
+            if (contact.getImage() != null && getUserImage(contact.getRecordId()) != null) {
                 Log.i(TAG, "name " + contact.getName());
-                Uri imageUri = Uri.parse(contact.getImage());
-                ivProfile.setImageURI(imageUri);
+                ivProfile.setImageBitmap(getUserImage(contact.getRecordId()));
                 ivProfile.setVisibility(View.VISIBLE);
                 tvProfile.setVisibility(View.INVISIBLE);
             } else {
@@ -245,7 +248,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                         ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
                         ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                         ContactsContract.CommonDataKinds.Phone.NUMBER,
-                        ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
+                        ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
                         ContactsContract.CommonDataKinds.Phone.STARRED,
                         ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
                 };
@@ -272,9 +275,9 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                     contact.setPhoneNumber(phoneNumber);
                     contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
 
-                    int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI);
+                    int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID);
                     if (colPhotoIndex != -1) {
-                        contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
+                        contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID)));
                     }
 
                     int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
@@ -409,5 +412,25 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
     private void showErrorTryAgain() {
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
+    }
+
+    private Bitmap getUserImage(int contactId){
+
+
+        Bitmap bitmap = null;
+        try {
+
+            Uri photo = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+            photo = Uri.withAppendedPath( photo, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY );
+
+            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photo);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return bitmap;
     }
 }

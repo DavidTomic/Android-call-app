@@ -4,11 +4,14 @@
     <color name="gray_button">#343C44</color>
     <color name="gray_light">#70767c</color>
     <color name="gray_light_80">#3370767c</color>
+    <color name="gray_light_2">#ababab</color>
 
-    <color name="blue_default">#005ABC</color>
+    <color name="blue_default">#005dc1</color>
 
     <color name="white">#FFFFFF</color>
     <color name="hint_color">#AAAAAA</color>
+
+    <color name="nav_bar_button_color">#545450</color>
 
     <color name="tab_bar_background">#d6d6d6</color>
     <color name="tabMedium">#2B2B2B</color>

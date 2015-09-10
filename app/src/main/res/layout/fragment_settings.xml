@@ -5,7 +5,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context="test.myprojects.com.callproject.tabFragments.SettingsFragment">
 
@@ -54,7 +54,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/rArrow"
-                android:text="English"
+                android:text="@string/ph_english"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>
@@ -95,7 +95,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/rArrow2"
-                android:text="+38593000333"
+                android:text="@string/ph_number"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>
@@ -136,7 +136,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/rArrow5"
-                android:text="*****"
+                android:text="@string/ph_password"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>
@@ -177,7 +177,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/rArrow3"
-                android:text="+38593000333"
+                android:text="@string/ph_number"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>
@@ -218,7 +218,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/rArrow4"
-                android:text="+38593000333"
+                android:text="@string/ph_number"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>

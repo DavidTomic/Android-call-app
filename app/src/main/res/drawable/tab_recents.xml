@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/recent_blue" android:state_selected="true" />
-    <item android:drawable="@drawable/recent_gray" />
+    <item android:drawable="@drawable/recents_active" android:state_selected="true" />
+    <item android:drawable="@drawable/recents" />
 </selector>

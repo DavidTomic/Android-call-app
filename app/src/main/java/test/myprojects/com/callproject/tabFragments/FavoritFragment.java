@@ -2,16 +2,18 @@ package test.myprojects.com.callproject.tabFragments;
 
 
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +42,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
-import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
-import test.myprojects.com.callproject.task.SendMessageTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,7 +53,7 @@ public class FavoritFragment extends Fragment {
 
     private static final String TAG = "FavoritFragment";
     private View rootView;
-    private List<Contact> favoritList = new ArrayList<Contact>();
+    private List<Contact> favoritList = new ArrayList<>();
     private FavoritAdapter favoritAdapter;
     private SwipeMenuListView swipeMenuListView;
     private boolean editEnabled;
@@ -229,9 +230,9 @@ public class FavoritFragment extends Fragment {
                 holder.infoButton = (ImageButton) convertView.findViewById(R.id.ibInfo);
                 holder.bDelete = (Button) convertView.findViewById(R.id.bDelete);
                 holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
-                holder.vStatusRed = (View) convertView.findViewById(R.id.vStatusRed);
-                holder.vStatusYellow = (View) convertView.findViewById(R.id.vStatusYellow);
-                holder.vStatusGreen = (View) convertView.findViewById(R.id.vStatusGreen);
+                holder.vStatusRed = convertView.findViewById(R.id.vStatusRed);
+                holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
+                holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 convertView.setTag(holder);
             } else {
@@ -242,10 +243,9 @@ public class FavoritFragment extends Fragment {
 
             holder.name.setText(contact.getName());
 
-            if (contact.getImage() != null) {
+            if (contact.getImage() != null && getUserImage(contact.getRecordId()) != null) {
                 Log.i(TAG, "name " + contact.getName());
-                Uri imageUri = Uri.parse(contact.getImage());
-                holder.ivProfile.setImageURI(imageUri);
+                holder.ivProfile.setImageBitmap(getUserImage(contact.getRecordId()));
                 holder.ivProfile.setVisibility(View.VISIBLE);
                 holder.tvProfile.setVisibility(View.INVISIBLE);
             } else {
@@ -360,4 +360,23 @@ public class FavoritFragment extends Fragment {
         }
     };
 
+    private Bitmap getUserImage(int contactId){
+
+
+        Bitmap bitmap = null;
+        try {
+
+            Uri photo = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+            photo = Uri.withAppendedPath( photo, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY );
+
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photo);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return bitmap;
+    }
 }

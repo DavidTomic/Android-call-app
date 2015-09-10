@@ -23,7 +23,7 @@ public class DataBase extends SQLiteOpenHelper {
     private static final String DB_NAME = "when2call_db";
 
 
-    public static synchronized void initInstance(Context context) {
+    private static synchronized void initInstance(Context context) {
         if (instance == null)
             instance = new DataBase(context);
 
@@ -34,17 +34,17 @@ public class DataBase extends SQLiteOpenHelper {
         return instance;
     }
 
-    public DataBase(Context context) {
+    private DataBase(Context context) {
         super(context, DB_NAME, null, 2);
 
     }
 
 
-    public static final String NOTIFICATION_TABLE = "notification_table";
-    public static final String NOTIFICATION_ID = "notification_id";
-    public static final String NAME = "name";
-    public static final String PHONE_NUMBER = "phone_number";
-    public static final String STATUS = "status";
+    private static final String NOTIFICATION_TABLE = "notification_table";
+    private static final String NOTIFICATION_ID = "notification_id";
+    private static final String NAME = "name";
+    private static final String PHONE_NUMBER = "phone_number";
+    private static final String STATUS = "status";
 
 
     @Override
@@ -84,7 +84,7 @@ public class DataBase extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT *" + " FROM "
                 + NOTIFICATION_TABLE, null);
 
-        List<Notification> list = new ArrayList<Notification>();
+        List<Notification> list = new ArrayList<>();
 
         if (cursor.getCount() > 0) {
             Notification notification;

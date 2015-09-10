@@ -7,7 +7,7 @@ public enum Language {
     DEFAULT(0), ENGLISH(1), DANISH(2);
     private final int value;
 
-    private Language(int value) {
+    Language(int value) {
         this.value = value;
     }
 

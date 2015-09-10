@@ -7,7 +7,7 @@ public enum Status {
     RED_STATUS(0), GREEN_STATUS(1), YELLOW_STATUS(2), ON_PHONE(3);
     private final int value;
 
-    private Status(int value) {
+    Status(int value) {
         this.value = value;
     }
 

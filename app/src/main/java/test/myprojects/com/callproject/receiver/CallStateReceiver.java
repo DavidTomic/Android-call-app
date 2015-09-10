@@ -11,7 +11,7 @@ import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.service.UpdateStatusIntentService;
 
 /**
- * Created by dtomic on 09/09/15.
+ * Created by developer dtomic on 09/09/15.
  */
 public class CallStateReceiver extends BroadcastReceiver {
 
