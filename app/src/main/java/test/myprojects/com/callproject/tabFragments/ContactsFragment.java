@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,15 +18,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -40,11 +46,14 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
@@ -61,24 +70,29 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private StickyAdapter adapter;
 
     private boolean refreshContactsFromPhoneBook;
+    private int currentStatus;
+
+    public ContactsFragment() {
+        // Required empty public constructor
+    }
 
     @Bind(R.id.inputSearch)
     SearchEditText inputSearch;
-
-    @Bind(R.id.ibRefresh) ImageButton ibRefresh;
+    @Bind(R.id.ibRefresh)
+    ImageButton ibRefresh;
     @Bind(R.id.pbProgressBar)
     ProgressBar progressBar;
-
-    @Bind(R.id.tvPhoneNumber) TextView tvPhoneNumber;
-
-    private int currentStatus;
-
-    @Bind(R.id.bStatusRed) ImageView bStatusRed;
-    @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
-    @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
+    @Bind(R.id.tvPhoneNumber)
+    TextView tvPhoneNumber;
+    @Bind(R.id.bStatusRed)
+    ImageView bStatusRed;
+    @Bind(R.id.bStatusYellow)
+    ImageView bStatusYellow;
+    @Bind(R.id.bStatusGreen)
+    ImageView bStatusGreen;
 
     @OnClick(R.id.bStatusRed)
-    public void bStatusRedClicked(){
+    public void bStatusRedClicked() {
 
         Log.i(TAG, "clicked red");
 
@@ -89,8 +103,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         currentStatus = 0;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
+
     @OnClick(R.id.bStatusYellow)
-    public void bStatusYellowClicked(){
+    public void bStatusYellowClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(true);
         bStatusGreen.setSelected(false);
@@ -98,19 +113,15 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         currentStatus = 2;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
+
     @OnClick(R.id.bStatusGreen)
-    public void bStatusGreenClicked(){
+    public void bStatusGreenClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(false);
         bStatusGreen.setSelected(true);
 
         currentStatus = 1;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-
-
-    public ContactsFragment() {
-        // Required empty public constructor
     }
 
 
@@ -127,11 +138,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     }
 
     @OnClick(R.id.ibRefresh)
-    public void refreshClicked(){
+    public void refreshClicked() {
         ibRefresh.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        ((MainActivity)getActivity()).refreshStatuses();
+        ((MainActivity) getActivity()).refreshStatuses();
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -150,18 +163,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
             adapter = new StickyAdapter(getActivity());
             stlist.getRefreshableView().setAdapter(adapter);
-
-            stlist.StickySwipe.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.i(TAG, "Item " + contactList.get(position).getName());
-
-                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
-                    contactDetailIntent.putExtra("contactId", contactList.get(position).getRecordId());
-                    getActivity().startActivity(contactDetailIntent);
-
-                }
-            });
 
             /** indexable listview */
             indexView.init(stlist);
@@ -203,7 +204,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             inputSearch.setOnEditTextImeBackListener(new SearchEditText.EditTextImeBackListener() {
                 @Override
                 public void onImeBack(SearchEditText ctrl, String text) {
-                    if (inputSearch.getText() != null && inputSearch.getText().toString().length() == 0){
+                    if (inputSearch.getText() != null && inputSearch.getText().toString().length() == 0) {
                         inputSearch.clearFocus();
                         inputSearch.setGravity(Gravity.CENTER);
                     }
@@ -237,18 +238,17 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             progressBar.setVisibility(View.VISIBLE);
 
             Prefs.setLastCallTime(getActivity(), 0);
-            ((MainActivity)getActivity()).refreshStatuses();
+            ((MainActivity) getActivity()).refreshStatuses();
 
         }
 
-        if (refreshContactsFromPhoneBook){
-            refreshContactsFromPhoneBook=false;
+        if (refreshContactsFromPhoneBook) {
+            refreshContactsFromPhoneBook = false;
             User.getInstance(getActivity()).loadContactsToList(getActivity());
         }
 
         adapter.notifyDataSetChanged();
     }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -263,8 +263,45 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         progressBar.setVisibility(View.GONE);
     }
 
+    private void refreshStatusUI() {
+        tvPhoneNumber.setText(getString(R.string.my_number) + ": " +
+                User.getInstance(getActivity()).getPhoneNumber());
 
-    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable{
+        Status status = User.getInstance(getActivity()).getStatus();
+
+        Log.i(TAG, "myStatus " + status);
+
+        if (status != null) {
+            switch (status) {
+                case RED_STATUS:
+                    bStatusRed.setSelected(true);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case YELLOW_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(true);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case GREEN_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    break;
+                case ON_PHONE:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+                    break;
+            }
+        }
+    }
+
+
+
+
+    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable {
 
 
         private LayoutInflater inflater;
@@ -300,66 +337,18 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.contact_list_item, parent, false);
-                holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-                holder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
-                holder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
-                holder.vStatusRed = convertView.findViewById(R.id.vStatusRed);
-                holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
-                holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
-                holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
+                convertView = inflater.inflate(R.layout.contact_swipe_list_item, parent, false);
+                holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            Contact contact = contactList.get(position);
+            holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
-            holder.tvTitle.setText(contact.getName());
+            SwipeAdapter sadapter = new SwipeAdapter(getActivity().getApplicationContext(), position);
 
-            String statusText = contact.getStatusText();
-            if (statusText != null) {
-                holder.tvStatusText.setText(contact.getStatusText());
-            } else {
-                holder.tvStatusText.setText("");
-            }
-
-            Status status = contact.getStatus();
-
-            holder.vStatus.setVisibility(View.VISIBLE);
-            holder.tvOnPhone.setVisibility(View.GONE);
-
-            if (status != null) {
-                switch (status) {
-                    case RED_STATUS:
-                        holder.vStatusRed.setSelected(true);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(false);
-                        break;
-                    case YELLOW_STATUS:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(true);
-                        holder.vStatusGreen.setSelected(false);
-                        break;
-                    case GREEN_STATUS:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(true);
-                        break;
-                    case ON_PHONE:
-                        holder.vStatus.setVisibility(View.GONE);
-                        holder.tvOnPhone.setVisibility(View.VISIBLE);
-                        break;
-                }
-            } else {
-                holder.vStatusRed.setSelected(false);
-                holder.vStatusYellow.setSelected(false);
-                holder.vStatusGreen.setSelected(false);
-            }
-
-
-            Log.i(TAG, "status " + contact.getStatus());
-
+            holder.swipelist.setAdapter(sadapter);
             return convertView;
         }
 
@@ -406,7 +395,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         Log.i(TAG, "constraint length 0");
                         results.count = mOriginalValues.size();
                         results.values = mOriginalValues;
-                    }else {
+                    } else {
                         constraint = constraint.toString().toLowerCase();
                         for (int i = 0; i < mOriginalValues.size(); i++) {
                             String data = mOriginalValues.get(i).getName();
@@ -422,7 +411,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                     Log.i(TAG, "filteredArrList " + filteredArrList.size());
                     Log.i(TAG, "contactList " + contactList.size());
                     Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
-
 
 
                     return results;
@@ -441,16 +429,213 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         }
 
         class ViewHolder {
-            TextView tvTitle;
-            TextView tvStatusText;
-            LinearLayout vStatus;
-            View vStatusRed;
-            View vStatusYellow;
-            View vStatusGreen;
-            TextView tvOnPhone;
+            SwipeListView swipelist;
         }
 
     }
+
+    public class SwipeViewHolder {
+        TextView tvTitle;
+        TextView tvStatusText;
+        LinearLayout vStatus;
+        View vStatusRed;
+        View vStatusYellow;
+        View vStatusGreen;
+        TextView tvOnPhone;
+        Button edit_btn;
+        RelativeLayout rlHolder;
+    }
+
+    public class SwipeAdapter extends BaseAdapter {
+        Context context;
+        int parent_postion;
+
+
+        List<Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
+                getInstance(getActivity()).getWritableDatabase());
+
+        public SwipeAdapter(Context context, int parent_postion) {
+            this.context = context;
+            this.parent_postion = parent_postion;
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int pos, View convertView, ViewGroup viewGroup) {
+
+            final SwipeViewHolder swipeholder;
+
+            if (convertView == null) {
+                LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = li.inflate(R.layout.contact_list_item, viewGroup, false);
+                swipeholder = new SwipeViewHolder();
+
+                swipeholder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+                swipeholder.tvStatusText = (TextView) convertView.findViewById(R.id.tvStatusText);
+                swipeholder.vStatus = (LinearLayout) convertView.findViewById(R.id.vStatus);
+                swipeholder.vStatusRed = convertView.findViewById(R.id.vStatusRed);
+                swipeholder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
+                swipeholder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
+                swipeholder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
+
+                swipeholder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
+                swipeholder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
+
+	            /* item click action*/
+
+                swipeholder.rlHolder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                        contactDetailIntent.putExtra("contactId", contactList.get(parent_postion).getRecordId());
+                        getActivity().startActivity(contactDetailIntent);
+                    }
+                });
+
+                /* button action */
+
+
+                swipeholder.edit_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                  //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
+
+                        String text = swipeholder.edit_btn.getText().toString();
+
+                        Log.i(TAG, "text " + text);
+
+                        if (text.contentEquals(getString(R.string.invite))) {
+
+                            SmsManager smsManager = SmsManager.getDefault();
+                            smsManager.sendTextMessage(contactList.get(parent_postion).getPhoneNumber(), null,
+                                    getString(R.string.invite_user_text), null, null);
+
+                        } else if (text.contentEquals(getString(R.string.add_contact))) {
+                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
+
+                        } else if (text.contentEquals(getString(R.string.set_notification))) {
+                            swipeholder.edit_btn.setText(getString(R.string.notification_already_added));
+
+                            DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                    contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(), contactList.get(parent_postion).getStatus().getValue());
+                            swipeholder.edit_btn.setEnabled(false);
+
+                            Intent pushIntent = new Intent(getActivity(), NotificationService.class);
+                            getActivity().startService(pushIntent);
+                        }
+
+                        adapter.notifyDataSetChanged();
+
+                    }
+                });
+
+
+                convertView.setTag(swipeholder);
+            } else {
+                swipeholder = (SwipeViewHolder) convertView.getTag();
+            }
+
+            Contact contact = contactList.get(parent_postion);
+
+            swipeholder.tvTitle.setText(contact.getName());
+
+            String statusText = contact.getStatusText();
+            if (statusText != null) {
+                swipeholder.tvStatusText.setText(contact.getStatusText());
+            } else {
+                swipeholder.tvStatusText.setText("");
+            }
+
+            Status status = contact.getStatus();
+
+            swipeholder.vStatus.setVisibility(View.VISIBLE);
+            swipeholder.tvOnPhone.setVisibility(View.GONE);
+
+            if (status != null) {
+                switch (status) {
+                    case RED_STATUS:
+                        swipeholder.vStatusRed.setSelected(true);
+                        swipeholder.vStatusYellow.setSelected(false);
+                        swipeholder.vStatusGreen.setSelected(false);
+                        break;
+                    case YELLOW_STATUS:
+                        swipeholder.vStatusRed.setSelected(false);
+                        swipeholder.vStatusYellow.setSelected(true);
+                        swipeholder.vStatusGreen.setSelected(false);
+                        break;
+                    case GREEN_STATUS:
+                        swipeholder.vStatusRed.setSelected(false);
+                        swipeholder.vStatusYellow.setSelected(false);
+                        swipeholder.vStatusGreen.setSelected(true);
+                        break;
+                    case ON_PHONE:
+                        swipeholder.vStatus.setVisibility(View.GONE);
+                        swipeholder.tvOnPhone.setVisibility(View.VISIBLE);
+                        break;
+                }
+            } else {
+                swipeholder.vStatusRed.setSelected(false);
+                swipeholder.vStatusYellow.setSelected(false);
+                swipeholder.vStatusGreen.setSelected(false);
+            }
+
+
+            Log.i(TAG, "status " + contact.getStatus());
+
+
+            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
+
+            if (checkPhoneList.contains(contact.getPhoneNumber())) {
+
+                if (contact.getStatus() == null) {
+                    swipeholder.edit_btn.setText(getString(R.string.add_contact));
+                } else {
+
+                    boolean contains = false;
+
+                    for (Notification notification : nList) {
+                        if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())) {
+                            contains = true;
+                            break;
+                        }
+                    }
+
+                    if (contains) {
+                        swipeholder.edit_btn.setText(getString(R.string.notification_already_added));
+                        swipeholder.edit_btn.setEnabled(false);
+                    } else {
+                        swipeholder.edit_btn.setText(getString(R.string.set_notification));
+                    }
+
+                }
+
+            } else {
+                swipeholder.edit_btn.setText(getString(R.string.invite));
+            }
+
+
+            return convertView;
+        }
+    }
+
+
+
+
+
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -462,6 +647,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             adapter.notifyDataSetChanged();
         }
     };
+
+
 
     private SoapObject getUpdateStatusParams(int status) {
 
@@ -491,7 +678,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         String endTime = User.getInstance(getActivity()).getEndTime();
 
-        if (endTime ==null || endTime.length() == 0){
+        if (endTime == null || endTime.length() == 0) {
             endTime = "2000-01-01T00:00:00";
         }
 
@@ -507,66 +694,128 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         return request;
     }
+    private SoapObject getAddContactsParams(String number) {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(getActivity()).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("ContactsPhoneNumber");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
+        pi = new PropertyInfo();
+        pi.setName("Name");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Noter");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Number");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("URL");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Adress");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Birthsday");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("pDate");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Favorites");
+        pi.setValue(false);
+        pi.setType(Boolean.class);
+        request.addProperty(pi);
+
+        return request;
+    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
-        if (result == null){
+        if (result == null) {
             return;
         }
 
-        try {
 
-            int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+        if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
 
-            if (resultStatus == 2) {
+            try {
 
-                User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
-                Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
+                if (resultStatus == 2) {
 
+                    ((MainActivity) getActivity()).refreshStatuses();
+
+                }
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
             }
 
-        } catch (NullPointerException ne) {
-            ne.printStackTrace();
+
+        } else if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
+
+            try {
+
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+                    User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
+                    Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
+
+
+                }
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
 //            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
 //                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void refreshStatusUI(){
-        tvPhoneNumber.setText(getString(R.string.my_number) + ": " +
-                User.getInstance(getActivity()).getPhoneNumber());
-
-        Status status = User.getInstance(getActivity()).getStatus();
-
-        Log.i(TAG, "myStatus " + status);
-
-        if (status != null) {
-            switch (status) {
-                case RED_STATUS:
-                    bStatusRed.setSelected(true);
-                    bStatusYellow.setSelected(false);
-                    bStatusGreen.setSelected(false);
-                    break;
-                case YELLOW_STATUS:
-                    bStatusRed.setSelected(false);
-                    bStatusYellow.setSelected(true);
-                    bStatusGreen.setSelected(false);
-                    break;
-                case GREEN_STATUS:
-                    bStatusRed.setSelected(false);
-                    bStatusYellow.setSelected(false);
-                    bStatusGreen.setSelected(true);
-                    break;
-                case ON_PHONE:
-                    bStatusRed.setSelected(false);
-                    bStatusYellow.setSelected(false);
-                    bStatusGreen.setSelected(true);
-                    new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-                    break;
             }
+
         }
     }
+
+
 
 }

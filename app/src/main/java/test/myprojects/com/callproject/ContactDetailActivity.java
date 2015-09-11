@@ -409,7 +409,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
     }
 
 
-
     private void showErrorTryAgain() {
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
     }

@@ -137,8 +137,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         if (result == null) {
 
-            if (methodName.contentEquals(SendMessageTask.REQUEST_STATUS_INFO))
-                Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
+//            if (methodName.contentEquals(SendMessageTask.REQUEST_STATUS_INFO))
+//                Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
 
             return;
         }
@@ -181,12 +181,12 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     sendBroadcast(returnIntent);
 
                 } else {
-                    Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
             }
         } else if (methodName.contentEquals(SendMessageTask.GET_DEFAULT_TEXT)) {
             try {
@@ -255,6 +255,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     if (statusText.contentEquals("anyType{}")){
                         statusText = "";
                     }
+                    user.setStatusText(statusText);
 
                     Prefs.setUserData(this, user);
 
@@ -265,6 +266,103 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         }
     }
 
+
+    public void refreshStatuses() {
+        mPollHandler.removeCallbacks(mPollRunnable);
+        mPollHandler.postDelayed(mPollRunnable, 50);
+    }
+    public void refreshCheckPhoneNumbers(){
+        new SendMessageTask(this, getCheckPhoneParams()).execute();
+    }
+
+    private SoapObject getDefaultTextParams() {
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_DEFAULT_TEXT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
+        return request;
+    }
+    private SoapObject getCheckPhoneParams() {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
+
+        List<Contact> cList = User.getInstance(this).getContactList();
+
+        for (Contact contact : cList) {
+            PropertyInfo piPhoneNumber = new PropertyInfo();
+            piPhoneNumber.setName("string");
+            piPhoneNumber.setValue(contact.getPhoneNumber());
+            piPhoneNumber.setType(String.class);
+            phoneNumbersSoapObject.addProperty(piPhoneNumber);
+        }
+
+        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
+
+        return request;
+    }
+    private SoapObject getLogInParams() {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.LOG_IN);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(this).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Password");
+        pi.setValue(User.getInstance(this).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        String versionCode = "";
+        try {
+            versionCode = ""+(getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionCode);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        pi = new PropertyInfo();
+        pi.setName("VersionNumber");
+        pi.setValue(versionCode);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("AppType");
+        pi.setValue(2);
+        pi.setType(Integer.class);
+        request.addProperty(pi);
+
+        return request;
+    }
     private SoapObject getRequestInfoParams() {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.REQUEST_STATUS_INFO);
 
@@ -309,106 +407,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         pi.setType(String.class);
         request.addProperty(pi);
 
-
-        return request;
-    }
-
-    public void refreshStatuses() {
-        mPollHandler.removeCallbacks(mPollRunnable);
-        mPollHandler.postDelayed(mPollRunnable, 50);
-    }
-
-    private SoapObject getDefaultTextParams() {
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_DEFAULT_TEXT);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-
-        return request;
-    }
-
-    public void refreshCheckPhoneNumbers(){
-        new SendMessageTask(this, getCheckPhoneParams()).execute();
-    }
-
-    private SoapObject getCheckPhoneParams() {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
-
-        List<Contact> cList = User.getInstance(this).getContactList();
-
-        for (Contact contact : cList) {
-            PropertyInfo piPhoneNumber = new PropertyInfo();
-            piPhoneNumber.setName("string");
-            piPhoneNumber.setValue(contact.getPhoneNumber());
-            piPhoneNumber.setType(String.class);
-            phoneNumbersSoapObject.addProperty(piPhoneNumber);
-        }
-
-        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
-
-        return request;
-    }
-
-    private SoapObject getLogInParams() {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.LOG_IN);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        String versionCode = "";
-        try {
-            versionCode = ""+(getPackageManager()
-                    .getPackageInfo(getPackageName(), 0).versionCode);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        pi = new PropertyInfo();
-        pi.setName("VersionNumber");
-        pi.setValue(versionCode);
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("AppType");
-        pi.setValue(2);
-        pi.setType(Integer.class);
-        request.addProperty(pi);
 
         return request;
     }
