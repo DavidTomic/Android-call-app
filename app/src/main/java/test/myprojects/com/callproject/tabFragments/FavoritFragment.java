@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,6 +31,9 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,14 +46,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
+import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.task.SendMessageTask;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoritFragment extends Fragment {
+public class FavoritFragment extends Fragment implements MessageInterface {
 
     private static final String TAG = "FavoritFragment";
     private View rootView;
@@ -57,6 +64,8 @@ public class FavoritFragment extends Fragment {
     private FavoritAdapter favoritAdapter;
     private SwipeMenuListView swipeMenuListView;
     private boolean editEnabled;
+
+    private int currentStatus;
 
     public FavoritFragment() {
         // Required empty public constructor
@@ -80,6 +89,42 @@ public class FavoritFragment extends Fragment {
         favoritAdapter.notifyDataSetChanged();
     }
 
+    @Bind(R.id.bStatusRed)
+    ImageView bStatusRed;
+    @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
+    @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
+
+    @OnClick(R.id.bStatusRed)
+    public void bStatusRedClicked(){
+
+        Log.i(TAG, "clicked red");
+
+        bStatusRed.setSelected(true);
+        bStatusYellow.setSelected(false);
+        bStatusGreen.setSelected(false);
+
+        currentStatus = 0;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+    @OnClick(R.id.bStatusYellow)
+    public void bStatusYellowClicked(){
+        bStatusRed.setSelected(false);
+        bStatusYellow.setSelected(true);
+        bStatusGreen.setSelected(false);
+
+        currentStatus = 2;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+    @OnClick(R.id.bStatusGreen)
+    public void bStatusGreenClicked(){
+        bStatusRed.setSelected(false);
+        bStatusYellow.setSelected(false);
+        bStatusGreen.setSelected(true);
+
+        currentStatus = 1;
+        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+
 
     @Override
     public void onResume() {
@@ -87,6 +132,7 @@ public class FavoritFragment extends Fragment {
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
                 new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
         refreshFavorits();
+        refreshStatusUI();
     }
 
     @Override
@@ -378,5 +424,110 @@ public class FavoritFragment extends Fragment {
         }
 
         return bitmap;
+    }
+
+
+    private void refreshStatusUI(){
+
+        Status status = User.getInstance(getActivity()).getStatus();
+
+        Log.i(TAG, "myStatus " + status);
+
+        if (status != null) {
+            switch (status) {
+                case RED_STATUS:
+                    bStatusRed.setSelected(true);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case YELLOW_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(true);
+                    bStatusGreen.setSelected(false);
+                    break;
+                case GREEN_STATUS:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    break;
+                case ON_PHONE:
+                    bStatusRed.setSelected(false);
+                    bStatusYellow.setSelected(false);
+                    bStatusGreen.setSelected(true);
+                    new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+                    break;
+            }
+        }
+    }
+
+    private SoapObject getUpdateStatusParams(int status) {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
+
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(getActivity()).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Status");
+        pi.setValue(status);
+        pi.setType(Integer.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("EndTime");
+
+        String endTime = User.getInstance(getActivity()).getEndTime();
+
+        if (endTime ==null || endTime.length() == 0){
+            endTime = "2000-01-01T00:00:00";
+        }
+
+        pi.setValue(endTime);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Text");
+        pi.setValue(User.getInstance(getActivity()).getStatusText());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        return request;
+    }
+
+    @Override
+    public void responseToSendMessage(SoapObject result, String methodName) {
+
+        if (result == null){
+            return;
+        }
+
+        try {
+
+            int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+            if (resultStatus == 2) {
+
+                User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
+                Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
+
+
+            }
+
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
+//            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
+//                    Toast.LENGTH_SHORT).show();
+        }
     }
 }

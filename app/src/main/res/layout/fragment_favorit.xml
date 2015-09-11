@@ -12,6 +12,39 @@
         android:layout_height="50dp"
         android:background="@color/tab_bar_background">
 
+
+        <LinearLayout
+            android:id="@+id/vStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginLeft="5dp">
+
+            <ImageView
+                android:id="@+id/bStatusRed"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="9dp"
+                android:src="@drawable/status_red_selector" />
+
+
+            <ImageView
+                android:id="@+id/bStatusYellow"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="9dp"
+                android:src="@drawable/status_yellow_selector" />
+
+            <ImageView
+                android:id="@+id/bStatusGreen"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="9dp"
+                android:src="@drawable/status_green_selector" />
+
+        </LinearLayout>
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

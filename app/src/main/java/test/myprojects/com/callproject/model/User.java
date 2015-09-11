@@ -1,11 +1,15 @@
 package test.myprojects.com.callproject.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
+
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +18,7 @@ import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.task.SendMessageTask;
 
 /**
  * Created by dtomic on 24/08/15.
@@ -169,6 +174,8 @@ public class User {
         Cursor phones = context.getContentResolver().
                 query(uri, projection, null, null, sortOrder);
 
+        List<Contact> oldContactList = new ArrayList<>(contactList);
+
         contactList.clear();
 
         while (phones.moveToNext()) {
@@ -202,11 +209,109 @@ public class User {
         if (context instanceof MainActivity){
             Log.i(TAG, "instanceof");
 
+            if (oldContactList.size() != contactList.size()){
+                for (Contact newContact : contactList){
+                    boolean match = false;
+                    for (Contact oldContact : oldContactList){
+                        if (newContact.getPhoneNumber().contentEquals(oldContact.getPhoneNumber())){
+                            match = true;
+                            break;
+                        }
+                    }
+
+                    if (!match){
+                    //    Log.i(TAG, "not match " + newContact.getName());
+                        new SendMessageTask(null, getAddContactsParams(newContact.getPhoneNumber()));
+                        break;
+                    }
+                }
+            }
+
+
+            //for case if connection on server not working to show new added contact in list
+            Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
+            context.sendBroadcast(returnIntent);
+
             ((MainActivity)context).refreshStatuses();
             ((MainActivity)context).refreshCheckPhoneNumbers();
         }
 
     }
+
+    private SoapObject getAddContactsParams(String number) {
+
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("ContactsPhoneNumber");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
+        pi = new PropertyInfo();
+        pi.setName("Name");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Noter");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Number");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("URL");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Adress");
+        pi.setValue("");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Birthsday");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("pDate");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("Favorites");
+        pi.setValue(false);
+        pi.setType(Boolean.class);
+        request.addProperty(pi);
+
+        return request;
+    }
+
 
     public static int getContactIDFromNumber(String contactNumber, Context context) {
         contactNumber = Uri.encode(contactNumber);

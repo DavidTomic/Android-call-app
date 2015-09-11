@@ -74,8 +74,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private int currentStatus;
 
     @Bind(R.id.bStatusRed) ImageView bStatusRed;
-    @Bind(R.id.bStatusYellow)
-    ImageView bStatusYellow;
+    @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
     @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
 
     @OnClick(R.id.bStatusRed)
@@ -279,6 +278,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
+            Log.i(TAG, "getCount " + contactList.size());
             return contactList.size();
         }
 
@@ -389,6 +389,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         @Override
         public Filter getFilter() {
+
+            Log.i(TAG, "filter");
+
             return new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
@@ -504,15 +507,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         return request;
     }
+
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
         if (result == null){
-            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
-                    Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         try {
 
@@ -523,19 +524,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                 User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                 Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
 
-                Toast.makeText(getActivity(), getString(R.string.status_updated),
-                        Toast.LENGTH_SHORT).show();
 
-            } else {
-                Toast.makeText(getActivity(), getString(R.string.status_not_updated),
-                        Toast.LENGTH_SHORT).show();
             }
-
 
         } catch (NullPointerException ne) {
             ne.printStackTrace();
-            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
+//                    Toast.LENGTH_SHORT).show();
         }
     }
 

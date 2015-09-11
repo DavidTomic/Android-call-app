@@ -1,9 +1,11 @@
 package test.myprojects.com.callproject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -143,6 +145,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         }
 
         bTitle.setText(spannablecontent);
+
+        TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNumber = tMgr.getLine1Number();
+
+        if (mPhoneNumber != null && mPhoneNumber.length()>3){
+            etPhoneNumber.setText(mPhoneNumber);
+        }
     }
 
     private void showErrorCheckData() {
