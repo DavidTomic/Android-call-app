@@ -77,7 +77,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         } else {
 
             if (!(etPhoneNumber.getText().toString().length() > 5 && etPassword.getText()
-                    .toString().length() > 3 && etName.getText().toString().length() > 3
+                    .toString().length() > 3 && etName.getText().toString().length() > 1
                     && etEmail.getText().toString().length() > 5)) {
                 showErrorCheckData();
                 return;
@@ -220,76 +220,80 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         return request;
     }
 
-//    private SoapObject getCheckPhoneParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
-//
-//        List<Contact> cList = User.getInstance(this).getContactList();
-//
-//        for (Contact contact : cList) {
-//            PropertyInfo piPhoneNumber = new PropertyInfo();
-//            piPhoneNumber.setName("string");
-//            piPhoneNumber.setValue(contact.getPhoneNumber());
-//            piPhoneNumber.setType(String.class);
-//            phoneNumbersSoapObject.addProperty(piPhoneNumber);
-//        }
-//
-//        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
-//
-//        return request;
-//    }
 
-//    private SoapObject getUpdateStatusParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
-//
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Status");
-//        pi.setValue(User.getInstance(this).getStatus().getValue());
-//        pi.setType(Integer.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("EndTime");
-//        pi.setValue("2000-01-01T00:00:00");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Text");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        return request;
-//    }
+    private SoapObject getAddContactsParams(String number) {
+
+            SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+
+            PropertyInfo pi = new PropertyInfo();
+            pi.setName("Phonenumber");
+            pi.setValue(User.getInstance(this).getPhoneNumber());
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("password");
+            pi.setValue(User.getInstance(this).getPassword());
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("ContactsPhoneNumber");
+            pi.setValue(number);
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+
+            pi = new PropertyInfo();
+            pi.setName("Name");
+            pi.setValue(number);
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Noter");
+            pi.setValue("");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Number");
+            pi.setValue("");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("URL");
+            pi.setValue("");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Adress");
+            pi.setValue("");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Birthsday");
+            pi.setValue("2000-01-01T00:00:00");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("pDate");
+            pi.setValue("2000-01-01T00:00:00");
+            pi.setType(String.class);
+            request.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Favorites");
+            pi.setValue(false);
+            pi.setType(Boolean.class);
+            request.addProperty(pi);
+
+            return request;
+    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
@@ -354,20 +358,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                 if (resultStatus == 2) {
 
-                    User user = User.getInstance(this);
-                    user.setPhoneNumber(etPhoneNumber.getText().toString());
-                    user.setPassword(etPassword.getText().toString());
-                    user.setName(etName.getText().toString());
-                    user.setEmail(etEmail.getText().toString());
-                    user.setLanguage(Language.ENGLISH);
-                    user.setLogedIn(true);
-
-                    Prefs.setUserData(this, User.getInstance(this));
-
-                    Intent intent = new Intent(this, AddContactsActivity.class);
-                    intent.putExtra("cameFromCreateAccount", true);
-                    startActivity(intent);
-                    finish();
+                    new SendMessageTask(this, getAddContactsParams("38594111333"));
 
                 } else if (resultStatus == 0) {
                     Toast.makeText(this, getString(R.string.user_already_exists),
@@ -383,37 +374,37 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 showErrorTryAgain();
             }
 
-        }
+        }else if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
+            try {
 
-//        else if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
-//            try {
-//
-//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-//
-//                if (resultStatus == 2) {
-//
-//                    Prefs.setUserData(this, User.getInstance(this));
-//
-//
-//                    if (isLogIn){
-//                        startActivity(new Intent(this, MainActivity.class));
-//                        finish();
-//                    }else {
-//                        startActivity(new Intent(this, AddContactsActivity.class));
-//                        finish();
-//                    }
-//
-//                } else {
-//                    User.empty();
-//                    showErrorCheckData();
-//                }
-//
-//
-//            } catch (NullPointerException ne) {
-//                ne.printStackTrace();
-//                User.empty();
-//                showErrorTryAgain();
-//            }
-//        }
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+                    User user = User.getInstance(this);
+                    user.setPhoneNumber(etPhoneNumber.getText().toString());
+                    user.setPassword(etPassword.getText().toString());
+                    user.setName(etName.getText().toString());
+                    user.setEmail(etEmail.getText().toString());
+                    user.setLanguage(Language.ENGLISH);
+                    user.setLogedIn(true);
+
+                    Prefs.setUserData(this, User.getInstance(this));
+
+                    Intent intent = new Intent(this, AddContactsActivity.class);
+                    intent.putExtra("cameFromCreateAccount", true);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    showErrorTryAgain();
+                }
+
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+                showErrorTryAgain();
+            }
+        }
     }
 }

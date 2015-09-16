@@ -27,6 +27,7 @@ import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.service.ImALiveService;
+import test.myprojects.com.callproject.tabFragments.AnswerMachineFragment;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
@@ -78,7 +79,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         refreshCheckPhoneNumbers();
 
-
     }
     @Override
     protected void onPause() {
@@ -96,6 +96,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.keypad), R.drawable.tab_keypad, KeypadFragment.class);
 
         addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
+
+    //    addTab("Answermachine", R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
     private void addTab(String labelId, int drawableId, Class<?> c) {

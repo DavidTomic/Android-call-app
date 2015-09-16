@@ -68,49 +68,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:background="@color/tab_bar_background"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="10dp">
+        android:weightSum="3">
 
-        <TextView
-            android:id="@+id/tvPhoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ph_my_number" />
 
         <LinearLayout
-            android:id="@+id/vStatus"
-            android:layout_width="wrap_content"
+            android:id="@+id/llRedStatus"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp">
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusRed"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_red_selector" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/llYellowStatus"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusYellow"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_yellow_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llGreenStatus"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusGreen"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_green_selector" />
-
         </LinearLayout>
-
-
     </LinearLayout>
 
 

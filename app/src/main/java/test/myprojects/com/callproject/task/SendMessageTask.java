@@ -1,6 +1,8 @@
 package test.myprojects.com.callproject.task;
 
+import android.app.Activity;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
@@ -99,8 +101,16 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         }
 
 
-        if (messageInterface != null)
+        if (messageInterface != null){
+            if ((messageInterface instanceof Fragment) && !((Fragment) messageInterface).isAdded()){
+                return;
+            }else if ((messageInterface instanceof Activity) && ((Activity) messageInterface).isFinishing()){
+                return;
+            }
+
             messageInterface.responseToSendMessage(result, request.getName());
+        }
+
 
     }
 }

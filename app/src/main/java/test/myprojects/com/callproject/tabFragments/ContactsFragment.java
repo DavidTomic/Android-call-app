@@ -72,6 +72,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private boolean refreshContactsFromPhoneBook;
     private int currentStatus;
 
+    private TextView tvPhoneNumber;
+
     public ContactsFragment() {
         // Required empty public constructor
     }
@@ -82,8 +84,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     ImageButton ibRefresh;
     @Bind(R.id.pbProgressBar)
     ProgressBar progressBar;
-    @Bind(R.id.tvPhoneNumber)
-    TextView tvPhoneNumber;
     @Bind(R.id.bStatusRed)
     ImageView bStatusRed;
     @Bind(R.id.bStatusYellow)
@@ -91,7 +91,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusGreen)
     ImageView bStatusGreen;
 
-    @OnClick(R.id.bStatusRed)
+
+    @OnClick(R.id.llRedStatus)
     public void bStatusRedClicked() {
 
         Log.i(TAG, "clicked red");
@@ -104,7 +105,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
 
-    @OnClick(R.id.bStatusYellow)
+    @OnClick(R.id.llYellowStatus)
     public void bStatusYellowClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(true);
@@ -114,7 +115,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
 
-    @OnClick(R.id.bStatusGreen)
+    @OnClick(R.id.llGreenStatus)
     public void bStatusGreenClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(false);
@@ -163,6 +164,11 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
             adapter = new StickyAdapter(getActivity());
             stlist.getRefreshableView().setAdapter(adapter);
+
+
+            View header = getActivity().getLayoutInflater().inflate(R.layout.contact_custom_header, null);
+            tvPhoneNumber = (TextView) header.findViewById(R.id.tvPhoneNumber);
+            stlist.getRefreshableView().addHeaderView(header);
 
             /** indexable listview */
             indexView.init(stlist);
@@ -315,7 +321,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
-            Log.i(TAG, "getCount " + contactList.size());
+      //      Log.i(TAG, "getCount " + contactList.size());
             return contactList.size();
         }
 

@@ -113,7 +113,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
     @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
 
-    @OnClick(R.id.bStatusRed)
+    @OnClick(R.id.llRedStatus)
     public void bStatusRedClicked(){
 
         Log.i(TAG, "clicked red");
@@ -125,7 +125,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
         currentStatus = 0;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
-    @OnClick(R.id.bStatusYellow)
+    @OnClick(R.id.llYellowStatus)
     public void bStatusYellowClicked(){
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(true);
@@ -134,7 +134,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
         currentStatus = 2;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
-    @OnClick(R.id.bStatusGreen)
+    @OnClick(R.id.llGreenStatus)
     public void bStatusGreenClicked(){
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(false);

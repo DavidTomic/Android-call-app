@@ -12,17 +12,18 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="6dp"
-        android:src="@drawable/search_normal"
-        />
+        android:layout_centerInParent="true"
+        android:paddingBottom="10dp"
+        android:src="@drawable/search_normal" />
 
     <TextView
         android:id="@+id/title"
-        android:textColor="@drawable/tab_textview_selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="10sp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:lines="1"
+        android:textColor="@drawable/tab_textview_selector"
+        android:textSize="10sp" />
 </RelativeLayout>
