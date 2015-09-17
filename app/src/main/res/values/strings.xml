@@ -132,4 +132,11 @@
     <string name="i_am_online_for">I\'m online for:</string>
     <string name="set_time">Set time</string>
 
+
+    //strings for translation from 17.09.2015
+    <string name="i_am_online_at">I\'m online at</string>
+    <string name="i_am_busy_from">I\'m busy from:</string>
+    <string name="now">Now</string>
+    <string name="i_am_away_from">I\'m away from:</string>
+
 </resources>

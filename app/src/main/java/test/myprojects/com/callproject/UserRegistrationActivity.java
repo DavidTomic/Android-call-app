@@ -28,6 +28,7 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
@@ -220,79 +221,93 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         return request;
     }
 
+    private SoapObject getAddMultiContactsParams() {
 
-    private SoapObject getAddContactsParams(String number) {
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_MULTI_CONTACT);
 
-            SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+        PropertyInfo pi1 = new PropertyInfo();
+        pi1.setName("Phonenumber");
+        pi1.setValue(etPhoneNumber.getText().toString());
+        pi1.setType(String.class);
+        request.addProperty(pi1);
+
+        pi1 = new PropertyInfo();
+        pi1.setName("password");
+        pi1.setValue(etPassword.getText().toString());
+        pi1.setType(String.class);
+        request.addProperty(pi1);
+
+        SoapObject contactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "Contacts");
+
+        List<Contact> cList = User.getInstance(this).getContactList();
+
+
+        for (Contact contact : cList) {
+
+            SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
             PropertyInfo pi = new PropertyInfo();
             pi.setName("Phonenumber");
-            pi.setValue(User.getInstance(this).getPhoneNumber());
+            pi.setValue(contact.getPhoneNumber());
             pi.setType(String.class);
-            request.addProperty(pi);
-
-            pi = new PropertyInfo();
-            pi.setName("password");
-            pi.setValue(User.getInstance(this).getPassword());
-            pi.setType(String.class);
-            request.addProperty(pi);
-
-            pi = new PropertyInfo();
-            pi.setName("ContactsPhoneNumber");
-            pi.setValue(number);
-            pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
 
             pi = new PropertyInfo();
             pi.setName("Name");
-            pi.setValue(number);
+            pi.setValue(contact.getName());
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("Noter");
             pi.setValue("");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("Number");
             pi.setValue("");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("URL");
             pi.setValue("");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("Adress");
             pi.setValue("");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("Birthsday");
             pi.setValue("2000-01-01T00:00:00");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("pDate");
             pi.setValue("2000-01-01T00:00:00");
             pi.setType(String.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
             pi = new PropertyInfo();
             pi.setName("Favorites");
-            pi.setValue(false);
+            pi.setValue(contact.isFavorit());
             pi.setType(Boolean.class);
-            request.addProperty(pi);
+            csContactsSoapObject.addProperty(pi);
 
-            return request;
+            contactsSoapObject.addProperty("csContacts", csContactsSoapObject);
+        }
+
+        request.addProperty("Contacts", contactsSoapObject);
+
+        return request;
+
     }
 
     @Override
@@ -358,7 +373,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                 if (resultStatus == 2) {
 
-                    new SendMessageTask(this, getAddContactsParams("38594111333"));
+                    new SendMessageTask(this, getAddMultiContactsParams()).execute();
 
                 } else if (resultStatus == 0) {
                     Toast.makeText(this, getString(R.string.user_already_exists),
@@ -374,7 +389,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 showErrorTryAgain();
             }
 
-        }else if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
+        }else if (methodName.contentEquals(SendMessageTask.ADD_MULTI_CONTACT)) {
             try {
 
                 int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
@@ -390,9 +405,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
+                    Prefs.setLastContactCount(this, user.getContactList().size());
 
-                    Intent intent = new Intent(this, AddContactsActivity.class);
-                    intent.putExtra("cameFromCreateAccount", true);
+                    Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                     finish();
 

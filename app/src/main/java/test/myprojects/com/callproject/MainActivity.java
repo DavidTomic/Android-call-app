@@ -27,12 +27,12 @@ import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.service.ImALiveService;
-import test.myprojects.com.callproject.tabFragments.AnswerMachineFragment;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
 import test.myprojects.com.callproject.tabFragments.RecentFragment;
 import test.myprojects.com.callproject.tabFragments.SettingsFragment;
+import test.myprojects.com.callproject.task.CheckAndUpdateAllContactsTask;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
 public class MainActivity extends FragmentActivity implements MessageInterface {
@@ -77,6 +77,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         
         mPollHandler.postDelayed(mPollRunnable, 50);
 
+        checkAndUpdateAllContact();
         refreshCheckPhoneNumbers();
 
     }
@@ -275,6 +276,9 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     }
     public void refreshCheckPhoneNumbers(){
         new SendMessageTask(this, getCheckPhoneParams()).execute();
+    }
+    public void checkAndUpdateAllContact(){
+        new CheckAndUpdateAllContactsTask(this).execute();
     }
 
     private SoapObject getDefaultTextParams() {

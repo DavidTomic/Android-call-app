@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
@@ -28,7 +27,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 
 import com.fortysevendeg.swipelistview.SwipeListView;
@@ -68,8 +67,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private View rootView;
     private List<Contact> contactList = new ArrayList<>();
     private StickyAdapter adapter;
-
-    private boolean refreshContactsFromPhoneBook;
     private int currentStatus;
 
     private TextView tvPhoneNumber;
@@ -129,8 +126,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     @OnClick(R.id.ibAddContact)
     public void addContact() {
         Log.i(TAG, "here");
-
-        refreshContactsFromPhoneBook = true;
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
@@ -248,11 +243,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         }
 
-        if (refreshContactsFromPhoneBook) {
-            refreshContactsFromPhoneBook = false;
-            User.getInstance(getActivity()).loadContactsToList(getActivity());
-        }
-
         adapter.notifyDataSetChanged();
     }
     @Override
@@ -311,17 +301,31 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
 
         private LayoutInflater inflater;
-        List<Contact> mOriginalValues;
+        private List<Contact> mOriginalValues;
+        private Context mContext;
 
         public StickyAdapter(Context context) {
+            mContext = context;
             inflater = LayoutInflater.from(context);
-            contactList = User.getInstance(context).getContactList();
+            contactList = new ArrayList<>(User.getInstance(context).getContactList());
+        }
+
+        public void refreshOnContactCountChange(){
+            inputSearch.setText("");
+            inputSearch.clearFocus();
+            inputSearch.setGravity(Gravity.CENTER);
+
+            mOriginalValues = null;
+
+            contactList = new ArrayList<>(User.getInstance(mContext).getContactList());
+            notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
-      //      Log.i(TAG, "getCount " + contactList.size());
+     //       Log.i(TAG, "contactList getCount " + contactList.size());
+     //        Log.i(TAG, "contactListid " + java.lang.System.identityHashCode(contactList));
             return contactList.size();
         }
 
@@ -414,9 +418,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         results.values = filteredArrList;
                     }
 
-                    Log.i(TAG, "filteredArrList " + filteredArrList.size());
-                    Log.i(TAG, "contactList " + contactList.size());
-                    Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
+//                    Log.i(TAG, "filteredArrList " + filteredArrList.size());
+//                    Log.i(TAG, "contactList " + contactList.size());
+//                    Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
 
 
                     return results;
@@ -641,8 +645,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
 
 
-
-
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -650,7 +652,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             Log.i(TAG, "statusUpdateBroadcastReceiver");
             ibRefresh.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
-            adapter.notifyDataSetChanged();
+            adapter.refreshOnContactCountChange();
         }
     };
 
