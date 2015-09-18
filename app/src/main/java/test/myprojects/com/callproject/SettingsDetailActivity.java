@@ -2,7 +2,12 @@ package test.myprojects.com.callproject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -15,6 +20,8 @@ import android.widget.Toast;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -106,6 +113,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
         SendMessageTask task3 = new SendMessageTask(this, getUpdateAccountParams());
         task3.execute();
 
+        setLocale("en");
     }
 
     @OnClick(R.id.bLanguage2)
@@ -114,7 +122,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
         newLanguage = Language.DANISH;
         SendMessageTask task3 = new SendMessageTask(this, getUpdateAccountParams());
         task3.execute();
-
+        setLocale("da");
     }
 
     @Override
@@ -157,6 +165,24 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
         }
     }
 
+
+    public void setLocale(String lang) {
+
+        Prefs.setLanguageCountryCode(this, lang);
+
+        Locale myLocale = new Locale(lang);
+        Locale.setDefault(myLocale);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+        Intent i = new Intent(this, StartActivity.class);
+        i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
+
+
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
         if (result == null) {
@@ -183,7 +209,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
                     User.getInstance(this).setLanguage(newLanguage);
 
                 rlProgress.setVisibility(View.GONE);
-                Toast.makeText(this, getString(R.string.data_updated), Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(this, getString(R.string.data_updated), Toast.LENGTH_SHORT).show();
                 Prefs.setUserData(this, User.getInstance(this));
                 finish();
 
@@ -196,7 +222,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
             showErrorTryAgain();
         }
     }
-
 
     private SoapObject getUpdateAccountParams() {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_ACCOUNT);

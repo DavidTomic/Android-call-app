@@ -21,6 +21,7 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,6 +37,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class UserRegistrationActivity extends Activity implements MessageInterface {
 
     private static final String TAG = "UserRegistration";
+    private Language language;
 
     @Bind(R.id.bSignLog)
     Button bTitle;
@@ -194,9 +196,19 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         pi.setType(String.class);
         request.addProperty(pi);
 
+        String countryCode = Locale.getDefault().getCountry();
+
+        if (countryCode.contains("en")){
+            language = Language.ENGLISH;
+        }else if (countryCode.contentEquals("da") || countryCode.contentEquals("en")){
+            language = Language.DANISH;
+        }else {
+            language = Language.DEFAULT;
+        }
+
         pi = new PropertyInfo();
         pi.setName("Language");
-        pi.setValue(1);
+        pi.setValue(language.getValue());
         pi.setType(Integer.class);
         request.addProperty(pi);
 
@@ -346,7 +358,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setPassword(etPassword.getText().toString());
                     user.setName(accountSetupSoapObject.getProperty("Name").toString());
                     user.setEmail(accountSetupSoapObject.getProperty("Email").toString());
-                    user.setLanguage(Language.ENGLISH);
+                    user.setLanguage(Language.values()[Integer.valueOf(accountSetupSoapObject.getProperty("Language").toString())]);
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
@@ -401,7 +413,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setPassword(etPassword.getText().toString());
                     user.setName(etName.getText().toString());
                     user.setEmail(etEmail.getText().toString());
-                    user.setLanguage(Language.ENGLISH);
+                    user.setLanguage(language);
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));

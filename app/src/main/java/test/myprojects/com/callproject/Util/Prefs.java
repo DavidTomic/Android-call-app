@@ -31,6 +31,7 @@ public class Prefs {
     public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
 
     public static final String PREFS_VOICEMAIL_NUMBER = "voice_mail_number";
+    public static final String PREFS_COUNTRY_CODE = "country_code";
 
     public static void setUserData(Context context, User user) {
         // TODO Auto-generated method stub
@@ -142,6 +143,21 @@ public class Prefs {
                 PREFS_FILE, 0);
 
         return prefs.getString(PREFS_VOICEMAIL_NUMBER, "");
+    }
+
+    public static void setLanguageCountryCode(Context context, String countryCode) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putString(PREFS_COUNTRY_CODE, countryCode);
+        editor.commit();
+    }
+    public static String getLanguageCountryCode(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getString(PREFS_COUNTRY_CODE, "");
     }
 
 

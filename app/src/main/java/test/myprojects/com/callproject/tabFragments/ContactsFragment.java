@@ -67,6 +67,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     private static final String TAG = "ContactsFragment";
     private View rootView;
+    private PullToRefreshStickyList stlist;
     private List<Contact> contactList = new ArrayList<>();
     private StickyAdapter adapter;
     private int currentStatus;
@@ -149,12 +150,10 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             ButterKnife.bind(this, rootView);
             // Initialise your layout here
 
-            final PullToRefreshStickyList stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
+            stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
             IndexView indexView = (IndexView) rootView.findViewById(R.id.indexView);
 
-            adapter = new StickyAdapter(getActivity());
-            stlist.getRefreshableView().setAdapter(adapter);
-
+            createListAdapter(0);
 
             View header = getActivity().getLayoutInflater().inflate(R.layout.contact_custom_header, null);
             tvPhoneNumber = (TextView) header.findViewById(R.id.tvPhoneNumber);
@@ -284,6 +283,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         }
     }
 
+    private void createListAdapter(int position){
+
+        adapter = new StickyAdapter(getActivity());
+        stlist.getRefreshableView().setAdapter(adapter);
+
+        stlist.getRefreshableView().setSelection(position);
+    }
 
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable {
 
@@ -432,8 +438,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     }
 
-
-
     public class SwipeViewHolder {
         TextView tvTitle;
         TextView tvStatusText;
@@ -541,8 +545,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         }
 
 
-                        adapter.notifyDataSetChanged();
-                        notifyDataSetChanged();
+                        createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 
                     }
                 });
