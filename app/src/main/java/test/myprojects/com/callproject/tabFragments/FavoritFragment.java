@@ -46,6 +46,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
@@ -123,6 +124,11 @@ public class FavoritFragment extends Fragment implements MessageInterface {
 
         currentStatus = 1;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    }
+
+    @OnClick(R.id.llSettings)
+    public void settingsClicked(){
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
 
 
@@ -485,14 +491,13 @@ public class FavoritFragment extends Fragment implements MessageInterface {
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
 
-        String endTime = User.getInstance(getActivity()).getEndTime();
-
-        if (endTime ==null || endTime.length() == 0){
-            endTime = "2000-01-01T00:00:00";
-        }
-
-        pi.setValue(endTime);
+        pi = new PropertyInfo();
+        pi.setName("StartTime");
+        pi.setValue("2000-01-01T00:00:00");
         pi.setType(String.class);
         request.addProperty(pi);
 

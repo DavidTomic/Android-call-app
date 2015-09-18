@@ -27,6 +27,7 @@ import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.service.ImALiveService;
+import test.myprojects.com.callproject.tabFragments.AnswerMachineFragment;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
@@ -96,9 +97,9 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.contacts), R.drawable.tab_contacts, ContactsFragment.class);
         addTab(getString(R.string.keypad), R.drawable.tab_keypad, KeypadFragment.class);
 
-        addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
+     //   addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
 
-    //    addTab("Answermachine", R.drawable.answer_machine_icon, AnswerMachineFragment.class);
+        addTab("Answermachine", R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
     private void addTab(String labelId, int drawableId, Class<?> c) {
@@ -251,7 +252,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     User user = User.getInstance(this);
 
                     user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
-                    user.setEndTime("" + result.getProperty("EndTimeStatus"));
+                  //  user.setEndTime("" + result.getProperty("EndTimeStatus"));
                     user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
                     String statusText = "" + result.getProperty("StatusText");

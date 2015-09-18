@@ -13,6 +13,33 @@
         android:background="@color/tab_bar_background">
 
 
+        <LinearLayout
+            android:id="@+id/llSettings"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@color/blue_default" />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/blue_default" />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/blue_default" />
+
+        </LinearLayout>
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,9 +69,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="35dp"
+        android:layout_marginTop="1dp"
         android:background="@color/tab_bar_background"
         android:orientation="horizontal"
-        android:layout_marginTop="1dp"
         android:weightSum="3">
 
 

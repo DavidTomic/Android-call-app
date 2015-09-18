@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.Util.WindowSize;
 import test.myprojects.com.callproject.model.Contact;
 
 public class IndexView extends LinearLayout {
@@ -58,32 +59,32 @@ public class IndexView extends LinearLayout {
 				Log.i(TAG, "onTouch");
 
 				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-				case MotionEvent.ACTION_MOVE:
-                    Log.i(TAG, "ACTION_MOVE");
-					int position = (int) (event.getY() * letters.length / v.getHeight());
-					if (position >= 0 && position <= letters.length) {
-						int localPosition;
-						if (position == 0) {
-							localPosition = 0;
-						} else {
-							char c = letters[position];
-							if (c == '•' && (position+1) <=letters.length){
-								c = letters[position+1];
+					case MotionEvent.ACTION_DOWN:
+					case MotionEvent.ACTION_MOVE:
+						Log.i(TAG, "ACTION_MOVE");
+						int position = (int) (event.getY() * letters.length / v.getHeight());
+						if (position >= 0 && position <= letters.length) {
+							int localPosition;
+							if (position == 0) {
+								localPosition = 0;
+							} else {
+								char c = letters[position];
+								if (c == '•' && (position + 1) <= letters.length) {
+									c = letters[position + 1];
+								}
+								localPosition = searchPosition(listAdapter, c);
 							}
-							localPosition = searchPosition(listAdapter, c);
+
+
+							if (localPosition != -1) {
+								Log.i(TAG, "setSelection localPosition " + localPosition);
+								pullToRefreshStickyList.getRefreshableView().setSelection(localPosition);
+							}
+
+						} else {
+							pullToRefreshStickyList.getRefreshableView().setSelection(0);
 						}
-
-
-						if (localPosition != -1) {
-							Log.i(TAG, "setSelection localPosition " + localPosition);
-							pullToRefreshStickyList.getRefreshableView().setSelection(localPosition);
-						}
-
-					} else {
-						pullToRefreshStickyList.getRefreshableView().setSelection(0);
-					}
-					return true;
+						return true;
 				}
 				return false;
 
@@ -99,7 +100,11 @@ public class IndexView extends LinearLayout {
 		LayoutParams lllp = new LayoutParams(
 				LayoutParams.MATCH_PARENT, 0);
 		lllp.weight = 1;
+		textView.setTextSize(WindowSize.convertPixelsToDp(textView.getTextSize()) - 2);
 		addView(textView, lllp);
+
+	//	Log.i(TAG, "size " + textView.getTextSize());
+
 	}
 
 	private int searchPosition(StickyListHeadersAdapter listAdapter, char c) {

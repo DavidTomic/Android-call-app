@@ -23,7 +23,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:lines="1"
         android:textColor="@drawable/tab_textview_selector"
         android:textSize="10sp" />
 </RelativeLayout>

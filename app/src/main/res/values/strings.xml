@@ -138,5 +138,8 @@
     <string name="i_am_busy_from">I\'m busy from:</string>
     <string name="now">Now</string>
     <string name="i_am_away_from">I\'m away from:</string>
+    <string name="voice_mail">Voicemail</string>
+    <string name="voice_mail_number">Voicemail number:</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
 </resources>

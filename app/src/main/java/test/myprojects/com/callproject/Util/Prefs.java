@@ -30,6 +30,8 @@ public class Prefs {
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
     public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
 
+    public static final String PREFS_VOICEMAIL_NUMBER = "voice_mail_number";
+
     public static void setUserData(Context context, User user) {
         // TODO Auto-generated method stub
         SharedPreferences.Editor editor = context.getSharedPreferences(
@@ -125,6 +127,21 @@ public class Prefs {
                 PREFS_FILE, 0);
 
         return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
+    }
+
+    public static void setVoiceMailNumber(Context context, String voicemailNumber) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putString(PREFS_VOICEMAIL_NUMBER, voicemailNumber);
+        editor.commit();
+    }
+    public static String getVoiceMailNumber(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getString(PREFS_VOICEMAIL_NUMBER, "");
     }
 
 

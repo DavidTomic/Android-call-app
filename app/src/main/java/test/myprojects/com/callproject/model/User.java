@@ -40,7 +40,7 @@ public class User {
     private int iAmLiveSeconds;
 
 
-    private String endTime;
+  //  private String endTime;
 
     private List<Contact> contactList = new ArrayList<>();
     private List<String> checkPhoneNumberList = new ArrayList<>();
@@ -52,13 +52,13 @@ public class User {
     }
 
     //Getters and Setters
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
+//    public String getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(String endTime) {
+//        this.endTime = endTime;
+//    }
 
     public boolean isNeedRefreshStatus() {
         return needRefreshStatus;

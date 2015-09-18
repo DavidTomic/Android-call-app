@@ -149,7 +149,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     String endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
                             (new java.util.Date(selectedEndTime));
-                    User.getInstance(this).setEndTime(endTime);
+                 //   User.getInstance(this).setEndTime(endTime);
                     Prefs.setUserData(this, User.getInstance(this));
 
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),

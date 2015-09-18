@@ -82,14 +82,13 @@ public class UpdateStatusIntentService extends IntentService {
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
 
-        String endTime = User.getInstance(this).getEndTime();
-
-        if (endTime ==null || endTime.length() == 0){
-            endTime = "2000-01-01T00:00:00";
-        }
-
-        pi.setValue(endTime);
+        pi = new PropertyInfo();
+        pi.setName("StartTime");
+        pi.setValue("2000-01-01T00:00:00");
         pi.setType(String.class);
         request.addProperty(pi);
 
