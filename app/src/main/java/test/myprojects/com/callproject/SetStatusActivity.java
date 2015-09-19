@@ -42,15 +42,15 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     private static final String TAG = "SetStatusActivity";
 
-    private long selectedTime;
-
-    @Bind(R.id.rlTime)
-    LinearLayout rlTime;
-    @Bind(R.id.tvTime)
-    TextView tvTime;
+    private long selectedEndTime, selectedStartTime;
+    private boolean startTimeclicked;
 
     @Bind(R.id.etStatus)
     EditText etStatus;
+    @OnClick(R.id.bSelect)
+    public void setStatus() {
+        showStatusTextDialog();
+    }
 
     @Bind(R.id.llRedStatus)
     LinearLayout llRedStatus;
@@ -59,15 +59,30 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
     @Bind(R.id.llGreenStatus)
     LinearLayout llGreenStatus;
 
-    @OnClick(R.id.bSelect)
-    public void setStatus() {
-        showStatusTextDialog();
-    }
 
-    @OnClick(R.id.bSetTime)
-    public void setTime() {
+    @Bind(R.id.rlStartTime)
+    LinearLayout rlStartTime;
+    @Bind(R.id.tvStartTimeLabel) TextView tvStartTimeLabel;
+    @Bind(R.id.tvStartTime) TextView tvStartTime;
+    @OnClick(R.id.bSetStartTime)
+    public void setStartTimeClicked(){
+        startTimeclicked = true;
         showDateTimeDialog();
     }
+
+
+
+    @Bind(R.id.rlEndTime)
+    LinearLayout rlEndTime;
+    @Bind(R.id.tvEndTime)
+    TextView tvEndTime;
+    @OnClick(R.id.bSetEndTime)
+    public void setEndTime() {
+        startTimeclicked = false;
+        showDateTimeDialog();
+    }
+
+
 
     @OnClick(R.id.bConfirm)
     public void confirm() {
@@ -133,8 +148,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
 
                     String endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                            (new java.util.Date(selectedTime));
-                    User.getInstance(this).setEndTime(endTime);
+                            (new java.util.Date(selectedEndTime));
+                 //   User.getInstance(this).setEndTime(endTime);
                     Prefs.setUserData(this, User.getInstance(this));
 
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
@@ -191,24 +206,42 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                         timePicker.getCurrentHour(),
                         timePicker.getCurrentMinute());
 
-                selectedTime = calendar.getTimeInMillis();
 
-                Log.i(TAG, "time " + (selectedTime - System.currentTimeMillis()));
+                if (startTimeclicked){
+                    selectedStartTime = calendar.getTimeInMillis();
 
-                if (selectedTime - System.currentTimeMillis() > 0) {
-                    int minutes = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60)) % 60);
-                    int hours = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60 * 60)) % 24);
+                    Log.i(TAG, "time " + selectedStartTime);
 
-                    if (hours == 0) {
-                        tvTime.setText((minutes+1) + " min");
-                    } else {
-                        tvTime.setText(String.format("%02d", hours) + ":"
-                                + String.format("%02d", (minutes+1)) + " min");
+                    if (selectedStartTime - System.currentTimeMillis() > 0) {
+
+                        tvStartTime.setText(new java.text.SimpleDateFormat("MM-dd HH:mm").format
+                                (new java.util.Date(selectedStartTime)));
+//                        int minutes = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60)) % 60);
+//                        int hours = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60 * 60)) % 24);
+//
+//                        if (hours == 0) {
+//                            tvTime.setText((minutes+1) + " min");
+//                        } else {
+//                            tvTime.setText(String.format("%02d", hours) + ":"
+//                                    + String.format("%02d", (minutes+1)) + " min");
+//                        }
+                    }else {
+                        selectedStartTime = 0;
+                        tvStartTime.setText(getString(R.string.now));
                     }
                 }else {
-                    tvTime.setText("");
-                }
+                    selectedEndTime = calendar.getTimeInMillis();
 
+                    Log.i(TAG, "time " + selectedEndTime);
+
+                    if (selectedEndTime - System.currentTimeMillis() > 0) {
+                        tvEndTime.setText(new java.text.SimpleDateFormat("MM-dd HH:mm").format
+                                (new java.util.Date(selectedEndTime)));
+                    }else {
+                        selectedEndTime = 0;
+                        tvEndTime.setText("-:-");
+                    }
+                }
 
                 alertDialog.dismiss();
             }
@@ -249,7 +282,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
 
-
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         pi.setValue(User.getInstance(this).getPhoneNumber());
@@ -268,13 +300,31 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         pi.setType(Integer.class);
         request.addProperty(pi);
 
+        String startTime;
+        if (selectedStartTime - System.currentTimeMillis() <= 0) {
+            startTime = "2000-01-01T00:00:00";
+
+        } else {
+            startTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
+                    (new java.util.Date(selectedEndTime));
+        }
+
+        Log.i(TAG, "startTime " + startTime);
+
+        pi = new PropertyInfo();
+        pi.setName("StartTime");
+        pi.setValue(startTime);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+
         String endTime;
-        if (selectedTime - System.currentTimeMillis() <= 0) {
+        if (selectedEndTime - System.currentTimeMillis() <= 0) {
             endTime = "2000-01-01T00:00:00";
 
         } else {
             endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                    (new java.util.Date(selectedTime));
+                    (new java.util.Date(selectedEndTime));
         }
 
         Log.i(TAG, "endTime " + endTime);
@@ -301,19 +351,28 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                rlTime.setVisibility(View.VISIBLE);
+                rlEndTime.setVisibility(View.VISIBLE);
+                rlStartTime.setVisibility(View.VISIBLE);
+                tvStartTimeLabel.setText(getString(R.string.i_am_busy_from));
+
+
                 break;
             case YELLOW_STATUS:
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                rlTime.setVisibility(View.VISIBLE);
+                rlEndTime.setVisibility(View.VISIBLE);
+                rlStartTime.setVisibility(View.VISIBLE);
+                tvStartTimeLabel.setText(getString(R.string.i_am_away_from));
+
+
                 break;
             case GREEN_STATUS:
                 llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
                 llGreenStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
-                rlTime.setVisibility(View.GONE);
+                rlEndTime.setVisibility(View.GONE);
+                rlStartTime.setVisibility(View.GONE);
                 break;
         }
     }

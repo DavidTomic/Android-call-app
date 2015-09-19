@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
@@ -28,7 +28,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 
 import com.fortysevendeg.swipelistview.SwipeListView;
@@ -46,6 +46,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
@@ -66,11 +67,12 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     private static final String TAG = "ContactsFragment";
     private View rootView;
+    private PullToRefreshStickyList stlist;
     private List<Contact> contactList = new ArrayList<>();
     private StickyAdapter adapter;
-
-    private boolean refreshContactsFromPhoneBook;
     private int currentStatus;
+
+    private TextView tvPhoneNumber;
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -78,12 +80,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     @Bind(R.id.inputSearch)
     SearchEditText inputSearch;
-    @Bind(R.id.ibRefresh)
-    ImageButton ibRefresh;
-    @Bind(R.id.pbProgressBar)
-    ProgressBar progressBar;
-    @Bind(R.id.tvPhoneNumber)
-    TextView tvPhoneNumber;
     @Bind(R.id.bStatusRed)
     ImageView bStatusRed;
     @Bind(R.id.bStatusYellow)
@@ -91,7 +87,8 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusGreen)
     ImageView bStatusGreen;
 
-    @OnClick(R.id.bStatusRed)
+
+    @OnClick(R.id.llRedStatus)
     public void bStatusRedClicked() {
 
         Log.i(TAG, "clicked red");
@@ -104,7 +101,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
 
-    @OnClick(R.id.bStatusYellow)
+    @OnClick(R.id.llYellowStatus)
     public void bStatusYellowClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(true);
@@ -114,7 +111,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
 
-    @OnClick(R.id.bStatusGreen)
+    @OnClick(R.id.llGreenStatus)
     public void bStatusGreenClicked() {
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(false);
@@ -127,9 +124,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     @OnClick(R.id.ibAddContact)
     public void addContact() {
-        Log.i(TAG, "here");
-
-        refreshContactsFromPhoneBook = true;
+      //  Log.i(TAG, "here");
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
@@ -137,13 +132,10 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         getActivity().startActivity(intent);
     }
 
-    @OnClick(R.id.ibRefresh)
-    public void refreshClicked() {
-        ibRefresh.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).refreshStatuses();
+    @OnClick(R.id.llSettings)
+    public void settingsClicked(){
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
-
 
 
     @Override
@@ -158,11 +150,14 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             ButterKnife.bind(this, rootView);
             // Initialise your layout here
 
-            final PullToRefreshStickyList stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
+            stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
             IndexView indexView = (IndexView) rootView.findViewById(R.id.indexView);
 
-            adapter = new StickyAdapter(getActivity());
-            stlist.getRefreshableView().setAdapter(adapter);
+            createListAdapter(0);
+
+            View header = getActivity().getLayoutInflater().inflate(R.layout.contact_custom_header, null);
+            tvPhoneNumber = (TextView) header.findViewById(R.id.tvPhoneNumber);
+            stlist.getRefreshableView().addHeaderView(header);
 
             /** indexable listview */
             indexView.init(stlist);
@@ -234,17 +229,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         if (User.getInstance(getActivity()).isNeedRefreshStatus()) {
             User.getInstance(getActivity()).setNeedRefreshStatus(false);
 
-            ibRefresh.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-
             Prefs.setLastCallTime(getActivity(), 0);
             ((MainActivity) getActivity()).refreshStatuses();
 
-        }
-
-        if (refreshContactsFromPhoneBook) {
-            refreshContactsFromPhoneBook = false;
-            User.getInstance(getActivity()).loadContactsToList(getActivity());
         }
 
         adapter.notifyDataSetChanged();
@@ -259,8 +246,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             e.printStackTrace();
         }
 
-        ibRefresh.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
     }
 
     private void refreshStatusUI() {
@@ -298,24 +283,43 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         }
     }
 
+    private void createListAdapter(int position){
 
+        adapter = new StickyAdapter(getActivity());
+        stlist.getRefreshableView().setAdapter(adapter);
 
+        stlist.getRefreshableView().setSelection(position);
+    }
 
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable {
 
 
         private LayoutInflater inflater;
-        List<Contact> mOriginalValues;
+        private List<Contact> mOriginalValues;
+        private Context mContext;
 
         public StickyAdapter(Context context) {
+            mContext = context;
             inflater = LayoutInflater.from(context);
-            contactList = User.getInstance(context).getContactList();
+            contactList = new ArrayList<>(User.getInstance(context).getContactList());
+        }
+
+        public void refreshOnContactCountChange(){
+            inputSearch.setText("");
+            inputSearch.clearFocus();
+            inputSearch.setGravity(Gravity.CENTER);
+
+            mOriginalValues = null;
+
+            contactList = new ArrayList<>(User.getInstance(mContext).getContactList());
+            notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
-            Log.i(TAG, "getCount " + contactList.size());
+     //       Log.i(TAG, "contactList getCount " + contactList.size());
+     //        Log.i(TAG, "contactListid " + java.lang.System.identityHashCode(contactList));
             return contactList.size();
         }
 
@@ -408,9 +412,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                         results.values = filteredArrList;
                     }
 
-                    Log.i(TAG, "filteredArrList " + filteredArrList.size());
-                    Log.i(TAG, "contactList " + contactList.size());
-                    Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
+//                    Log.i(TAG, "filteredArrList " + filteredArrList.size());
+//                    Log.i(TAG, "contactList " + contactList.size());
+//                    Log.i(TAG, "mOriginalValues " + mOriginalValues.size());
 
 
                     return results;
@@ -495,6 +499,9 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                 swipeholder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
                 swipeholder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
 
+                /* button action */
+
+
 	            /* item click action*/
 
                 swipeholder.rlHolder.setOnClickListener(new View.OnClickListener() {
@@ -506,13 +513,10 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                     }
                 });
 
-                /* button action */
-
-
                 swipeholder.edit_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                  //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
+                        //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
 
                         String text = swipeholder.edit_btn.getText().toString();
 
@@ -520,9 +524,11 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
                         if (text.contentEquals(getString(R.string.invite))) {
 
-                            SmsManager smsManager = SmsManager.getDefault();
-                            smsManager.sendTextMessage(contactList.get(parent_postion).getPhoneNumber(), null,
-                                    getString(R.string.invite_user_text), null, null);
+                            Uri uri = Uri.parse("smsto:" + contactList.get(0).getPhoneNumber());
+                            Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+                            it.putExtra("sms_body", getString(R.string.invite_user_text));
+                            startActivity(it);
+
 
                         } else if (text.contentEquals(getString(R.string.add_contact))) {
                             new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
@@ -532,22 +538,27 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
                             DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
                                     contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(), contactList.get(parent_postion).getStatus().getValue());
-                            swipeholder.edit_btn.setEnabled(false);
+                         //   swipeholder.edit_btn.setEnabled(false);
 
                             Intent pushIntent = new Intent(getActivity(), NotificationService.class);
                             getActivity().startService(pushIntent);
                         }
 
-                        adapter.notifyDataSetChanged();
+
+                        createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 
                     }
                 });
+
 
 
                 convertView.setTag(swipeholder);
             } else {
                 swipeholder = (SwipeViewHolder) convertView.getTag();
             }
+
+
+
 
             Contact contact = contactList.get(parent_postion);
 
@@ -635,16 +646,12 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
 
 
-
-
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
-            ibRefresh.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-            adapter.notifyDataSetChanged();
+            adapter.refreshOnContactCountChange();
         }
     };
 
@@ -675,14 +682,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
 
-        String endTime = User.getInstance(getActivity()).getEndTime();
-
-        if (endTime == null || endTime.length() == 0) {
-            endTime = "2000-01-01T00:00:00";
-        }
-
-        pi.setValue(endTime);
+        pi = new PropertyInfo();
+        pi.setName("StartTime");
+        pi.setValue("2000-01-01T00:00:00");
         pi.setType(String.class);
         request.addProperty(pi);
 

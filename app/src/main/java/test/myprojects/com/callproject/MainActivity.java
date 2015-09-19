@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.IntentCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +28,13 @@ import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.service.ImALiveService;
+import test.myprojects.com.callproject.tabFragments.AnswerMachineFragment;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
 import test.myprojects.com.callproject.tabFragments.RecentFragment;
 import test.myprojects.com.callproject.tabFragments.SettingsFragment;
+import test.myprojects.com.callproject.task.CheckAndUpdateAllContactsTask;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
 public class MainActivity extends FragmentActivity implements MessageInterface {
@@ -76,8 +79,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         
         mPollHandler.postDelayed(mPollRunnable, 50);
 
+        checkAndUpdateAllContact();
         refreshCheckPhoneNumbers();
-
 
     }
     @Override
@@ -95,7 +98,9 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.contacts), R.drawable.tab_contacts, ContactsFragment.class);
         addTab(getString(R.string.keypad), R.drawable.tab_keypad, KeypadFragment.class);
 
-        addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
+     //   addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
+
+        addTab("Answermachine", R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
     private void addTab(String labelId, int drawableId, Class<?> c) {
@@ -241,14 +246,14 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     User.empty();
                     Prefs.deleteUserSettings(this);
                     Intent i = new Intent(this, StartActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                 }else if (resultStatus == 2){
 
                     User user = User.getInstance(this);
 
                     user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
-                    user.setEndTime("" + result.getProperty("EndTimeStatus"));
+                  //  user.setEndTime("" + result.getProperty("EndTimeStatus"));
                     user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
                     String statusText = "" + result.getProperty("StatusText");
@@ -273,6 +278,9 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     }
     public void refreshCheckPhoneNumbers(){
         new SendMessageTask(this, getCheckPhoneParams()).execute();
+    }
+    public void checkAndUpdateAllContact(){
+        new CheckAndUpdateAllContactsTask(this).execute();
     }
 
     private SoapObject getDefaultTextParams() {

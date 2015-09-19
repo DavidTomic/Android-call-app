@@ -28,6 +28,10 @@ public class Prefs {
     private static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
+    public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
+
+    public static final String PREFS_VOICEMAIL_NUMBER = "voice_mail_number";
+    public static final String PREFS_COUNTRY_CODE = "country_code";
 
     public static void setUserData(Context context, User user) {
         // TODO Auto-generated method stub
@@ -45,7 +49,6 @@ public class Prefs {
         editor.putInt(PREFS_I_AM_LIVE_SECONS, user.getiAmLiveSeconds());
         editor.commit();
     }
-
     public static void loadUserData(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(
                 PREFS_FILE, 0);
@@ -62,6 +65,7 @@ public class Prefs {
         user.setiAmLiveSeconds(prefs.getInt(PREFS_I_AM_LIVE_SECONS, 240));
     }
 
+
     public static void setLastCallTime(Context context, long time) {
         SharedPreferences.Editor editor = context.getSharedPreferences(
                 PREFS_FILE, 0).edit();
@@ -69,7 +73,6 @@ public class Prefs {
         editor.putLong(PREFS_LAST_CALL_TIME, time);
         editor.commit();
     }
-
     public static long getLastCallTime(Context context) {
 
         SharedPreferences prefs = context.getSharedPreferences(
@@ -77,6 +80,7 @@ public class Prefs {
 
         return prefs.getLong(PREFS_LAST_CALL_TIME, 0);
     }
+
 
     public static boolean saveDefaultTexts(Context context, List<String> list)
     {
@@ -108,6 +112,52 @@ public class Prefs {
         }
 
         return list;
+    }
+
+
+    public static void setLastContactCount(Context context, int count) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
+        editor.commit();
+    }
+    public static long getLastContactCount(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
+    }
+
+    public static void setVoiceMailNumber(Context context, String voicemailNumber) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putString(PREFS_VOICEMAIL_NUMBER, voicemailNumber);
+        editor.commit();
+    }
+    public static String getVoiceMailNumber(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getString(PREFS_VOICEMAIL_NUMBER, "");
+    }
+
+    public static void setLanguageCountryCode(Context context, String countryCode) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putString(PREFS_COUNTRY_CODE, countryCode);
+        editor.commit();
+    }
+    public static String getLanguageCountryCode(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getString(PREFS_COUNTRY_CODE, "");
     }
 
 

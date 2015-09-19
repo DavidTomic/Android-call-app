@@ -40,12 +40,10 @@ public class User {
     private int iAmLiveSeconds;
 
 
-    private String endTime;
+  //  private String endTime;
 
     private List<Contact> contactList = new ArrayList<>();
     private List<String> checkPhoneNumberList = new ArrayList<>();
-
-
 
     private boolean needRefreshStatus;
 
@@ -53,14 +51,14 @@ public class User {
 
     }
 
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
+    //Getters and Setters
+//    public String getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(String endTime) {
+//        this.endTime = endTime;
+//    }
 
     public boolean isNeedRefreshStatus() {
         return needRefreshStatus;
@@ -155,6 +153,18 @@ public class User {
         return contactList;
     }
 
+    public List<String> getCheckPhoneNumberList() {
+        return checkPhoneNumberList;
+    }
+
+
+    public int getiAmLiveSeconds() {
+        return iAmLiveSeconds;
+    }
+
+    public void setiAmLiveSeconds(int iAmLiveSeconds) {
+        this.iAmLiveSeconds = iAmLiveSeconds;
+    }
 
     //methods
     public void loadContactsToList(Context context) {
@@ -173,8 +183,6 @@ public class User {
 
         Cursor phones = context.getContentResolver().
                 query(uri, projection, null, null, sortOrder);
-
-        List<Contact> oldContactList = new ArrayList<>(contactList);
 
         contactList.clear();
 
@@ -206,110 +214,49 @@ public class User {
         }
         phones.close();
 
-        if (context instanceof MainActivity){
-            Log.i(TAG, "instanceof");
-
-            if (oldContactList.size() != contactList.size()){
-                for (Contact newContact : contactList){
-                    boolean match = false;
-                    for (Contact oldContact : oldContactList){
-                        if (newContact.getPhoneNumber().contentEquals(oldContact.getPhoneNumber())){
-                            match = true;
-                            break;
-                        }
-                    }
-
-                    if (!match){
-                    //    Log.i(TAG, "not match " + newContact.getName());
-                        new SendMessageTask(null, getAddContactsParams(newContact.getPhoneNumber()));
-                        break;
-                    }
-                }
-            }
+        Log.i(TAG, "contactList.size() " + contactList.size());
+        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(context));
 
 
-            //for case if connection on server not working to show new added contact in list
-            Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
-            context.sendBroadcast(returnIntent);
+//        if (Prefs.getLastContactCount(context) < contactList.size()){
+//            Prefs.setLastContactCount(context, contactList.size());
+//
+//            new SendMessageTask(null, getAddContactsParams()).execute();
+//
+//            if (context instanceof MainActivity){
+//
+//                //for case if connection on server not working to show new added contact in list
+//                Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
+//                context.sendBroadcast(returnIntent);
+//
+//                ((MainActivity)context).refreshStatuses();
+//                ((MainActivity)context).refreshCheckPhoneNumbers();
+//            }
+//        }
 
-            ((MainActivity)context).refreshStatuses();
-            ((MainActivity)context).refreshCheckPhoneNumbers();
-        }
+//        if (context instanceof MainActivity){
+//            Log.i(TAG, "instanceof");
+//
+//            if (oldContactList.size() != contactList.size()){
+//                for (Contact newContact : contactList){
+//                    boolean match = false;
+//                    for (Contact oldContact : oldContactList){
+//                        if (newContact.getPhoneNumber().contentEquals(oldContact.getPhoneNumber())){
+//                            match = true;
+//                            break;
+//                        }
+//                    }
+//
+//                    if (!match){
+//                    //    Log.i(TAG, "not match " + newContact.getName());
+//                        new SendMessageTask(null, getAddContactsParams(newContact.getPhoneNumber()));
+//                        break;
+//                    }
+//                }
+//            }
+//
+//        }
 
-    }
-
-    private SoapObject getAddContactsParams(String number) {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("ContactsPhoneNumber");
-        pi.setValue(number);
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-
-        pi = new PropertyInfo();
-        pi.setName("Name");
-        pi.setValue(number);
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Noter");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Number");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("URL");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Adress");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Birthsday");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("pDate");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Favorites");
-        pi.setValue(false);
-        pi.setType(Boolean.class);
-        request.addProperty(pi);
-
-        return request;
     }
 
 
@@ -341,33 +288,25 @@ public class User {
         return null;
     }
 
-    public int getStatusColor(){
 
-        if (status==null){
-            return R.drawable.green_circle;
-        }
+//    public int getStatusColor(){
+//
+//        if (status==null){
+//            return R.drawable.green_circle;
+//        }
+//
+//        switch (status){
+//            case RED_STATUS:
+//                return R.drawable.red_circle;
+//            case GREEN_STATUS:
+//                return R.drawable.green_circle;
+//            case YELLOW_STATUS:
+//                return R.drawable.yellow_circle;
+//        }
+//
+//        return R.drawable.green_circle;
+//    }
 
-        switch (status){
-            case RED_STATUS:
-                return R.drawable.red_circle;
-            case GREEN_STATUS:
-                return R.drawable.green_circle;
-            case YELLOW_STATUS:
-                return R.drawable.yellow_circle;
-        }
 
-        return R.drawable.green_circle;
-    }
 
-    public List<String> getCheckPhoneNumberList() {
-        return checkPhoneNumberList;
-    }
-
-    public int getiAmLiveSeconds() {
-        return iAmLiveSeconds;
-    }
-
-    public void setiAmLiveSeconds(int iAmLiveSeconds) {
-        this.iAmLiveSeconds = iAmLiveSeconds;
-    }
 }

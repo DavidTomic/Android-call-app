@@ -1,6 +1,8 @@
 package test.myprojects.com.callproject.task;
 
+import android.app.Activity;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
@@ -27,6 +29,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String SET_DEFAULT_TEXT = "SetDefaultText";
     public static final String GET_DEFAULT_TEXT = "GetDefaultText";
     public static final String ADD_CONTACT = "AddContacts";
+    public static final String ADD_MULTI_CONTACT = "AddMultiContacts";
     public static final String DELETE_CONTACT = "DeleteContact";
     public static final String GET_CONTACT = "GetContact";
     public static final String LOG_IN = "Login";
@@ -99,8 +102,16 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         }
 
 
-        if (messageInterface != null)
+        if (messageInterface != null){
+            if ((messageInterface instanceof Fragment) && !((Fragment) messageInterface).isAdded()){
+                return;
+            }else if ((messageInterface instanceof Activity) && ((Activity) messageInterface).isFinishing()){
+                return;
+            }
+
             messageInterface.responseToSendMessage(result, request.getName());
+        }
+
 
     }
 }

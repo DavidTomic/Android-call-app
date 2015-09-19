@@ -41,19 +41,12 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
     private TextView textView;
 
     private int currentPosition;
-    private boolean cameFromCreateAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contacts);
 
-
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            cameFromCreateAccount = bundle.getBoolean("cameFromCreateAccount", false);
-        }
 
         bDone = (Button) findViewById(R.id.bDone);
         progressBar = (ProgressBar) findViewById(R.id.pbProgressBar);
@@ -62,11 +55,6 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
         bDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (cameFromCreateAccount) {
-                    startActivity(new Intent(AddContactsActivity.this, MainActivity.class));
-                }
-
                 finish();
             }
         });
@@ -325,14 +313,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
                     SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
 
                     if (phoneNumbersSoapObject.getPropertyCount()==0){
-                        if (cameFromCreateAccount) {
-                            startActivity(new Intent(AddContactsActivity.this, MainActivity.class));
-                            Toast.makeText(AddContactsActivity.this,
-                                    getString(R.string.no_contact_using_app), Toast.LENGTH_SHORT).show();
-                        }else {
-                            textView.setVisibility(View.VISIBLE);
-                        }
-
+                        textView.setVisibility(View.VISIBLE);
                         return;
                     }
 
@@ -362,10 +343,7 @@ public class AddContactsActivity extends ListActivity implements MessageInterfac
 
                     ((ArrayAdapter) listview.getAdapter()).notifyDataSetChanged();
 
-                    if (!cameFromCreateAccount){
-                        new SendMessageTask(this, getGetContactParams()).execute();
-                    }
-
+                    new SendMessageTask(this, getGetContactParams()).execute();
 
                 } else {
                     showErrorTryAgain();

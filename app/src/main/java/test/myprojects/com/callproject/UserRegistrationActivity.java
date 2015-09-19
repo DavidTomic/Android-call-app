@@ -21,6 +21,7 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +29,7 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.task.SendMessageTask;
@@ -35,6 +37,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class UserRegistrationActivity extends Activity implements MessageInterface {
 
     private static final String TAG = "UserRegistration";
+    private Language language;
 
     @Bind(R.id.bSignLog)
     Button bTitle;
@@ -77,7 +80,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         } else {
 
             if (!(etPhoneNumber.getText().toString().length() > 5 && etPassword.getText()
-                    .toString().length() > 3 && etName.getText().toString().length() > 3
+                    .toString().length() > 3 && etName.getText().toString().length() > 1
                     && etEmail.getText().toString().length() > 5)) {
                 showErrorCheckData();
                 return;
@@ -193,9 +196,19 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         pi.setType(String.class);
         request.addProperty(pi);
 
+        String countryCode = Locale.getDefault().getCountry();
+
+        if (countryCode.contains("en")){
+            language = Language.ENGLISH;
+        }else if (countryCode.contentEquals("da") || countryCode.contentEquals("en")){
+            language = Language.DANISH;
+        }else {
+            language = Language.DEFAULT;
+        }
+
         pi = new PropertyInfo();
         pi.setName("Language");
-        pi.setValue(1);
+        pi.setValue(language.getValue());
         pi.setType(Integer.class);
         request.addProperty(pi);
 
@@ -220,76 +233,94 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         return request;
     }
 
-//    private SoapObject getCheckPhoneParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
-//
-//        List<Contact> cList = User.getInstance(this).getContactList();
-//
-//        for (Contact contact : cList) {
-//            PropertyInfo piPhoneNumber = new PropertyInfo();
-//            piPhoneNumber.setName("string");
-//            piPhoneNumber.setValue(contact.getPhoneNumber());
-//            piPhoneNumber.setType(String.class);
-//            phoneNumbersSoapObject.addProperty(piPhoneNumber);
-//        }
-//
-//        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
-//
-//        return request;
-//    }
+    private SoapObject getAddMultiContactsParams() {
 
-//    private SoapObject getUpdateStatusParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
-//
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Status");
-//        pi.setValue(User.getInstance(this).getStatus().getValue());
-//        pi.setType(Integer.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("EndTime");
-//        pi.setValue("2000-01-01T00:00:00");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Text");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        return request;
-//    }
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_MULTI_CONTACT);
+
+        PropertyInfo pi1 = new PropertyInfo();
+        pi1.setName("Phonenumber");
+        pi1.setValue(etPhoneNumber.getText().toString());
+        pi1.setType(String.class);
+        request.addProperty(pi1);
+
+        pi1 = new PropertyInfo();
+        pi1.setName("password");
+        pi1.setValue(etPassword.getText().toString());
+        pi1.setType(String.class);
+        request.addProperty(pi1);
+
+        SoapObject contactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "Contacts");
+
+        List<Contact> cList = User.getInstance(this).getContactList();
+
+
+        for (Contact contact : cList) {
+
+            SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
+
+            PropertyInfo pi = new PropertyInfo();
+            pi.setName("Phonenumber");
+            pi.setValue(contact.getPhoneNumber());
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+
+            pi = new PropertyInfo();
+            pi.setName("Name");
+            pi.setValue(contact.getName());
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Noter");
+            pi.setValue("");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Number");
+            pi.setValue("");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("URL");
+            pi.setValue("");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Adress");
+            pi.setValue("");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Birthsday");
+            pi.setValue("2000-01-01T00:00:00");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("pDate");
+            pi.setValue("2000-01-01T00:00:00");
+            pi.setType(String.class);
+            csContactsSoapObject.addProperty(pi);
+
+            pi = new PropertyInfo();
+            pi.setName("Favorites");
+            pi.setValue(contact.isFavorit());
+            pi.setType(Boolean.class);
+            csContactsSoapObject.addProperty(pi);
+
+            contactsSoapObject.addProperty("csContacts", csContactsSoapObject);
+        }
+
+        request.addProperty("Contacts", contactsSoapObject);
+
+        return request;
+
+    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
@@ -327,7 +358,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setPassword(etPassword.getText().toString());
                     user.setName(accountSetupSoapObject.getProperty("Name").toString());
                     user.setEmail(accountSetupSoapObject.getProperty("Email").toString());
-                    user.setLanguage(Language.ENGLISH);
+                    user.setLanguage(Language.values()[Integer.valueOf(accountSetupSoapObject.getProperty("Language").toString())]);
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
@@ -354,20 +385,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                 if (resultStatus == 2) {
 
-                    User user = User.getInstance(this);
-                    user.setPhoneNumber(etPhoneNumber.getText().toString());
-                    user.setPassword(etPassword.getText().toString());
-                    user.setName(etName.getText().toString());
-                    user.setEmail(etEmail.getText().toString());
-                    user.setLanguage(Language.ENGLISH);
-                    user.setLogedIn(true);
-
-                    Prefs.setUserData(this, User.getInstance(this));
-
-                    Intent intent = new Intent(this, AddContactsActivity.class);
-                    intent.putExtra("cameFromCreateAccount", true);
-                    startActivity(intent);
-                    finish();
+                    new SendMessageTask(this, getAddMultiContactsParams()).execute();
 
                 } else if (resultStatus == 0) {
                     Toast.makeText(this, getString(R.string.user_already_exists),
@@ -383,37 +401,37 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 showErrorTryAgain();
             }
 
-        }
+        }else if (methodName.contentEquals(SendMessageTask.ADD_MULTI_CONTACT)) {
+            try {
 
-//        else if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
-//            try {
-//
-//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-//
-//                if (resultStatus == 2) {
-//
-//                    Prefs.setUserData(this, User.getInstance(this));
-//
-//
-//                    if (isLogIn){
-//                        startActivity(new Intent(this, MainActivity.class));
-//                        finish();
-//                    }else {
-//                        startActivity(new Intent(this, AddContactsActivity.class));
-//                        finish();
-//                    }
-//
-//                } else {
-//                    User.empty();
-//                    showErrorCheckData();
-//                }
-//
-//
-//            } catch (NullPointerException ne) {
-//                ne.printStackTrace();
-//                User.empty();
-//                showErrorTryAgain();
-//            }
-//        }
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+                    User user = User.getInstance(this);
+                    user.setPhoneNumber(etPhoneNumber.getText().toString());
+                    user.setPassword(etPassword.getText().toString());
+                    user.setName(etName.getText().toString());
+                    user.setEmail(etEmail.getText().toString());
+                    user.setLanguage(language);
+                    user.setLogedIn(true);
+
+                    Prefs.setUserData(this, User.getInstance(this));
+                    Prefs.setLastContactCount(this, user.getContactList().size());
+
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    showErrorTryAgain();
+                }
+
+
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+                showErrorTryAgain();
+            }
+        }
     }
 }

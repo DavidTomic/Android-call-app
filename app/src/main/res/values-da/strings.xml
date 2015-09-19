@@ -1,0 +1,82 @@
+<resources>
+
+    //string for translation 
+    <string name="action_settings">Indstillinger</string> 
+    <string name="sign_up">TILMELD DIG</string>
+     <string name="log_in">LOG IND</string> 
+    <string name="sign_up_log_in">Tilmeld dig/Log Ind</string> 
+    <string name="phone_number">Telefon nummer</string>
+     <string name="password">Adgangskode</string> 
+    <string name="name">Navn</string> 
+    <string name="email">Email</string> 
+    <string name="fill_all_data">Kontroller venligst dine informationer</string>
+
+      <string name="favorites">Favoritter</string>
+     <string name="recents">Seneste</string> 
+    <string name="all_contacts">Kontakter</string>
+     <string name="keypad">Tastatur</string> 
+    <string name="settings">Indstillinger</string>
+     <string name="delete">Slet</string> 
+    <string name="dial">Ring op</string> 
+    <string name="user_already_exists">Nummeret eksisterer allerede</string>
+     <string name="set_status">Sæt status</string>
+     <string name="confirm">BEKRÆFT</string> 
+    <string name="status_updated">Status opdateret</string> 
+    <string name="status_not_updated">Status ikke opdateret</string>
+
+       <string name="please_try_again">Fejl, prøv venligst igen</string> 
+    <string name="status_update_error"> Status ikke opdateret </string> 
+    <string name="contacts">Kontakter</string>
+     <string name="edit">Rediger</string> <string name="done">Færdig</string> 
+    <string name="set_language">Vælg sprog</string> 
+    <string name="default_text">Standard tekst</string> 
+    <string name="title_activity_settings_detail">SettingsDetailActivity</string> 
+    <string name="save">Gem</string> <string name="english">Engelsk</string>
+     <string name="danish">Dansk</string>
+
+       <string name="select_language">Vælg sprog</string>
+     <string name="enter_correct_data">Indtast korrekt information</string>
+     <string name="data_updated">Informationerne er opdateret</string> 
+    <string name="add">Tilføj</string> <string name="add_new_text">Tilføj ny tekst</string> 
+    <string name="edit_text">Rediger tekst</string> 
+    <string name="add_contacts">Tilføj kontakt</string>
+     <string name="contact_added">Kontakt tilføjet</string>
+     <string name="contact_deleted">Kontakt slettet</string> 
+    <string name="my_number">Mit nummer</string>   
+
+    <string name="add_some_default_text">Gå venligst til indstillinger for at tilføje standard tekster </string>
+     <string name="invite">Inviter</string>
+     <string name="add_contact">Tilføj kontakt</string> 
+    <string name="set_notification">Sæt notifikation</string> 
+    <string name="invite_user_text">Hej se denne app jeg burger den hver dag, When2Call</string>
+     <string name="no_contact_using_app">Du har ingen kontakter endnu, gå til kontakt siden for at tilføje dem</string>
+     <string name="on_phone">OPTAGET</string> <string name="search">Søg</string> 
+    <string name="please_enable_internet">Tænd venligst internettet for at andres status</string> 
+    <string name="notification_already_added">Notifikation tilføjet</string> 
+    <string name="changed_status_to">Status ændret til:</string> 
+    <string name="user_changed_statuses">Brugere har ændret status </string>   
+
+    <string name="busy">Optaget</string>
+     <string name="online">online</string> 
+    <string name="not_available">Ikke tilgængelig</string> 
+    <string name="speaking">Optaget</string> 
+    <string name="edit_notifications">Rediger notifikationer</string>
+     <string name="all">Alle</string> 
+    <string name="unanswer">Ubesvaret</string> <string name="set">Sæt</string>
+     <string name="phone">Telefon</string>
+     <string name="select">Vælg</string> 
+    <string name="send_message">Send besked</string> 
+    <string name="i_am_online_for">Jeg er ikke tilgængelig imellem:</string>
+    <string name="set_time">Sæt timer</string>
+
+
+    //strings for translation from 17.09.2015
+    <string name="i_am_online_at">I\'m online at</string>
+    <string name="i_am_busy_from">I\'m busy from:</string>
+    <string name="now">Now</string>
+    <string name="i_am_away_from">I\'m away from:</string>
+    <string name="voice_mail">Voicemail</string>
+    <string name="voice_mail_number">Voicemail number:</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+</resources>

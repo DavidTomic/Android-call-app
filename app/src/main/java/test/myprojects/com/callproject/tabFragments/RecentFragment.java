@@ -41,6 +41,7 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
@@ -113,7 +114,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
     @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
 
-    @OnClick(R.id.bStatusRed)
+    @OnClick(R.id.llRedStatus)
     public void bStatusRedClicked(){
 
         Log.i(TAG, "clicked red");
@@ -125,7 +126,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
         currentStatus = 0;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
-    @OnClick(R.id.bStatusYellow)
+    @OnClick(R.id.llYellowStatus)
     public void bStatusYellowClicked(){
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(true);
@@ -134,7 +135,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
         currentStatus = 2;
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
-    @OnClick(R.id.bStatusGreen)
+    @OnClick(R.id.llGreenStatus)
     public void bStatusGreenClicked(){
         bStatusRed.setSelected(false);
         bStatusYellow.setSelected(false);
@@ -144,6 +145,12 @@ public class RecentFragment extends Fragment implements MessageInterface {
         new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
     }
 
+
+
+    @OnClick(R.id.llSettings)
+    public void settingsClicked(){
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
+    }
 
     private RecentAdapter recentAdapter;
 
@@ -295,7 +302,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
             }
 
 
-            String date = new java.text.SimpleDateFormat("dd-MM-yyyy").format
+            String date = new java.text.SimpleDateFormat("dd-MM HH:mm").format
                     (new java.util.Date(contact.getDate()));
 
             holder.date.setText(date);
@@ -573,14 +580,13 @@ public class RecentFragment extends Fragment implements MessageInterface {
 
         pi = new PropertyInfo();
         pi.setName("EndTime");
+        pi.setValue("2000-01-01T00:00:00");
+        pi.setType(String.class);
+        request.addProperty(pi);
 
-        String endTime = User.getInstance(getActivity()).getEndTime();
-
-        if (endTime ==null || endTime.length() == 0){
-            endTime = "2000-01-01T00:00:00";
-        }
-
-        pi.setValue(endTime);
+        pi = new PropertyInfo();
+        pi.setName("StartTime");
+        pi.setValue("2000-01-01T00:00:00");
         pi.setType(String.class);
         request.addProperty(pi);
 

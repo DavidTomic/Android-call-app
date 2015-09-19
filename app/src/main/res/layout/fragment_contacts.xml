@@ -12,10 +12,39 @@
         android:layout_height="50dp"
         android:background="@color/tab_bar_background">
 
+
+        <LinearLayout
+            android:id="@+id/llSettings"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@color/blue_default" />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/blue_default" />
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/blue_default" />
+
+        </LinearLayout>
+
+
         <ImageButton
             android:id="@+id/ibAddContact"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_alignParentRight="true"
             android:background="@null"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -30,26 +59,6 @@
             android:text="@string/all_contacts"
             android:textColor="@color/black"
             android:textSize="18sp" />
-
-        <ImageButton
-            android:id="@+id/ibRefresh"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:background="@null"
-            android:padding="15dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/refresh_icon" />
-
-        <ProgressBar
-            android:id="@+id/pbProgressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:indeterminate="true"
-            android:padding="10dp"
-            android:visibility="gone" />
 
 
     </RelativeLayout>
@@ -68,49 +77,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:background="@color/tab_bar_background"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="10dp">
+        android:weightSum="3">
 
-        <TextView
-            android:id="@+id/tvPhoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ph_my_number" />
 
         <LinearLayout
-            android:id="@+id/vStatus"
-            android:layout_width="wrap_content"
+            android:id="@+id/llRedStatus"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp">
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusRed"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_red_selector" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/llYellowStatus"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusYellow"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_yellow_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llGreenStatus"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/bStatusGreen"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="9dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/status_green_selector" />
-
         </LinearLayout>
-
-
     </LinearLayout>
 
 
