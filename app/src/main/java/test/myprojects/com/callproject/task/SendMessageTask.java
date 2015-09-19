@@ -24,6 +24,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String GET_ACCOUNT_SETUP = "GetAccountSetup";
     public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
     public static final String UPDATE_STATUS = "UpdateStatus";
+    public static final String UPDATE_STATUS_WITH_TIMESTAMP = "UpdateStatusWidthTimestamp";
     public static final String REQUEST_STATUS_INFO = "RequestStatusInfo";
     public static final String UPDATE_ACCOUNT = "UpdateAccount";
     public static final String SET_DEFAULT_TEXT = "SetDefaultText";

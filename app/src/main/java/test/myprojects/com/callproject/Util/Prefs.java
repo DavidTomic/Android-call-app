@@ -24,8 +24,11 @@ public class Prefs {
     private static final String PREFS_USER_LANGUAGE = "user_language_v2";
     private static final String PREFS_USER_STATUS_TEXT = "user_status_text";
     private static final String PREFS_USER_STATUS = "user_status";
+    private static final String PREFS_USER_SMS_INVITE_TEXT = "user_sms_invite_text";
     private static final String PREFS_USER_LOGED_IN = "user_loged_in";
     private static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
+    private static final String PREFS_USER_STATUS_START_TIME = "status_start_time";
+    private static final String PREFS_USER_STATUS_END_TIME = "status_end_time";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
     public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
@@ -44,9 +47,12 @@ public class Prefs {
         editor.putString(PREFS_USER_PASSWORD, user.getPassword());
         editor.putInt(PREFS_USER_LANGUAGE, user.getLanguage().getValue());
         editor.putString(PREFS_USER_STATUS_TEXT, user.getStatusText());
+        editor.putString(PREFS_USER_SMS_INVITE_TEXT, user.getSmsInviteText());
         editor.putInt(PREFS_USER_STATUS, user.getStatus().getValue());
         editor.putBoolean(PREFS_USER_LOGED_IN, user.isLogedIn());
         editor.putInt(PREFS_I_AM_LIVE_SECONS, user.getiAmLiveSeconds());
+        editor.putString(PREFS_USER_STATUS_START_TIME, user.getStatusStartTime());
+        editor.putString(PREFS_USER_STATUS_END_TIME, user.getStatusEndTime());
         editor.commit();
     }
     public static void loadUserData(Context context) {
@@ -60,9 +66,12 @@ public class Prefs {
         user.setPassword(prefs.getString(PREFS_USER_PASSWORD, ""));
         user.setLanguage(Language.values()[prefs.getInt(PREFS_USER_LANGUAGE, 1)]);
         user.setStatusText(prefs.getString(PREFS_USER_STATUS_TEXT, ""));
+        user.setSmsInviteText(prefs.getString(PREFS_USER_SMS_INVITE_TEXT, ""));
         user.setStatus(Status.values()[prefs.getInt(PREFS_USER_STATUS, 1)]);
         user.setLogedIn(prefs.getBoolean(PREFS_USER_LOGED_IN, false));
         user.setiAmLiveSeconds(prefs.getInt(PREFS_I_AM_LIVE_SECONS, 240));
+        user.setStatusStartTime(prefs.getString(PREFS_USER_STATUS_START_TIME, "2000-01-01T00:00:00"));
+        user.setStatusEndTime(prefs.getString(PREFS_USER_STATUS_END_TIME, "2000-01-01T00:00:00"));
     }
 
 
@@ -173,6 +182,10 @@ public class Prefs {
         editor.putString(PREFS_USER_STATUS_TEXT, "");
         editor.putInt(PREFS_USER_STATUS, 1);
         editor.putBoolean(PREFS_USER_LOGED_IN, false);
+
+        editor.putString(PREFS_USER_SMS_INVITE_TEXT, "");
+        editor.putString(PREFS_USER_STATUS_START_TIME, "");
+        editor.putString(PREFS_USER_STATUS_END_TIME, "");
 
         editor.putLong(PREFS_LAST_CALL_TIME, 0);
 

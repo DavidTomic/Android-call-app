@@ -147,9 +147,28 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     User.getInstance(this).setStatus(currentStatus);
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
 
-                    String endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                            (new java.util.Date(selectedEndTime));
-                 //   User.getInstance(this).setEndTime(endTime);
+
+                    String startTime;
+                    if (selectedStartTime - System.currentTimeMillis() <= 0) {
+                        startTime = "2000-01-01T00:00:00";
+
+                    } else {
+                        startTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
+                                (new java.util.Date(selectedEndTime));
+                    }
+
+                    User.getInstance(this).setStatusStartTime(startTime);
+
+                    String endTime;
+                    if (selectedEndTime - System.currentTimeMillis() <= 0) {
+                        endTime = "2000-01-01T00:00:00";
+
+                    } else {
+                        endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
+                                (new java.util.Date(selectedEndTime));
+                    }
+                    User.getInstance(this).setStatusEndTime(endTime);
+
                     Prefs.setUserData(this, User.getInstance(this));
 
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
@@ -280,7 +299,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     private SoapObject getUpdateStatusParams() {
 
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS_WITH_TIMESTAMP);
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");

@@ -203,7 +203,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         }else if (countryCode.contentEquals("da") || countryCode.contentEquals("en")){
             language = Language.DANISH;
         }else {
-            language = Language.DEFAULT;
+            language = Language.ENGLISH;
         }
 
         pi = new PropertyInfo();

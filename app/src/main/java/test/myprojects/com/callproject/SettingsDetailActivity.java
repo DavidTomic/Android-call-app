@@ -170,6 +170,9 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
 
         Prefs.setLanguageCountryCode(this, lang);
 
+        User.getInstance(this).setLanguage(newLanguage);
+        Prefs.setUserData(this, User.getInstance(this));
+
         Locale myLocale = new Locale(lang);
         Locale.setDefault(myLocale);
         Resources res = getResources();
@@ -186,7 +189,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
         if (result == null) {
-            User.empty();
             showErrorTryAgain();
             return;
         }
@@ -205,13 +207,12 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
                     User.getInstance(this).setName(newName);
                 else if (CURRENT_EDITING == EDIT_EMAIL)
                     User.getInstance(this).setEmail(newEmail);
-                else if (CURRENT_EDITING == EDIT_LANGUAGE)
-                    User.getInstance(this).setLanguage(newLanguage);
 
                 rlProgress.setVisibility(View.GONE);
-            //    Toast.makeText(this, getString(R.string.data_updated), Toast.LENGTH_SHORT).show();
                 Prefs.setUserData(this, User.getInstance(this));
-                finish();
+
+                if (CURRENT_EDITING != EDIT_LANGUAGE)
+                    finish();
 
             } else {
                 showErrorTryAgain();

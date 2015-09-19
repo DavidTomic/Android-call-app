@@ -69,9 +69,15 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
         if (text.contentEquals(getString(R.string.invite))){
 
+            String smsText = User.getInstance(this).getSmsInviteText();
+
+            if (smsText == null || smsText.length() == 0){
+                smsText = getString(R.string.invite_user_text);
+            }
+
             Uri uri = Uri.parse("smsto:" + contact.getPhoneNumber());
             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-            it.putExtra("sms_body", getString(R.string.invite_user_text));
+            it.putExtra("sms_body", smsText);
             startActivity(it);
 
 

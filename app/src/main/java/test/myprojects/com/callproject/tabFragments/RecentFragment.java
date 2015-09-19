@@ -579,18 +579,6 @@ public class RecentFragment extends Fragment implements MessageInterface {
         request.addProperty(pi);
 
         pi = new PropertyInfo();
-        pi.setName("EndTime");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("StartTime");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
         pi.setName("Text");
         pi.setValue(User.getInstance(getActivity()).getStatusText());
         pi.setType(String.class);

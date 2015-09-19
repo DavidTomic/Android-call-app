@@ -262,6 +262,36 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     }
                     user.setStatusText(statusText);
 
+                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
+                    if (statusStartTime.contentEquals("anyType{}")){
+                        statusStartTime = "2000-01-01T00:00:00";
+                    }
+                    user.setStatusStartTime(statusStartTime);
+
+                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
+                    if (statusEndTime.contentEquals("anyType{}")){
+                        statusEndTime = "2000-01-01T00:00:00";
+                    }
+                    user.setStatusEndTime(statusEndTime);
+
+                    Log.i(TAG, "lang user " + user.getLanguage().getValue());
+
+                    SoapObject inviteSMSSoapObject = (SoapObject) result.getProperty("InviteSMS");
+                    for (int i = 0; i < inviteSMSSoapObject.getPropertyCount(); i++) {
+                        SoapObject csInviteSMSSoapObject = (SoapObject) inviteSMSSoapObject.getProperty(i);
+
+                        int lang = Integer.parseInt(csInviteSMSSoapObject.getProperty("Language").toString());
+
+                        Log.i(TAG, "lang login " + lang);
+
+                        if (lang == user.getLanguage().getValue()){
+                            user.setSmsInviteText(csInviteSMSSoapObject.getProperty("SMSText").toString());
+                            break;
+                        }
+
+                    }
+
+
                     Prefs.setUserData(this, user);
 
                 }

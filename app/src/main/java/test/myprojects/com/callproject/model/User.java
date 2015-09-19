@@ -37,10 +37,12 @@ public class User {
     private Status status;
     private String statusText;
 
+    private String smsInviteText;
+
+    private String statusStartTime;
+    private String statusEndTime;
+
     private int iAmLiveSeconds;
-
-
-  //  private String endTime;
 
     private List<Contact> contactList = new ArrayList<>();
     private List<String> checkPhoneNumberList = new ArrayList<>();
@@ -52,13 +54,30 @@ public class User {
     }
 
     //Getters and Setters
-//    public String getEndTime() {
-//        return endTime;
-//    }
-//
-//    public void setEndTime(String endTime) {
-//        this.endTime = endTime;
-//    }
+
+    public String getStatusEndTime() {
+        return statusEndTime;
+    }
+
+    public void setStatusEndTime(String statusEndTime) {
+        this.statusEndTime = statusEndTime;
+    }
+
+    public String getStatusStartTime() {
+        return statusStartTime;
+    }
+
+    public void setStatusStartTime(String statusStartTime) {
+        this.statusStartTime = statusStartTime;
+    }
+
+    public String getSmsInviteText() {
+        return smsInviteText;
+    }
+
+    public void setSmsInviteText(String smsInviteText) {
+        this.smsInviteText = smsInviteText;
+    }
 
     public boolean isNeedRefreshStatus() {
         return needRefreshStatus;

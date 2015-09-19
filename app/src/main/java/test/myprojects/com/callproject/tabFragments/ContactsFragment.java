@@ -153,11 +153,12 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
             IndexView indexView = (IndexView) rootView.findViewById(R.id.indexView);
 
-            createListAdapter(0);
 
             View header = getActivity().getLayoutInflater().inflate(R.layout.contact_custom_header, null);
             tvPhoneNumber = (TextView) header.findViewById(R.id.tvPhoneNumber);
             stlist.getRefreshableView().addHeaderView(header);
+
+            createListAdapter(0);
 
             /** indexable listview */
             indexView.init(stlist);
@@ -304,7 +305,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             contactList = new ArrayList<>(User.getInstance(context).getContactList());
         }
 
-        public void refreshOnContactCountChange(){
+        private void refreshOnContactCountChange(){
             inputSearch.setText("");
             inputSearch.clearFocus();
             inputSearch.setGravity(Gravity.CENTER);
@@ -422,8 +423,13 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
-                    contactList = (List<Contact>) results.values;
-                    adapter.notifyDataSetChanged();
+
+                    if(results.values != null)
+                    {
+                        contactList = (List<Contact>) results.values;
+                        adapter.notifyDataSetChanged();
+                    }
+
                 }
             };
         }
@@ -524,9 +530,15 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
                         if (text.contentEquals(getString(R.string.invite))) {
 
+                            String smsText = User.getInstance(getActivity()).getSmsInviteText();
+
+                            if (smsText == null || smsText.length() == 0){
+                                smsText = getString(R.string.invite_user_text);
+                            }
+
                             Uri uri = Uri.parse("smsto:" + contactList.get(0).getPhoneNumber());
                             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                            it.putExtra("sms_body", getString(R.string.invite_user_text));
+                            it.putExtra("sms_body", smsText);
                             startActivity(it);
 
 
@@ -678,18 +690,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
         pi.setName("Status");
         pi.setValue(status);
         pi.setType(Integer.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("EndTime");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("StartTime");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
         request.addProperty(pi);
 
         pi = new PropertyInfo();

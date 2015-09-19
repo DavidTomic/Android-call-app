@@ -101,16 +101,16 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             Prefs.setLastContactCount(mainActivity, contactList.size());
 
             List<Contact> originalList = User.getInstance(mainActivity).getContactList();
-            Log.i(TAG, "originalListBid " + java.lang.System.identityHashCode(originalList));
+        //    Log.i(TAG, "originalListBid " + java.lang.System.identityHashCode(originalList));
             originalList.clear();
-            Log.i(TAG, "originalListAid " + java.lang.System.identityHashCode(originalList));
+         //   Log.i(TAG, "originalListAid " + java.lang.System.identityHashCode(originalList));
 
             for (Contact c : contactList) {
                 originalList.add(c);
             }
 
-            Log.i(TAG, "originalList size " + originalList.size());
-            Log.i(TAG, "originalListid " + java.lang.System.identityHashCode(originalList));
+       //     Log.i(TAG, "originalList size " + originalList.size());
+       //     Log.i(TAG, "originalListid " + java.lang.System.identityHashCode(originalList));
 
 
             //for case if connection on server not working to show new added contact in list
@@ -144,24 +144,16 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
         List<Contact> cList = User.getInstance(mainActivity).getContactList();
 
+//        int i = 0;
         for (Contact contact : cList) {
+//            if (++i == 3){
+//                break;
+//            }
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
             PropertyInfo pi = new PropertyInfo();
             pi.setName("Phonenumber");
-            pi.setValue(User.getInstance(mainActivity).getPhoneNumber());
-            pi.setType(String.class);
-            csContactsSoapObject.addProperty(pi);
-
-            pi = new PropertyInfo();
-            pi.setName("password");
-            pi.setValue(User.getInstance(mainActivity).getPassword());
-            pi.setType(String.class);
-            csContactsSoapObject.addProperty(pi);
-
-            pi = new PropertyInfo();
-            pi.setName("ContactsPhoneNumber");
             pi.setValue(contact.getPhoneNumber());
             pi.setType(String.class);
             csContactsSoapObject.addProperty(pi);
@@ -229,6 +221,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     public void responseToSendMessage(SoapObject result, String methodName) {
 
         if (result == null) {
+            Prefs.setLastContactCount(mainActivity, 0);
             return;
         }
 
@@ -244,6 +237,8 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
                 mainActivity.refreshStatuses();
                 mainActivity.refreshCheckPhoneNumbers();
 
+            }else {
+                Prefs.setLastContactCount(mainActivity, 0);
             }
         } catch (Exception e) {
             e.printStackTrace();
