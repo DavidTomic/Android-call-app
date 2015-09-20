@@ -100,7 +100,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
      //   addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
 
-        addTab("Answermachine", R.drawable.answer_machine_icon, AnswerMachineFragment.class);
+        addTab(getString(R.string.voice_mail), R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
     private void addTab(String labelId, int drawableId, Class<?> c) {

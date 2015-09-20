@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -41,7 +42,7 @@ public class KeypadFragment extends Fragment implements View.OnClickListener,
     private Button mStarButton;
     private Button mPoundButton;
     private ImageView mDialButton;
-    private Button mDeleteButton;
+    private ImageButton mDeleteButton;
 
 
     public KeypadFragment() {
@@ -71,7 +72,7 @@ public class KeypadFragment extends Fragment implements View.OnClickListener,
         mStarButton = (Button) v.findViewById(R.id.asterisk);
         mPoundButton = (Button) v.findViewById(R.id.hash);
         mDialButton = (ImageView) v.findViewById(R.id.dialButton);
-        mDeleteButton = (Button) v.findViewById(R.id.deleteButton);
+        mDeleteButton = (ImageButton) v.findViewById(R.id.deleteButton);
     }
 
     private void addNumberFormatting() {

@@ -33,15 +33,16 @@
                 android:textColor="@color/gray_button"
                 android:textSize="33sp"></EditText>
 
-            <Button
+            <ImageButton
                 android:id="@+id/deleteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_weight="0"
-                android:background="@null"
-                android:text="@string/backspace"
+                android:scaleType="fitCenter"
+                android:layout_marginRight="10dp"                android:background="@null"
+                android:src="@drawable/delete_icon"
                 android:textColor="@color/gray_button"
-                android:textSize="30sp"></Button>
+                android:textSize="30sp"></ImageButton>
         </LinearLayout>
 
 
