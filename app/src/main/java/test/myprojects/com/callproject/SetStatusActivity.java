@@ -42,7 +42,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     private static final String TAG = "SetStatusActivity";
 
-    private long selectedEndTime, selectedStartTime;
+    private long selectedEndTime;
+    private long selectedStartTime = System.currentTimeMillis();
     private boolean startTimeclicked;
 
     @Bind(R.id.etStatus)

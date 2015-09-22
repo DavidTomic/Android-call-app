@@ -230,9 +230,9 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
             if (resultStatus == 2) {
-
-                Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
-                mainActivity.sendBroadcast(returnIntent);
+//
+//                Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
+//                mainActivity.sendBroadcast(returnIntent);
 
                 mainActivity.refreshStatuses();
                 mainActivity.refreshCheckPhoneNumbers();

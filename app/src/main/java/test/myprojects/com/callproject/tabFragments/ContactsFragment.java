@@ -70,7 +70,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
     private PullToRefreshStickyList stlist;
     private List<Contact> contactList = new ArrayList<>();
     private StickyAdapter adapter;
-    private int currentStatus;
+    private int currentStatus = 1;
 
     private TextView tvPhoneNumber;
 

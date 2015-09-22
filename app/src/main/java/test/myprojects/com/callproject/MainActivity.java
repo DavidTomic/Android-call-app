@@ -175,7 +175,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                                 }
 
                                 c.setStatusText(statusText);
-                                c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
+                              //  c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
                                 break;
                             }
                         }
@@ -309,7 +309,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     public void refreshCheckPhoneNumbers(){
         new SendMessageTask(this, getCheckPhoneParams()).execute();
     }
-    public void checkAndUpdateAllContact(){
+    private void checkAndUpdateAllContact(){
         new CheckAndUpdateAllContactsTask(this).execute();
     }
 
@@ -425,7 +425,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
             for (Contact c : contactList){
                 c.setStatus(null);
                 c.setStatusText(null);
-                c.setEndTime(null);
             }
 
             endTime = "2000-01-01T00:00:00";

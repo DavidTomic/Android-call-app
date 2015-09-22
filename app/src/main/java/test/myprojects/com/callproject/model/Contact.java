@@ -26,7 +26,7 @@ public class Contact {
 
     private Status status;
     private String statusText;
-    private String endTime;
+   // private String endTime;
 
     //only for recents
     private ContactType contactType;
@@ -116,13 +116,13 @@ public class Contact {
         this.statusText = statusText;
     }
 
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
+//    public String getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(String endTime) {
+//        this.endTime = endTime;
+//    }
 
     public String getImage() {
         return image;
