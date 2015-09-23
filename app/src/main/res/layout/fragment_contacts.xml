@@ -75,10 +75,15 @@
         android:inputType="textVisiblePassword"
         android:paddingLeft="10dp" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/tab_bar_background" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:background="@color/tab_bar_background"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:weightSum="3">
 

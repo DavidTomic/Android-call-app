@@ -1,24 +1,17 @@
 package test.myprojects.com.callproject.model;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import test.myprojects.com.callproject.MainActivity;
-import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
-import test.myprojects.com.callproject.task.SendMessageTask;
 
 /**
  * Created by dtomic on 24/08/15.
@@ -306,26 +299,6 @@ public class User {
 
         return null;
     }
-
-
-//    public int getStatusColor(){
-//
-//        if (status==null){
-//            return R.drawable.green_circle;
-//        }
-//
-//        switch (status){
-//            case RED_STATUS:
-//                return R.drawable.red_circle;
-//            case GREEN_STATUS:
-//                return R.drawable.green_circle;
-//            case YELLOW_STATUS:
-//                return R.drawable.yellow_circle;
-//        }
-//
-//        return R.drawable.green_circle;
-//    }
-
 
 
 }

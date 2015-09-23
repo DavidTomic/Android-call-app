@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
-import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,11 +20,9 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -124,7 +121,6 @@ public class ContactsFragment extends Fragment implements MessageInterface {
 
     @OnClick(R.id.ibAddContact)
     public void addContact() {
-      //  Log.i(TAG, "here");
 
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
@@ -539,6 +535,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
                             Uri uri = Uri.parse("smsto:" + contactList.get(0).getPhoneNumber());
                             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
                             it.putExtra("sms_body", smsText);
+                            it.putExtra("exit_on_sent", true);
                             startActivity(it);
 
 
@@ -617,7 +614,7 @@ public class ContactsFragment extends Fragment implements MessageInterface {
             }
 
 
-            Log.i(TAG, "status " + contact.getStatus());
+          //  Log.i(TAG, "status " + contact.getStatus());
 
 
             List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();

@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -43,6 +44,7 @@ import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.Util.WindowSize;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
@@ -304,9 +306,7 @@ public class RecentFragment extends Fragment implements MessageInterface {
 
             String date = new java.text.SimpleDateFormat("dd-MM HH:mm").format
                     (new java.util.Date(contact.getDate()));
-
             holder.date.setText(date);
-
 
             holder.infoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -345,39 +345,65 @@ public class RecentFragment extends Fragment implements MessageInterface {
                 holder.statusText.setVisibility(View.GONE);
             }
 
-            Log.i(TAG, "status " + contact.getStatus());
+         //   Log.i(TAG, "status " + contact.getStatus());
 
             Status status = contact.getStatus();
 
-            holder.vStatus.setVisibility(View.VISIBLE);
-            holder.tvOnPhone.setVisibility(View.GONE);
+            Log.i(TAG, "getRecordId " + contact.getRecordId());
+            Log.i(TAG, "name " + name);
 
-            if (status != null) {
-                switch (status) {
-                    case RED_STATUS:
-                        holder.vStatusRed.setSelected(true);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(false);
-                        break;
-                    case YELLOW_STATUS:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(true);
-                        holder.vStatusGreen.setSelected(false);
-                        break;
-                    case GREEN_STATUS:
-                        holder.vStatusRed.setSelected(false);
-                        holder.vStatusYellow.setSelected(false);
-                        holder.vStatusGreen.setSelected(true);
-                        break;
-                    case ON_PHONE:
-                        holder.vStatus.setVisibility(View.GONE);
-                        holder.tvOnPhone.setVisibility(View.VISIBLE);
-                        break;
+            if (contact.getRecordId() == -1){
+                holder.infoButton.setVisibility(View.INVISIBLE);
+                holder.vStatus.setVisibility(View.GONE);
+                holder.tvOnPhone.setVisibility(View.GONE);
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.setMargins(0,0,WindowSize.convertDpToPixel(14),0);
+                holder.date.setLayoutParams(params);
+
+            }else {
+                holder.infoButton.setVisibility(View.VISIBLE);
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.setMargins(0,0,WindowSize.convertDpToPixel(14),WindowSize.convertDpToPixel(2));
+                holder.date.setLayoutParams(params);
+
+                holder.vStatus.setVisibility(View.VISIBLE);
+                holder.tvOnPhone.setVisibility(View.GONE);
+
+                if (status != null) {
+                    switch (status) {
+                        case RED_STATUS:
+                            holder.vStatusRed.setSelected(true);
+                            holder.vStatusYellow.setSelected(false);
+                            holder.vStatusGreen.setSelected(false);
+                            break;
+                        case YELLOW_STATUS:
+                            holder.vStatusRed.setSelected(false);
+                            holder.vStatusYellow.setSelected(true);
+                            holder.vStatusGreen.setSelected(false);
+                            break;
+                        case GREEN_STATUS:
+                            holder.vStatusRed.setSelected(false);
+                            holder.vStatusYellow.setSelected(false);
+                            holder.vStatusGreen.setSelected(true);
+                            break;
+                        case ON_PHONE:
+                            holder.vStatus.setVisibility(View.GONE);
+                            holder.tvOnPhone.setVisibility(View.VISIBLE);
+                            break;
+                    }
+                } else {
+                    holder.vStatusRed.setSelected(false);
+                    holder.vStatusYellow.setSelected(false);
+                    holder.vStatusGreen.setSelected(false);
                 }
-            } else {
-                holder.vStatusRed.setSelected(false);
-                holder.vStatusYellow.setSelected(false);
-                holder.vStatusGreen.setSelected(false);
             }
 
             return convertView;
@@ -469,8 +495,9 @@ public class RecentFragment extends Fragment implements MessageInterface {
             }
 
             int cId = User.getContactIDFromNumber(contact.getPhoneNumber(), getActivity());
-            if (cId != -1) contact.setRecordId(cId);
-            //  Log.i(TAG, "cID " + cId);
+            contact.setRecordId(cId);
+
+          //  Log.i(TAG, "cID " + contact.getRecordId());
 
             switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))) {
                 case CallLog.Calls.INCOMING_TYPE:

@@ -10,15 +10,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -36,7 +33,6 @@ import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
-import test.myprojects.com.callproject.service.ImALiveService;
 import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
@@ -78,6 +74,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
             Uri uri = Uri.parse("smsto:" + contact.getPhoneNumber());
             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
             it.putExtra("sms_body", smsText);
+            it.putExtra("exit_on_sent", true);
             startActivity(it);
 
 
@@ -155,6 +152,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
         smsIntent.setType("vnd.android-dir/mms-sms");
         smsIntent.putExtra("address", contact.getPhoneNumber());
         smsIntent.addCategory(Intent.CATEGORY_DEFAULT);
+        smsIntent.putExtra("exit_on_sent", true);
         startActivity(smsIntent);
     }
 
@@ -170,7 +168,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
             int contactid = bundle.getInt("contactId");
             this.contact = User.getInstance(this).getContactWithId(contactid);
         }
-
 
     }
 
@@ -303,7 +300,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
         }
     }
 
-
     private SoapObject getAddContactsParams(String number) {
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
@@ -415,7 +411,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
         }
     }
-
 
     private void showErrorTryAgain() {
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();

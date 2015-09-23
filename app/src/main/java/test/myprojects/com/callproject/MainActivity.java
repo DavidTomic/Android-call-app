@@ -18,8 +18,11 @@ import android.widget.Toast;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Prefs;
@@ -430,8 +433,11 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
             endTime = "2000-01-01T00:00:00";
             Prefs.setLastCallTime(this, System.currentTimeMillis());
         } else {
-            endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                    (new java.util.Date(time));
+
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            endTime = sdf.format(new Date(time));
             Prefs.setLastCallTime(this, time);
         }
 

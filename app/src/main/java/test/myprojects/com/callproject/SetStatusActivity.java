@@ -23,10 +23,13 @@ import android.widget.Toast;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -137,7 +140,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
             return;
         }
 
-        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
+        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS_WITH_TIMESTAMP)) {
             try {
 
 
@@ -148,14 +151,15 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     User.getInstance(this).setStatus(currentStatus);
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
 
+                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     String startTime;
                     if (selectedStartTime - System.currentTimeMillis() <= 0) {
                         startTime = "2000-01-01T00:00:00";
 
                     } else {
-                        startTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                                (new java.util.Date(selectedEndTime));
+                        startTime = sdf.format(new Date(selectedStartTime));
                     }
 
                     User.getInstance(this).setStatusStartTime(startTime);
@@ -165,8 +169,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                         endTime = "2000-01-01T00:00:00";
 
                     } else {
-                        endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                                (new java.util.Date(selectedEndTime));
+                        endTime = sdf.format(new Date(selectedEndTime));
                     }
                     User.getInstance(this).setStatusEndTime(endTime);
 
@@ -205,7 +208,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         currentStatus = User.getInstance(this).getStatus();
         setStatusBackgrounds();
 
-        etStatus.setText(User.getInstance(this).getStatusText());
+        if (User.getInstance(this).getStatusText() !=null)
+            etStatus.setText(User.getInstance(this).getStatusText());
 
     }
 
@@ -320,13 +324,16 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         pi.setType(Integer.class);
         request.addProperty(pi);
 
+
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         String startTime;
         if (selectedStartTime - System.currentTimeMillis() <= 0) {
             startTime = "2000-01-01T00:00:00";
 
         } else {
-            startTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                    (new java.util.Date(selectedEndTime));
+            startTime = sdf.format(new Date(selectedStartTime));
         }
 
         Log.i(TAG, "startTime " + startTime);
@@ -343,8 +350,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
             endTime = "2000-01-01T00:00:00";
 
         } else {
-            endTime = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                    (new java.util.Date(selectedEndTime));
+            endTime = sdf.format(new Date(selectedEndTime));
         }
 
         Log.i(TAG, "endTime " + endTime);

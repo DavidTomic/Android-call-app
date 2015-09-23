@@ -19,9 +19,12 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.StartActivity;
@@ -185,8 +188,10 @@ public class NotificationService extends Service {
         pi.setType(String.class);
         request.addProperty(pi);
 
-        String lastCall = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format
-                (new java.util.Date(lastTimeChecked));
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        String lastCall = sdf.format(new Date(lastTimeChecked));
 
         Log.i(TAG, "lastCall " + lastCall);
 
