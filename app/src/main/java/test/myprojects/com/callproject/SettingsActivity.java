@@ -80,10 +80,10 @@ public class SettingsActivity extends Activity {
         startActivity(new Intent(this, SetStatusActivity.class));
     }
 
-    @OnClick(R.id.rlManageContacts)
-    public void manageContactClicked() {
-        startActivity(new Intent(this, AddContactsActivity.class));
-    }
+//    @OnClick(R.id.rlManageContacts)
+//    public void manageContactClicked() {
+//        startActivity(new Intent(this, AddContactsActivity.class));
+//    }
 
     @OnClick(R.id.rlNotification)
     public void notificationClicked(){
