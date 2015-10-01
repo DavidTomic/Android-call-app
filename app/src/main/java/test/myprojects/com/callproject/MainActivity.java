@@ -1,12 +1,15 @@
 package test.myprojects.com.callproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.content.IntentCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +42,14 @@ import test.myprojects.com.callproject.tabFragments.RecentFragment;
 import test.myprojects.com.callproject.tabFragments.SettingsFragment;
 import test.myprojects.com.callproject.task.CheckAndUpdateAllContactsTask;
 import test.myprojects.com.callproject.task.SendMessageTask;
+import test.myprojects.com.callproject.view.ReclickableTabHost;
 
 public class MainActivity extends FragmentActivity implements MessageInterface {
 
     public static final String BROADCAST_STATUS_UPDATE_ACTION = "status_update_action";
     private String TAG = "MainActivity";
 
-    private FragmentTabHost mTabHost;
+    private ReclickableTabHost mTabHost;
     private Handler mPollHandler = new Handler();
 
     @Override
@@ -55,10 +59,36 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         Log.i(TAG, "onCreate");
 
-        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost = (ReclickableTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
         setTabs();
+
+        mTabHost.setOnVoicemailClickListener(new ReclickableTabHost.VoicemailClickListener() {
+            @Override
+            public void onVoicemailClicked() {
+             //   mTabHost.getTabWidget().getChildAt(4).setSelected(true);
+
+                TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                String voiceMailNumber = Prefs.getVoiceMailNumber(MainActivity.this);
+
+                if (!voiceMailNumber.contentEquals("")){
+                        startActivity(new Intent(Intent.ACTION_CALL,
+                                Uri.parse("tel:" + voiceMailNumber)));
+
+                }else {
+                    voiceMailNumber = tm.getVoiceMailNumber();
+
+                    if (voiceMailNumber != null && voiceMailNumber.length()>0){
+                        startActivity(new Intent(Intent.ACTION_CALL,
+                                Uri.parse("tel:" + voiceMailNumber)));
+                    }else {
+                        Toast.makeText(MainActivity.this,
+                                getString(R.string.please_enter_your_voicemail), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
 
         Prefs.setLastCallTime(this, 0);
 
@@ -101,11 +131,12 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.contacts), R.drawable.tab_contacts, ContactsFragment.class);
         addTab(getString(R.string.keypad), R.drawable.tab_keypad, KeypadFragment.class);
 
-     //   addTab(getString(R.string.settings), R.drawable.tab_settings, SettingsFragment.class);
-
         addTab(getString(R.string.voice_mail), R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
+
+
+
     private void addTab(String labelId, int drawableId, Class<?> c) {
 
         TabHost.TabSpec spec = mTabHost.newTabSpec("tab" + labelId);
@@ -127,27 +158,22 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         @Override
         public void run() {
             try {
-                Log.i(TAG, "fdf");
                 SendMessageTask sTask = new SendMessageTask(MainActivity.this, getRequestInfoParams());
                 sTask.execute();
             } catch (Exception e) {
                 e.printStackTrace();
                 // TODO Auto-generated catch block
             }
-            mPollHandler.postDelayed(mPollRunnable, 1000 * 60);
+            mPollHandler.postDelayed(mPollRunnable, 1000 * User.getInstance(MainActivity.this).getRequestStatusInfoSeconds());
         }
     };
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
-        Log.i(TAG, "responseToSendMessage methodName " + methodName);
+     //   Log.i(TAG, "responseToSendMessage methodName " + methodName);
 
         if (result == null) {
-
-//            if (methodName.contentEquals(SendMessageTask.REQUEST_STATUS_INFO))
-//                Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
-
             return;
         }
 
@@ -159,17 +185,22 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                     List<Contact> contactList = User.getInstance(this).getContactList();
 
+                 //   Log.i(TAG, "C LIST " + contactList.size());
+
                     SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
 
                     for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
                         SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
 
                         String pohoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
-                        Log.i(TAG, "pohoneNumber " + pohoneNumber);
+                  //      Log.i(TAG, "pohoneNumber " + pohoneNumber);
 
 
                         for (Contact c : contactList){
                             if (c.getPhoneNumber().contentEquals(pohoneNumber)){
+
+                          //      Log.i(TAG, "nasao " + c.getPhoneNumber());
+
                                 c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
 
                                 String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
@@ -205,8 +236,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                     List<String> list = new ArrayList<String>();
                     for (int i = 0; i < textSoapObject.getPropertyCount(); i++) {
-                        list.add(""+textSoapObject.getProperty(i));
-                        Log.i(TAG, "text " + textSoapObject.getProperty(i));
+                        list.add("" + textSoapObject.getProperty(i));
+                      //  Log.i(TAG, "text " + textSoapObject.getProperty(i));
                     }
 
                     Prefs.saveDefaultTexts(this, list);
@@ -228,7 +259,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
 
                     for (int i = 0; i < phoneNumbersSoapObject.getPropertyCount(); i++) {
-                        Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));
+                     //   Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));
                         list.add(""+phoneNumbersSoapObject.getProperty(i));
                     }
 
@@ -259,6 +290,13 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                   //  user.setEndTime("" + result.getProperty("EndTimeStatus"));
                     user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
+                    int updateStatusOnList = Integer.valueOf(result.getProperty("UpdateStatusOnList").toString());
+
+                    if (updateStatusOnList < 10)
+                        updateStatusOnList = 10;
+
+                    user.setRequestStatusInfoSeconds(updateStatusOnList);
+
                     String statusText = "" + result.getProperty("StatusText");
                     if (statusText.contentEquals("anyType{}")){
                         statusText = "";
@@ -277,7 +315,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     }
                     user.setStatusEndTime(statusEndTime);
 
-                    Log.i(TAG, "lang user " + user.getLanguage().getValue());
+                 //   Log.i(TAG, "lang user " + user.getLanguage().getValue());
 
                     SoapObject inviteSMSSoapObject = (SoapObject) result.getProperty("InviteSMS");
                     for (int i = 0; i < inviteSMSSoapObject.getPropertyCount(); i++) {
@@ -285,7 +323,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                         int lang = Integer.parseInt(csInviteSMSSoapObject.getProperty("Language").toString());
 
-                        Log.i(TAG, "lang login " + lang);
+                    //    Log.i(TAG, "lang login " + lang);
 
                         if (lang == user.getLanguage().getValue()){
                             user.setSmsInviteText(csInviteSMSSoapObject.getProperty("SMSText").toString());
@@ -441,7 +479,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
             Prefs.setLastCallTime(this, time);
         }
 
-        Log.i(TAG, "endTime " + endTime);
+     //   Log.i(TAG, "endTime " + endTime);
 
 
         pi = new PropertyInfo();

@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="28dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/all_unanswer_bg"
+            android:background="@drawable/border_blue_corners"
             android:orientation="horizontal"
             android:paddingBottom="3dp"
             android:paddingTop="3dp">
@@ -92,7 +92,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:background="@drawable/top_bar_button_border"
+            android:background="@drawable/border_blue_corners"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:text="@string/edit"
@@ -103,57 +103,84 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_marginTop="1dp"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:weightSum="3">
+        android:layout_height="50dp">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray_light_2">
+
+            <Button
+                android:id="@+id/bSetTime"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:background="@null"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:text="@string/set_time"
+                android:textColor="@color/blue_default"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/llRedStatus"
-            android:layout_width="0dp"
+            android:id="@+id/llStatusHolder"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
+            android:layout_marginTop="1dp"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
-            <ImageView
-                android:id="@+id/bStatusRed"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_red_selector" />
+
+            <LinearLayout
+                android:id="@+id/llRedStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusRed"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_red_selector" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llYellowStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusYellow"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_yellow_selector" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGreenStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusGreen"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_green_selector" />
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llYellowStatus"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/bStatusYellow"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_yellow_selector" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llGreenStatus"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/bStatusGreen"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_green_selector" />
-        </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"

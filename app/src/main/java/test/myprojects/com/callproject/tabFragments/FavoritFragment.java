@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -46,8 +48,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.Prefs;
+import test.myprojects.com.callproject.Util.WindowSize;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
@@ -57,7 +61,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoritFragment extends Fragment implements MessageInterface {
+public class FavoritFragment extends Fragment implements MessageInterface, View.OnTouchListener {
 
     private static final String TAG = "FavoritFragment";
     private View rootView;
@@ -67,6 +71,11 @@ public class FavoritFragment extends Fragment implements MessageInterface {
     private boolean editEnabled;
 
     private int currentStatus;
+
+    private LinearLayout currentView;
+    private int startX = 0;
+    private int rightMargin = 0;
+    private boolean moveWasActive = false;
 
     public FavoritFragment() {
         // Required empty public constructor
@@ -95,35 +104,20 @@ public class FavoritFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
     @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
 
-    @OnClick(R.id.llRedStatus)
-    public void bStatusRedClicked(){
+    @Bind(R.id.llStatusHolder)
+    LinearLayout llStatusHolder;
 
-        Log.i(TAG, "clicked red");
+    @Bind(R.id.llRedStatus)
+    LinearLayout llRedStatus;
+    @Bind(R.id.llYellowStatus)
+    LinearLayout llYellowStatus;
+    @Bind(R.id.llGreenStatus)
+    LinearLayout llGreenStatus;
 
-        bStatusRed.setSelected(true);
-        bStatusYellow.setSelected(false);
-        bStatusGreen.setSelected(false);
-
-        currentStatus = 0;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-    @OnClick(R.id.llYellowStatus)
-    public void bStatusYellowClicked(){
-        bStatusRed.setSelected(false);
-        bStatusYellow.setSelected(true);
-        bStatusGreen.setSelected(false);
-
-        currentStatus = 2;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-    @OnClick(R.id.llGreenStatus)
-    public void bStatusGreenClicked(){
-        bStatusRed.setSelected(false);
-        bStatusYellow.setSelected(false);
-        bStatusGreen.setSelected(true);
-
-        currentStatus = 1;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
+    @OnClick(R.id.bSetTime)
+    public void bSetTimeClicked() {
+        closeSwipeView();
+        startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
     @OnClick(R.id.llSettings)
@@ -156,7 +150,7 @@ public class FavoritFragment extends Fragment implements MessageInterface {
     private void refreshFavorits() {
         favoritList.clear();
 
-        Log.i(TAG, "refreshFavorits getContactList() " + User.getInstance(getActivity()).getContactList().size());
+    //    Log.i(TAG, "refreshFavorits getContactList() " + User.getInstance(getActivity()).getContactList().size());
 
         for (Contact c : User.getInstance(getActivity()).getContactList()) {
             if (c.isFavorit()) {
@@ -227,6 +221,95 @@ public class FavoritFragment extends Fragment implements MessageInterface {
                 }
             });
 
+
+            llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    // Log.i(TAG, "onTouch");
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+
+                    switch (event.getAction()) {
+
+                        case MotionEvent.ACTION_DOWN:
+                            startX = (int) event.getRawX() + rightMargin;
+                            //  Log.i(TAG, "startX " + startX);
+                            //  Log.i(TAG, "rightMargin " + rightMargin);
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            rightMargin = -((int) event.getRawX() - startX);
+                            //    Log.i(TAG, "event.getRawX() " + event.getRawX());
+                        //    Log.i(TAG, "rMargin " + rightMargin);
+
+                            if (rightMargin >= 0 && rightMargin < WindowSize.convertDpToPixel(120)) {
+                                params.rightMargin = rightMargin;
+                                params.leftMargin = -rightMargin;
+                                llStatusHolder.setLayoutParams(params);
+                            }
+
+                            moveWasActive = true;
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+
+                            if (!moveWasActive) {
+                                if (currentView == llRedStatus) {
+                                    //     Log.i(TAG, "llRedStatus");
+                                    bStatusRed.setSelected(true);
+                                    bStatusYellow.setSelected(false);
+                                    bStatusGreen.setSelected(false);
+
+                                    currentStatus = 0;
+                                    new SendMessageTask(FavoritFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                } else if (currentView == llYellowStatus) {
+                                    //   Log.i(TAG, "llYellowStatus");
+                                    bStatusRed.setSelected(false);
+                                    bStatusYellow.setSelected(true);
+                                    bStatusGreen.setSelected(false);
+
+                                    currentStatus = 2;
+                                    new SendMessageTask(FavoritFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                } else {
+                                    //    Log.i(TAG, "llGreenStatus");
+                                    bStatusRed.setSelected(false);
+                                    bStatusYellow.setSelected(false);
+                                    bStatusGreen.setSelected(true);
+
+                                    currentStatus = 1;
+                                    new SendMessageTask(FavoritFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                }
+                            } else {
+                                moveWasActive = false;
+                            }
+
+                            if (rightMargin < 0) {
+                                rightMargin = 0;
+                                closeSwipeView();
+                            } else {
+
+                                if (rightMargin > WindowSize.convertDpToPixel(30)) {
+                                    rightMargin = WindowSize.convertDpToPixel(100);
+                                    params.rightMargin = rightMargin;
+                                    params.leftMargin = -rightMargin;
+                                    llStatusHolder.setLayoutParams(params);
+                                } else {
+                                    closeSwipeView();
+                                }
+
+                            }
+
+                            break;
+
+                    }
+
+                    return true;
+                }
+            });
+
+            llRedStatus.setOnTouchListener(this);
+            llYellowStatus.setOnTouchListener(this);
+            llGreenStatus.setOnTouchListener(this);
+
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (parent != null) {
@@ -236,6 +319,20 @@ public class FavoritFragment extends Fragment implements MessageInterface {
         }
 
         return rootView;
+    }
+
+    private void closeSwipeView(){
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
+        rightMargin = 0;
+        params.rightMargin = rightMargin;
+        params.leftMargin = -rightMargin;
+        llStatusHolder.setLayoutParams(params);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        currentView = (LinearLayout) v;
+        return false;
     }
 
     private void dialNumber(String phoneNumber) {
@@ -296,7 +393,9 @@ public class FavoritFragment extends Fragment implements MessageInterface {
             holder.name.setText(contact.getName());
 
             if (contact.getImage() != null && getUserImage(contact.getRecordId()) != null) {
-                Log.i(TAG, "name " + contact.getName());
+             //
+             //
+             //  Log.i(TAG, "name " + contact.getName());
                 holder.ivProfile.setImageBitmap(getUserImage(contact.getRecordId()));
                 holder.ivProfile.setVisibility(View.VISIBLE);
                 holder.tvProfile.setVisibility(View.INVISIBLE);
@@ -407,7 +506,7 @@ public class FavoritFragment extends Fragment implements MessageInterface {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Log.i(TAG, "statusUpdateBroadcastReceiver");
+         //   Log.i(TAG, "statusUpdateBroadcastReceiver");
             refreshFavorits();
         }
     };
@@ -437,7 +536,7 @@ public class FavoritFragment extends Fragment implements MessageInterface {
 
         Status status = User.getInstance(getActivity()).getStatus();
 
-        Log.i(TAG, "myStatus " + status);
+    //    Log.i(TAG, "myStatus " + status);
 
         if (status != null) {
             switch (status) {
@@ -513,7 +612,6 @@ public class FavoritFragment extends Fragment implements MessageInterface {
 
                 User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                 Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
-
 
             }
 

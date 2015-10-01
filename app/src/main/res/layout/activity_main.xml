@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.app.FragmentTabHost xmlns:android="http://schemas.android.com/apk/res/android"
+<test.myprojects.com.callproject.view.ReclickableTabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/tabhost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,4 +31,4 @@
             android:showDividers="none"
             android:layout_weight="0" />
     </LinearLayout>
-</android.support.v4.app.FragmentTabHost>
+</test.myprojects.com.callproject.view.ReclickableTabHost>

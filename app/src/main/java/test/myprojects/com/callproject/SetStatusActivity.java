@@ -3,19 +3,13 @@ package test.myprojects.com.callproject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -24,7 +18,6 @@ import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,7 +28,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import test.myprojects.com.callproject.Util.Prefs;
-import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
@@ -65,7 +57,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
 
     @Bind(R.id.rlStartTime)
-    LinearLayout rlStartTime;
+    RelativeLayout rlStartTime;
     @Bind(R.id.tvStartTimeLabel) TextView tvStartTimeLabel;
     @Bind(R.id.tvStartTime) TextView tvStartTime;
     @OnClick(R.id.bSetStartTime)
@@ -77,9 +69,11 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
 
     @Bind(R.id.rlEndTime)
-    LinearLayout rlEndTime;
+    RelativeLayout rlEndTime;
     @Bind(R.id.tvEndTime)
     TextView tvEndTime;
+    @Bind(R.id.tvEndTimeLabel)
+    TextView tvEndTimeLabel;
     @OnClick(R.id.bSetEndTime)
     public void setEndTime() {
         startTimeclicked = false;
@@ -148,11 +142,26 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                 if (resultStatus == 2) {
 
-                    User.getInstance(this).setStatus(currentStatus);
-                    User.getInstance(this).setStatusText(etStatus.getText().toString());
+                    if (currentStatus == Status.RED_STATUS || currentStatus == Status.YELLOW_STATUS){
+
+                        if (tvStartTime.getText().toString().contentEquals(getString(R.string.now))){
+                            User.getInstance(this).setStatus(currentStatus);
+                            User.getInstance(this).setStatusText(etStatus.getText().toString());
+                        }
+
+                    }else {
+                        User.getInstance(this).setStatus(currentStatus);
+                        User.getInstance(this).setStatusText(etStatus.getText().toString());
+                    }
+
+
+
+
+
 
                     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
 
                     String startTime;
                     if (selectedStartTime - System.currentTimeMillis() <= 0) {
@@ -161,8 +170,9 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     } else {
                         startTime = sdf.format(new Date(selectedStartTime));
                     }
-
                     User.getInstance(this).setStatusStartTime(startTime);
+
+
 
                     String endTime;
                     if (selectedEndTime - System.currentTimeMillis() <= 0) {
@@ -172,6 +182,9 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                         endTime = sdf.format(new Date(selectedEndTime));
                     }
                     User.getInstance(this).setStatusEndTime(endTime);
+
+
+
 
                     Prefs.setUserData(this, User.getInstance(this));
 
@@ -208,7 +221,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         currentStatus = User.getInstance(this).getStatus();
         setStatusBackgrounds();
 
-        if (User.getInstance(this).getStatusText() !=null)
+        if (User.getInstance(this).getStatusText() !=null &&
+                !User.getInstance(this).getStatusText().contentEquals("(null)"))
             etStatus.setText(User.getInstance(this).getStatusText());
 
     }
@@ -238,7 +252,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     if (selectedStartTime - System.currentTimeMillis() > 0) {
 
-                        tvStartTime.setText(new java.text.SimpleDateFormat("MM-dd HH:mm").format
+                        tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedStartTime)));
 //                        int minutes = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60)) % 60);
 //                        int hours = (int) (((selectedTime - System.currentTimeMillis()) / (1000 * 60 * 60)) % 24);
@@ -259,7 +273,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     Log.i(TAG, "time " + selectedEndTime);
 
                     if (selectedEndTime - System.currentTimeMillis() > 0) {
-                        tvEndTime.setText(new java.text.SimpleDateFormat("MM-dd HH:mm").format
+                        tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedEndTime)));
                     }else {
                         selectedEndTime = 0;
@@ -292,8 +306,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 }
 
             });
-            adb.setNegativeButton("Cancel", null);
-            adb.setTitle("Choose status");
+            adb.setNegativeButton(getString(R.string.cancel), null);
+            adb.setTitle(getString(R.string.choose_status_text));
             adb.show();
         } else {
             Toast.makeText(this, getString(R.string.add_some_default_text),
@@ -374,29 +388,31 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
         switch (currentStatus) {
             case RED_STATUS:
-                llRedStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
-                llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
+                llRedStatus.getChildAt(0).setSelected(true);
+                llYellowStatus.getChildAt(0).setSelected(false);
+                llGreenStatus.getChildAt(0).setSelected(false);
                 rlEndTime.setVisibility(View.VISIBLE);
                 rlStartTime.setVisibility(View.VISIBLE);
-                tvStartTimeLabel.setText(getString(R.string.i_am_busy_from));
+                tvStartTimeLabel.setText(getString(R.string.set_red_status_from));
+                tvEndTimeLabel.setText(getString(R.string.set_red_status_to));
 
 
                 break;
             case YELLOW_STATUS:
-                llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                llYellowStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
-                llGreenStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
+                llRedStatus.getChildAt(0).setSelected(false);
+                llYellowStatus.getChildAt(0).setSelected(true);
+                llGreenStatus.getChildAt(0).setSelected(false);
                 rlEndTime.setVisibility(View.VISIBLE);
                 rlStartTime.setVisibility(View.VISIBLE);
-                tvStartTimeLabel.setText(getString(R.string.i_am_away_from));
+                tvStartTimeLabel.setText(getString(R.string.set_yellow_status_from));
+                tvEndTimeLabel.setText(getString(R.string.set_yellow_status_to));
 
 
                 break;
             case GREEN_STATUS:
-                llRedStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                llYellowStatus.setBackgroundColor(getResources().getColor(R.color.transparent));
-                llGreenStatus.setBackgroundColor(getResources().getColor(R.color.gray_light_80));
+                llRedStatus.getChildAt(0).setSelected(false);
+                llYellowStatus.getChildAt(0).setSelected(false);
+                llGreenStatus.getChildAt(0).setSelected(true);
                 rlEndTime.setVisibility(View.GONE);
                 rlStartTime.setVisibility(View.GONE);
                 break;

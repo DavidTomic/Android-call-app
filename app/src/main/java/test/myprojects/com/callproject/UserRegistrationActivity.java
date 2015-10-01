@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -39,8 +40,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
     private static final String TAG = "UserRegistration";
     private Language language;
 
-    @Bind(R.id.bSignLog)
-    Button bTitle;
+
     @Bind(R.id.bConfirm)
     Button bConfirm;
     @Bind(R.id.etPhoneNumber)
@@ -51,12 +51,19 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
     EditText etEmail;
     @Bind(R.id.etName)
     EditText etName;
-    @Bind(R.id.rlProgress)
-    RelativeLayout rlProgress;
+    @Bind(R.id.pbProgress)
+    ProgressBar pbProgress;
 
-    @OnClick(R.id.bSignLog)
-    public void titleClicked() {
-        isLogIn = !isLogIn;
+    @OnClick(R.id.bSignUp)
+    public void bSignUpClicked() {
+        isLogIn = false;
+
+        refreshUI();
+    }
+
+    @OnClick(R.id.bLogIn)
+    public void bLogInClicked() {
+        isLogIn = true;
 
         refreshUI();
     }
@@ -72,7 +79,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 return;
             }
 
-            rlProgress.setVisibility(View.VISIBLE);
+            pbProgress.setVisibility(View.VISIBLE);
 
             SendMessageTask task = new SendMessageTask(this, getLogInParams());
             task.execute();
@@ -86,7 +93,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 return;
             }
 
-            rlProgress.setVisibility(View.VISIBLE);
+            pbProgress.setVisibility(View.VISIBLE);
             SendMessageTask task = new SendMessageTask(this, getCreateAccountParams());
             task.execute();
         }
@@ -122,32 +129,32 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
     private void refreshUI() {
 
-        String text = bTitle.getText().toString();
-        SpannableString spannablecontent = new SpannableString(text);
+//        String text = bTitle.getText().toString();
+//        SpannableString spannablecontent = new SpannableString(text);
 
         if (isLogIn) {
-            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY), 0, text.indexOf("/"),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                            (R.color.blue_default)), text.indexOf("/"), text.length(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY), 0, text.indexOf("/"),
+//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+//                            (R.color.blue_default)), text.indexOf("/"), text.length(),
+//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             etName.setVisibility(View.INVISIBLE);
             etEmail.setVisibility(View.INVISIBLE);
             bConfirm.setText(getString(R.string.log_in));
         } else {
-            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-                            (R.color.blue_default)), 0, text.indexOf("/"),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY),
-                    text.indexOf("/"), text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
+//                            (R.color.blue_default)), 0, text.indexOf("/"),
+//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY),
+//                    text.indexOf("/"), text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             etName.setVisibility(View.VISIBLE);
             etEmail.setVisibility(View.VISIBLE);
             bConfirm.setText(getString(R.string.sign_up));
         }
 
-        bTitle.setText(spannablecontent);
+     //   bTitle.setText(spannablecontent);
 
         TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         String mPhoneNumber = tMgr.getLine1Number();
@@ -160,13 +167,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
     private void showErrorCheckData() {
 
         Toast.makeText(this, getString(R.string.fill_all_data), Toast.LENGTH_SHORT).show();
-        rlProgress.setVisibility(View.GONE);
+        pbProgress.setVisibility(View.GONE);
     }
 
     private void showErrorTryAgain() {
 
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
-        rlProgress.setVisibility(View.GONE);
+        pbProgress.setVisibility(View.GONE);
     }
 
     private SoapObject getCreateAccountParams() {
@@ -390,7 +397,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 } else if (resultStatus == 0) {
                     Toast.makeText(this, getString(R.string.user_already_exists),
                             Toast.LENGTH_SHORT).show();
-                    rlProgress.setVisibility(View.GONE);
+                    pbProgress.setVisibility(View.GONE);
                 } else {
                     showErrorCheckData();
                 }

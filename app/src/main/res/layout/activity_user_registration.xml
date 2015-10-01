@@ -5,22 +5,53 @@
     android:background="@color/tab_bar_background"
     tools:context="test.myprojects.com.callproject.UserRegistrationActivity">
 
-    <Button
-        android:id="@+id/bSignLog"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:id="@+id/holder1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:background="@null"
-        android:text="@string/sign_up_log_in"
-        android:textColor="@color/blue_default"
-        android:textSize="25sp" />
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/bSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_default"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:text="@string/sign_up"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/bLogIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:background="@color/blue_default"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:text="@string/log_in"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bConfirm"
-        android:layout_below="@+id/bSignLog"
+        android:layout_below="@+id/holder1"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -58,30 +89,37 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/bConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:text="@string/sign_up"
-        android:textColor="@color/blue_default"
-        android:textSize="20sp" />
-
     <RelativeLayout
-        android:id="@+id/rlProgress"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
-        android:visibility="gone">
+        android:visibility="visible">
+
+        <Button
+            android:id="@+id/bConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_default"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:layout_centerInParent="true"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:text="@string/sign_up"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <ProgressBar
+            android:id="@+id/pbProgress"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:indeterminate="true"
+            android:visibility="gone"
             android:padding="10dp" />
 
     </RelativeLayout>

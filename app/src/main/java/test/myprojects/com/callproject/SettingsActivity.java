@@ -11,6 +11,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.User;
 
 public class SettingsActivity extends Activity {
@@ -29,6 +30,8 @@ public class SettingsActivity extends Activity {
     TextView tvName;
     @Bind(R.id.tvEmail)
     TextView tvEmail;
+    @Bind(R.id.tvVoicemail)
+    TextView tvVoicemail;
     @Bind(R.id.tvDefaultText)
     TextView tvDefaultText;
 
@@ -67,6 +70,13 @@ public class SettingsActivity extends Activity {
     public void emailClicked() {
         Intent intent = new Intent(this, SettingsDetailActivity.class);
         intent.putExtra("key", SettingsDetailActivity.EDIT_EMAIL);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.rlVoicemail)
+    public void voicemailClicked() {
+        Intent intent = new Intent(this, SettingsDetailActivity.class);
+        intent.putExtra("key", SettingsDetailActivity.EDIT_VOICEMAIL);
         startActivity(intent);
     }
 
@@ -115,7 +125,12 @@ public class SettingsActivity extends Activity {
         tvPhone.setText(user.getPhoneNumber());
         tvName.setText(user.getName());
         tvEmail.setText(user.getEmail());
+        tvVoicemail.setText(Prefs.getVoiceMailNumber(this));
+
+        if (User.getInstance(this).getStatusText() !=null &&
+                !User.getInstance(this).getStatusText().contentEquals("(null)"))
         tvDefaultText.setText(user.getStatusText());
+
     }
 
     @Override

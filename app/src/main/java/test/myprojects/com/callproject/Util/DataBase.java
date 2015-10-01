@@ -106,5 +106,26 @@ public class DataBase extends SQLiteOpenHelper {
         return list;
     }
 
+    public static Notification getNotificationWithPhoneNumber(SQLiteDatabase db, String phoneNumber) {
+
+        Cursor cursor = db.rawQuery("SELECT *" + " FROM "
+                + NOTIFICATION_TABLE + " WHERE " + PHONE_NUMBER + " = ?", new String[] {phoneNumber});
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToPosition(0);
+
+            Notification notification = new Notification();
+
+            notification.setNotificationID(cursor.getInt(cursor.getColumnIndex(NOTIFICATION_ID)));
+            notification.setName(cursor.getString(cursor.getColumnIndex(NAME)));
+            notification.setPhoneNumber(cursor.getString(cursor.getColumnIndex(PHONE_NUMBER)));
+            notification.setStatus(Status.values()[cursor.getInt(cursor.getColumnIndex(STATUS))]);
+
+            return notification;
+        }
+
+        return null;
+    }
+
 
 }

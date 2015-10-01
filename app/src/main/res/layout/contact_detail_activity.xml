@@ -29,17 +29,18 @@
 
             <Button
                 android:id="@+id/bEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="50dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
-                android:background="@null"
                 android:minHeight="0dp"
                 android:minWidth="0dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/border_blue_corners"
                 android:text="@string/edit"
                 android:textAllCaps="false"
-                android:textColor="@color/blue_default" />
+                android:textSize="10sp"
+                android:textColor="@color/nav_bar_button_color" />
 
         </RelativeLayout>
 
@@ -76,6 +77,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/ivProfile"
+                android:layout_toLeftOf="@+id/ibFavorit"
+                android:layout_marginRight="10dp"
                 android:text="@string/ph_name_lastname"
                 android:textColor="@color/black"
                 android:textSize="16sp" />

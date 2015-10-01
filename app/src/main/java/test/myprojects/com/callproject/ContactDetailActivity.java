@@ -45,6 +45,8 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
     private static final String TAG = "ContactDetailActivity";
     private Contact contact;
 
+    private Notification notification;
+
     @Bind(R.id.tvName) TextView tvName;
     @Bind(R.id.tvPhoneNumber) TextView tvPhoneNumber;
 
@@ -82,14 +84,16 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
             new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
 
         }else if (text.contentEquals(getString(R.string.set_notification))){
-            bConfirm.setText(getString(R.string.notification_already_added));
+            bConfirm.setText(getString(R.string.remove_notification));
 
             DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
                     contact.getName(), contact.getPhoneNumber(), contact.getStatus().getValue());
-            bConfirm.setEnabled(false);
 
             Intent pushIntent = new Intent(this, NotificationService.class);
             startService(pushIntent);
+        }else if (text.contentEquals(getString(R.string.remove_notification))){
+            bConfirm.setText(getString(R.string.set_notification));
+            DataBase.removeNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),notification);
         }
 
     }
@@ -209,21 +213,11 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                     bConfirm.setText(getString(R.string.add_contact));
                 }else {
 
-                    List<Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
-                            getInstance(this).getWritableDatabase());
+                    notification = DataBase.getNotificationWithPhoneNumber
+                            (DataBase.getInstance(this).getWritableDatabase(), contact.getPhoneNumber());
 
-                    boolean contains = false;
-
-                    for (Notification notification : nList){
-                     if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())){
-                         contains = true;
-                         break;
-                     }
-                    }
-
-                    if (contains){
-                        bConfirm.setText(getString(R.string.notification_already_added));
-                        bConfirm.setEnabled(false);
+                    if (notification != null){
+                        bConfirm.setText(getString(R.string.remove_notification));
                     }else {
                         bConfirm.setText(getString(R.string.set_notification));
                     }
@@ -393,7 +387,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                     if (contact.getStatus() != null && contact.getStatus() != Status.GREEN_STATUS){
                         bConfirm.setText(getString(R.string.set_notification));
                     }else {
-                        bConfirm.setVisibility(View.GONE);
+                        bConfirm.setText(getString(R.string.remove_notification));
                     }
 
                     User.getInstance(this).setNeedRefreshStatus(true);

@@ -14,6 +14,7 @@ import android.provider.CallLog;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -42,6 +43,7 @@ import butterknife.OnClick;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
+import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsActivity;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.Util.WindowSize;
@@ -54,7 +56,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecentFragment extends Fragment implements MessageInterface {
+public class RecentFragment extends Fragment implements MessageInterface, View.OnTouchListener  {
 
 
     private static final String TAG = "RecentFragment";
@@ -63,6 +65,28 @@ public class RecentFragment extends Fragment implements MessageInterface {
     private boolean showAllContacts = true;
 
     private int currentStatus;
+
+    private LinearLayout currentView;
+    private int startX = 0;
+    private int rightMargin = 0;
+    private boolean moveWasActive = false;
+
+    @Bind(R.id.llStatusHolder)
+    LinearLayout llStatusHolder;
+
+    @Bind(R.id.llRedStatus)
+    LinearLayout llRedStatus;
+    @Bind(R.id.llYellowStatus)
+    LinearLayout llYellowStatus;
+    @Bind(R.id.llGreenStatus)
+    LinearLayout llGreenStatus;
+
+
+    @OnClick(R.id.bSetTime)
+    public void bSetTimeClicked() {
+        closeSwipeView();
+        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+    }
 
     @Bind(R.id.swipeMenuListView)
     SwipeMenuListView swipeMenuListView;
@@ -115,38 +139,6 @@ public class RecentFragment extends Fragment implements MessageInterface {
     @Bind(R.id.bStatusRed) ImageView bStatusRed;
     @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
     @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
-
-    @OnClick(R.id.llRedStatus)
-    public void bStatusRedClicked(){
-
-        Log.i(TAG, "clicked red");
-
-        bStatusRed.setSelected(true);
-        bStatusYellow.setSelected(false);
-        bStatusGreen.setSelected(false);
-
-        currentStatus = 0;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-    @OnClick(R.id.llYellowStatus)
-    public void bStatusYellowClicked(){
-        bStatusRed.setSelected(false);
-        bStatusYellow.setSelected(true);
-        bStatusGreen.setSelected(false);
-
-        currentStatus = 2;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-    @OnClick(R.id.llGreenStatus)
-    public void bStatusGreenClicked(){
-        bStatusRed.setSelected(false);
-        bStatusYellow.setSelected(false);
-        bStatusGreen.setSelected(true);
-
-        currentStatus = 1;
-        new SendMessageTask(this, getUpdateStatusParams(currentStatus)).execute();
-    }
-
 
 
     @OnClick(R.id.llSettings)
@@ -217,6 +209,94 @@ public class RecentFragment extends Fragment implements MessageInterface {
                 }
             });
 
+            llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    // Log.i(TAG, "onTouch");
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+
+                    switch (event.getAction()) {
+
+                        case MotionEvent.ACTION_DOWN:
+                            startX = (int) event.getRawX() + rightMargin;
+                            //  Log.i(TAG, "startX " + startX);
+                            //  Log.i(TAG, "rightMargin " + rightMargin);
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            rightMargin = -((int) event.getRawX() - startX);
+                            //    Log.i(TAG, "event.getRawX() " + event.getRawX());
+                          //  Log.i(TAG, "rMargin " + rightMargin);
+
+                            if (rightMargin >= 0 && rightMargin < WindowSize.convertDpToPixel(120)) {
+                                params.rightMargin = rightMargin;
+                                params.leftMargin = -rightMargin;
+                                llStatusHolder.setLayoutParams(params);
+                            }
+
+                            moveWasActive = true;
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+
+                            if (!moveWasActive) {
+                                if (currentView == llRedStatus) {
+                                    //     Log.i(TAG, "llRedStatus");
+                                    bStatusRed.setSelected(true);
+                                    bStatusYellow.setSelected(false);
+                                    bStatusGreen.setSelected(false);
+
+                                    currentStatus = 0;
+                                    new SendMessageTask(RecentFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                } else if (currentView == llYellowStatus) {
+                                    //   Log.i(TAG, "llYellowStatus");
+                                    bStatusRed.setSelected(false);
+                                    bStatusYellow.setSelected(true);
+                                    bStatusGreen.setSelected(false);
+
+                                    currentStatus = 2;
+                                    new SendMessageTask(RecentFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                } else {
+                                    //    Log.i(TAG, "llGreenStatus");
+                                    bStatusRed.setSelected(false);
+                                    bStatusYellow.setSelected(false);
+                                    bStatusGreen.setSelected(true);
+
+                                    currentStatus = 1;
+                                    new SendMessageTask(RecentFragment.this, getUpdateStatusParams(currentStatus)).execute();
+                                }
+                            } else {
+                                moveWasActive = false;
+                            }
+
+                            if (rightMargin < 0) {
+                                rightMargin = 0;
+                                closeSwipeView();
+                            } else {
+
+                                if (rightMargin > WindowSize.convertDpToPixel(30)) {
+                                    rightMargin = WindowSize.convertDpToPixel(100);
+                                    params.rightMargin = rightMargin;
+                                    params.leftMargin = -rightMargin;
+                                    llStatusHolder.setLayoutParams(params);
+                                } else {
+                                    closeSwipeView();
+                                }
+
+                            }
+
+                            break;
+
+                    }
+
+                    return true;
+                }
+            });
+
+            llRedStatus.setOnTouchListener(this);
+            llYellowStatus.setOnTouchListener(this);
+            llGreenStatus.setOnTouchListener(this);
+
         } else {
             ViewGroup parent = (ViewGroup) rootView.getParent();
             if (parent != null) {
@@ -226,6 +306,20 @@ public class RecentFragment extends Fragment implements MessageInterface {
         }
 
         return rootView;
+    }
+
+    private void closeSwipeView(){
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
+        rightMargin = 0;
+        params.rightMargin = rightMargin;
+        params.leftMargin = -rightMargin;
+        llStatusHolder.setLayoutParams(params);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        currentView = (LinearLayout) v;
+        return false;
     }
 
     public class RecentAdapter extends BaseAdapter {
@@ -349,32 +443,32 @@ public class RecentFragment extends Fragment implements MessageInterface {
 
             Status status = contact.getStatus();
 
-            Log.i(TAG, "getRecordId " + contact.getRecordId());
-            Log.i(TAG, "name " + name);
+//            Log.i(TAG, "getRecordId " + contact.getRecordId());
+//            Log.i(TAG, "name " + name);
 
             if (contact.getRecordId() == -1){
                 holder.infoButton.setVisibility(View.INVISIBLE);
-                holder.vStatus.setVisibility(View.GONE);
+//                holder.vStatus.setVisibility(View.GONE);
                 holder.tvOnPhone.setVisibility(View.GONE);
 
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
-                params.addRule(RelativeLayout.CENTER_VERTICAL);
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.setMargins(0,0,WindowSize.convertDpToPixel(14),0);
-                holder.date.setLayoutParams(params);
+//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+//                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                params.addRule(RelativeLayout.CENTER_VERTICAL);
+//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                params.setMargins(0,0,WindowSize.convertDpToPixel(14),0);
+//                holder.date.setLayoutParams(params);
 
             }else {
                 holder.infoButton.setVisibility(View.VISIBLE);
 
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.setMargins(0,0,WindowSize.convertDpToPixel(14),WindowSize.convertDpToPixel(2));
-                holder.date.setLayoutParams(params);
-
-                holder.vStatus.setVisibility(View.VISIBLE);
+//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
+//                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
+//                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                params.setMargins(0,0,WindowSize.convertDpToPixel(14),WindowSize.convertDpToPixel(2));
+//                holder.date.setLayoutParams(params);
+//
+//                holder.vStatus.setVisibility(View.VISIBLE);
                 holder.tvOnPhone.setVisibility(View.GONE);
 
                 if (status != null) {

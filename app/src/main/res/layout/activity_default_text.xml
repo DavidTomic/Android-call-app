@@ -14,18 +14,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/default_text"
+            android:text="@string/edit_status_text"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
         <Button
             android:id="@+id/bAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
             android:layout_alignParentRight="true"
-            android:background="@null"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/border_blue_corners"
             android:text="@string/add"
-            android:textColor="@color/blue_default" />
+            android:textColor="@color/nav_bar_button_color"
+            android:textSize="10sp" />
 
     </RelativeLayout>
 

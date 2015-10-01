@@ -43,19 +43,23 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsDetailActivity"
-            android:label="@string/title_activity_settings_detail" >
+            android:label="@string/title_activity_settings_detail"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".DefaultTextActivity"
-            android:label="@string/title_activity_default_text" >
+            android:label="@string/title_activity_default_text"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".DefaultTextDetailActivity"
-            android:label="@string/title_activity_default_text_detail" >
+            android:label="@string/title_activity_default_text_detail"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".AddContactsActivity"
-            android:label="@string/title_activity_add_contacts" >
+            android:label="@string/title_activity_add_contacts"
+            android:screenOrientation="portrait">
         </activity>
 
         <receiver android:name=".receiver.CallStateReceiver" >
@@ -76,11 +80,13 @@
 
         <activity
             android:name=".EditNotificationsActivity"
-            android:label="@string/title_activity_edit_notifications" >
+            android:label="@string/title_activity_edit_notifications"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

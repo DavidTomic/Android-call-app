@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
     public static final int EDIT_PASSWORD = 3;
     public static final int EDIT_NAME = 4;
     public static final int EDIT_EMAIL = 5;
+    public static final int EDIT_VOICEMAIL = 6;
 
     private int CURRENT_EDITING = 0;
 
@@ -100,6 +102,15 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
                 SendMessageTask task4 = new SendMessageTask(this, getUpdateAccountParams());
                 task4.execute();
 
+                break;
+            case EDIT_VOICEMAIL:
+                String number = etValue.getText().toString();
+
+                if (number.length()>0){
+                    Prefs.setVoiceMailNumber(this, number);
+                }
+
+                finish();
                 break;
         }
 
@@ -161,10 +172,27 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
                     tvLabel.setText(getString(R.string.email));
 
                     break;
+                case EDIT_VOICEMAIL:
+                    tvLabel.setText(getString(R.string.voice_mail));
+
+                    TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                    String voiceMailNumber = Prefs.getVoiceMailNumber(this);
+
+                    if (!voiceMailNumber.contentEquals("")){
+                        etValue.setText(voiceMailNumber);
+
+                    }else {
+                        voiceMailNumber = tm.getVoiceMailNumber();
+
+                        if (voiceMailNumber != null && voiceMailNumber.length()>0){
+                            etValue.setText(voiceMailNumber);
+                        }
+                    }
+
+                    break;
             }
         }
     }
-
 
     public void setLocale(String lang) {
 
@@ -184,7 +212,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
         i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }
-
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {

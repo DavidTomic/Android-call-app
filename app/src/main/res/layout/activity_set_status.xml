@@ -16,7 +16,8 @@
             android:background="@color/tab_bar_background"
             android:gravity="center"
             android:text="@string/set_status"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
@@ -36,10 +37,10 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:background="@drawable/red_circle" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_red_selector" />
 
             </LinearLayout>
 
@@ -50,10 +51,10 @@
                 android:layout_weight="1"
                 android:gravity="center">
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:background="@drawable/yellow_circle" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_yellow_selector" />
             </LinearLayout>
 
             <LinearLayout
@@ -61,28 +62,23 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/gray_light"
                 android:gravity="center">
 
-                <View
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:background="@drawable/green_circle" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_green_selector" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/gray_light"></View>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="0dp"
             android:text="@string/ph_status_text"
             android:textColor="@color/black" />
 
@@ -90,6 +86,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="15dp">
 
 
@@ -101,6 +98,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_toLeftOf="@+id/bSelect"
                 android:background="@color/tab_bar_background"
+                android:maxLength="40"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:singleLine="true"
@@ -113,12 +111,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+
                 android:background="@color/gray_light"
                 android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:minWidth="80dp"
                 android:text="@string/select"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
@@ -126,19 +122,20 @@
 
         </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/rlStartTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tvStartTimeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:text="@string/i_am_away_from"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
@@ -147,42 +144,44 @@
                 android:id="@+id/tvStartTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="3dp"
+                android:layout_toRightOf="@+id/tvStartTimeLabel"
                 android:text="@string/now"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="13sp" />
 
 
             <Button
                 android:id="@+id/bSetStartTime"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
+                android:layout_alignParentRight="true"
                 android:background="@color/gray_light"
                 android:gravity="center"
                 android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:minWidth="80dp"
                 android:text="@string/set_time"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/rlEndTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:gravity="center_vertical">
 
             <TextView
+                android:id="@+id/tvEndTimeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:text="@string/i_am_online_at"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
@@ -191,29 +190,29 @@
                 android:id="@+id/tvEndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/tvEndTimeLabel"
                 android:text="-:-"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="13sp" />
 
 
             <Button
                 android:id="@+id/bSetEndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
+                android:layout_alignParentRight="true"
                 android:background="@color/gray_light"
                 android:gravity="center"
                 android:minHeight="0dp"
-                android:minWidth="0dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:minWidth="80dp"
                 android:text="@string/set_time"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
     </LinearLayout>

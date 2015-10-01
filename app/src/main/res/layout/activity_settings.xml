@@ -246,7 +246,7 @@
             android:background="@color/black_80"></View>
 
         <RelativeLayout
-            android:id="@+id/rlDefaultText"
+            android:id="@+id/rlVoicemail"
             android:layout_width="match_parent"
             android:layout_height="50dp">
 
@@ -255,7 +255,50 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="@string/default_text"
+                android:text="@string/voice_mail"
+                android:textColor="@color/black" />
+
+
+            <ImageView
+                android:id="@+id/rArrow33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/right_arrow" />
+
+            <TextView
+                android:id="@+id/tvVoicemail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/rArrow33"
+                android:text="@string/ph_number"
+                android:textColor="@color/blue_default" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="20dp"
+            android:background="@color/black_80"></View>
+
+        <RelativeLayout
+            android:id="@+id/rlDefaultText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/holder34"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/edit_status_text"
                 android:textColor="@color/black" />
 
 
@@ -272,8 +315,10 @@
                 android:id="@+id/tvDefaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
+                android:layout_toRightOf="@+id/holder34"
                 android:layout_toLeftOf="@+id/rArrow6"
                 android:textColor="@color/blue_default" />
 
@@ -368,7 +413,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:text="@string/edit_notifications"
+                android:text="@string/remove_notifications"
                 android:textColor="@color/black" />
 
 

@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
+        android:maxLength="40"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:paddingLeft="10dp" />
@@ -60,6 +61,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
         android:background="@color/blue_default"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:text="@string/save"

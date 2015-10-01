@@ -43,6 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ph_name_lastname"
+            android:singleLine="true"
             android:textColor="@color/black" />
 
         <TextView
@@ -50,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="2dp"
+            android:singleLine="true"
             android:text="@string/ph_my_status"
             android:textColor="@color/gray_light"
             android:textSize="10sp" />
@@ -61,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="10dp"
         android:layout_toLeftOf="@+id/ibInfo">
 
@@ -97,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="50dp"
+        android:layout_marginRight="55dp"
         android:visibility="gone"
         android:textSize="10sp"
         android:text="@string/on_phone"

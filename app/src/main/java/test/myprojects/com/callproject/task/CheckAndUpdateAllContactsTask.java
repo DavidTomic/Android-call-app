@@ -62,6 +62,11 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             if (contact.getPhoneNumber() == null || contact.getName() == null ||
                     TextUtils.isDigitsOnly(String.valueOf(contact.getName().charAt(0)))) continue;
 
+
+            String phoneNumberOnlyDigit = contact.getPhoneNumber();
+            phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+            contact.setPhoneNumber(phoneNumberOnlyDigit);
+
             contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
 
             contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
@@ -82,8 +87,8 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         }
         phones.close();
 
-   //     Log.i(TAG, "contactList.size() " + contactList.size());
-   //     Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
+        Log.i(TAG, "contactList.size() " + contactList.size());
+        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
 
         if (Prefs.getLastContactCount(mainActivity) < contactList.size()) {
             return true;
@@ -95,7 +100,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
-        Log.i(TAG, "result " + result);
+     //   Log.i(TAG, "result " + result);
 
         if (result) {
             Prefs.setLastContactCount(mainActivity, contactList.size());

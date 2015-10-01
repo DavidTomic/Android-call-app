@@ -29,12 +29,14 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:text="@string/ph_name_lastname"
             android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
+            android:singleLine="true"
             android:layout_height="wrap_content"
             android:paddingLeft="2dp"
             android:text="@string/ph_my_status"
@@ -48,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="10dp"
         android:layout_toLeftOf="@+id/ibInfo">
 
@@ -109,11 +111,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@+id/ibInfo"
         android:layout_marginBottom="2dp"
-        android:layout_marginRight="14dp"
+        android:layout_marginRight="10dp"
         android:text="@string/ph_date"
-        android:textColor="@color/gray_light"
+        android:textColor="@color/gray_button"
         android:textSize="8sp" />
 
     <Button

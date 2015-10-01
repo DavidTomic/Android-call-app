@@ -80,57 +80,87 @@
         android:layout_height="1px"
         android:background="@color/tab_bar_background" />
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:weightSum="3">
+        android:layout_height="50dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray_light_2">
+
+            <Button
+                android:id="@+id/bSetTime"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:layout_marginRight="5dp"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:text="@string/set_time"
+                android:textColor="@color/blue_default" />
+
+        </RelativeLayout>
 
 
         <LinearLayout
-            android:id="@+id/llRedStatus"
-            android:layout_width="0dp"
+            android:id="@+id/llStatusHolder"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
-            <ImageView
-                android:id="@+id/bStatusRed"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_red_selector" />
+
+            <LinearLayout
+                android:id="@+id/llRedStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusRed"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_red_selector" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llYellowStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusYellow"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_yellow_selector" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGreenStatus"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/bStatusGreen"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/status_green_selector" />
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/llYellowStatus"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
 
-            <ImageView
-                android:id="@+id/bStatusYellow"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_yellow_selector" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llGreenStatus"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/bStatusGreen"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/status_green_selector" />
-        </LinearLayout>
-    </LinearLayout>
-
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

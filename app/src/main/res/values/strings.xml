@@ -134,4 +134,16 @@
     <string name="voice_mail">Voicemail</string>
     <string name="voice_mail_number">Voicemail number:</string>
 
+    //strings for translation from 30.09.2015
+    <string name="set_red_status_to">Set red status to:</string>
+    <string name="set_red_status_from">Set red status from:</string>
+    <string name="set_yellow_status_from">Set yellow status from:</string>
+    <string name="set_yellow_status_to">Set yellow status to:</string>
+    <string name="please_enter_your_voicemail">Please enter your voicemail number in application settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="choose_status_text">Choose status text</string>
+    <string name="edit_status_text">Edit status text</string>
+    <string name="remove_notifications">Remove notifications</string>
+    <string name="remove_notification">Remove notification</string>
+
 </resources>

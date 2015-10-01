@@ -36,6 +36,7 @@ public class User {
     private String statusEndTime;
 
     private int iAmLiveSeconds;
+    private int requestStatusInfoSeconds;
 
     private List<Contact> contactList = new ArrayList<>();
     private List<String> checkPhoneNumberList = new ArrayList<>();
@@ -47,6 +48,14 @@ public class User {
     }
 
     //Getters and Setters
+
+    public int getRequestStatusInfoSeconds() {
+        return requestStatusInfoSeconds;
+    }
+
+    public void setRequestStatusInfoSeconds(int requestStatusInfoSeconds) {
+        this.requestStatusInfoSeconds = requestStatusInfoSeconds;
+    }
 
     public String getStatusEndTime() {
         return statusEndTime;
@@ -206,6 +215,11 @@ public class User {
             if (contact.getPhoneNumber() == null || contact.getName() == null ||
                     TextUtils.isDigitsOnly(String.valueOf(contact.getName().charAt(0)))) continue;
 
+
+            String phoneNumberOnlyDigit = contact.getPhoneNumber();
+            phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+            contact.setPhoneNumber(phoneNumberOnlyDigit);
+
             contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
 
             contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
@@ -221,7 +235,7 @@ public class User {
 
             contact.setLookupKey(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY)));
 
-            Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
+          //  Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
             contactList.add(contact);
         }
         phones.close();
