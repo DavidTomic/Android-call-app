@@ -79,6 +79,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 return;
             }
 
+            bConfirm.setVisibility(View.INVISIBLE);
             pbProgress.setVisibility(View.VISIBLE);
 
             SendMessageTask task = new SendMessageTask(this, getLogInParams());
@@ -93,6 +94,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 return;
             }
 
+            bConfirm.setVisibility(View.INVISIBLE);
             pbProgress.setVisibility(View.VISIBLE);
             SendMessageTask task = new SendMessageTask(this, getCreateAccountParams());
             task.execute();
@@ -168,12 +170,14 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         Toast.makeText(this, getString(R.string.fill_all_data), Toast.LENGTH_SHORT).show();
         pbProgress.setVisibility(View.GONE);
+        bConfirm.setVisibility(View.VISIBLE);
     }
 
     private void showErrorTryAgain() {
 
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
         pbProgress.setVisibility(View.GONE);
+        bConfirm.setVisibility(View.VISIBLE);
     }
 
     private SoapObject getCreateAccountParams() {
@@ -398,6 +402,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     Toast.makeText(this, getString(R.string.user_already_exists),
                             Toast.LENGTH_SHORT).show();
                     pbProgress.setVisibility(View.GONE);
+                    bConfirm.setVisibility(View.VISIBLE);
                 } else {
                     showErrorCheckData();
                 }
