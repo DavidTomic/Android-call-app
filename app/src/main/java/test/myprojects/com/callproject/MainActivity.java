@@ -39,7 +39,6 @@ import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
 import test.myprojects.com.callproject.tabFragments.KeypadFragment;
 import test.myprojects.com.callproject.tabFragments.RecentFragment;
-import test.myprojects.com.callproject.tabFragments.SettingsFragment;
 import test.myprojects.com.callproject.task.CheckAndUpdateAllContactsTask;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.ReclickableTabHost;
@@ -123,7 +122,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         mPollHandler.removeCallbacks(mPollRunnable);
     }
 
-
     private void setTabs() {
         addTab(getString(R.string.favorites), R.drawable.tab_favorites, FavoritFragment.class);
         addTab(getString(R.string.recents), R.drawable.tab_recents, RecentFragment.class);
@@ -134,8 +132,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         addTab(getString(R.string.voice_mail), R.drawable.answer_machine_icon, AnswerMachineFragment.class);
 
     }
-
-
 
     private void addTab(String labelId, int drawableId, Class<?> c) {
 
@@ -458,7 +454,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         request.addProperty(pi);
 
         long time = Prefs.getLastCallTime(this);
-        String endTime;
+        String lastCallTime;
         if (time == 0) {
 
             List<Contact> contactList = User.getInstance(this).getContactList();
@@ -468,26 +464,25 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 c.setStatusText(null);
             }
 
-            endTime = "2000-01-01T00:00:00";
-            Prefs.setLastCallTime(this, System.currentTimeMillis());
+            lastCallTime = "2000-01-01T00:00:00";
         } else {
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            endTime = sdf.format(new Date(time));
-            Prefs.setLastCallTime(this, time);
+            lastCallTime = sdf.format(new Date(time));
         }
+
+        Prefs.setLastCallTime(this, System.currentTimeMillis());
 
      //   Log.i(TAG, "endTime " + endTime);
 
 
         pi = new PropertyInfo();
         pi.setName("LastCall");
-        pi.setValue(endTime);
+        pi.setValue(lastCallTime);
         pi.setType(String.class);
         request.addProperty(pi);
-
 
         return request;
     }
