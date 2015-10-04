@@ -343,6 +343,15 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         Status status = User.getInstance(getActivity()).getStatus();
 
+        long currentMillies = System.currentTimeMillis();
+
+        if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+            status = User.getInstance(getActivity()).getTimerStatus();
+
+            //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
+        }
+
         Log.i(TAG, "myStatus " + status);
 
         if (status != null) {
@@ -762,6 +771,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
             adapter.refreshOnContactCountChange();
+            refreshStatusUI();
         }
     };
 

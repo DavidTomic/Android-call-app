@@ -88,6 +88,10 @@
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait">
         </activity>
+
+        <receiver
+            android:name=".receiver.TimerBroadcastReceiver" >
+        </receiver>
     </application>
 
 </manifest>

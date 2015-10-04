@@ -147,7 +147,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="3dp"
                 android:layout_toRightOf="@+id/tvStartTimeLabel"
-                android:text="@string/now"
+                android:text="-:-"
                 android:textColor="@color/black"
                 android:textSize="13sp" />
 

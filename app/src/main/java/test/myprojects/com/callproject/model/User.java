@@ -32,8 +32,10 @@ public class User {
 
     private String smsInviteText;
 
-    private String statusStartTime;
-    private String statusEndTime;
+    private long statusStartTime;
+    private long statusEndTime;
+
+    private Status timerStatus;
 
     private int iAmLiveSeconds;
     private int requestStatusInfoSeconds;
@@ -48,6 +50,13 @@ public class User {
     }
 
     //Getters and Setters
+    public Status getTimerStatus() {
+        return timerStatus;
+    }
+
+    public void setTimerStatus(Status timerStatus) {
+        this.timerStatus = timerStatus;
+    }
 
     public int getRequestStatusInfoSeconds() {
         return requestStatusInfoSeconds;
@@ -57,21 +66,37 @@ public class User {
         this.requestStatusInfoSeconds = requestStatusInfoSeconds;
     }
 
-    public String getStatusEndTime() {
-        return statusEndTime;
-    }
-
-    public void setStatusEndTime(String statusEndTime) {
-        this.statusEndTime = statusEndTime;
-    }
-
-    public String getStatusStartTime() {
+    public long getStatusStartTime() {
         return statusStartTime;
     }
 
-    public void setStatusStartTime(String statusStartTime) {
+    public void setStatusStartTime(long statusStartTime) {
         this.statusStartTime = statusStartTime;
     }
+
+    public long getStatusEndTime() {
+        return statusEndTime;
+    }
+
+    public void setStatusEndTime(long statusEndTime) {
+        this.statusEndTime = statusEndTime;
+    }
+
+//    public String getStatusEndTime() {
+//        return statusEndTime;
+//    }
+//
+//    public void setStatusEndTime(String statusEndTime) {
+//        this.statusEndTime = statusEndTime;
+//    }
+//
+//    public String getStatusStartTime() {
+//        return statusStartTime;
+//    }
+//
+//    public void setStatusStartTime(String statusStartTime) {
+//        this.statusStartTime = statusStartTime;
+//    }
 
     public String getSmsInviteText() {
         return smsInviteText;

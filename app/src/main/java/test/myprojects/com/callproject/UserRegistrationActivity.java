@@ -185,7 +185,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
-        pi.setValue(etPhoneNumber.getText().toString());
+        String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+        phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+        pi.setValue(phoneNumberOnlyDigit);
         pi.setType(String.class);
         request.addProperty(pi);
 
@@ -231,7 +233,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
-        pi.setValue(etPhoneNumber.getText().toString());
+        String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+        phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+        pi.setValue(phoneNumberOnlyDigit);
         pi.setType(String.class);
         request.addProperty(pi);
 
@@ -365,7 +369,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     SoapObject accountSetupSoapObject = (SoapObject) result.getProperty("AccountSetup");
 
                     User user = User.getInstance(this);
-                    user.setPhoneNumber(etPhoneNumber.getText().toString());
+                    String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+                    phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+                    user.setPhoneNumber(phoneNumberOnlyDigit);
                     user.setPassword(etPassword.getText().toString());
                     user.setName(accountSetupSoapObject.getProperty("Name").toString());
                     user.setEmail(accountSetupSoapObject.getProperty("Email").toString());
@@ -421,7 +427,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                 if (resultStatus == 2) {
 
                     User user = User.getInstance(this);
-                    user.setPhoneNumber(etPhoneNumber.getText().toString());
+                    String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+                    phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+                    user.setPhoneNumber(phoneNumberOnlyDigit);
                     user.setPassword(etPassword.getText().toString());
                     user.setName(etName.getText().toString());
                     user.setEmail(etEmail.getText().toString());

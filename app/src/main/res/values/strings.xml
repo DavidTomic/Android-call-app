@@ -145,5 +145,6 @@
     <string name="edit_status_text">Edit status text</string>
     <string name="remove_notifications">Remove notifications</string>
     <string name="remove_notification">Remove notification</string>
+    <string name="please_correct_your_start_end_time">Please correct you start and end time</string>
 
 </resources>

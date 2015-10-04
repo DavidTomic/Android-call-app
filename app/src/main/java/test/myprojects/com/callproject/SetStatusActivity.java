@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -32,6 +33,7 @@ import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
 import test.myprojects.com.callproject.task.SendMessageTask;
 
 public class SetStatusActivity extends Activity implements View.OnClickListener, MessageInterface {
@@ -88,6 +90,15 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     @OnClick(R.id.bConfirm)
     public void confirm() {
+
+        if (selectedStartTime < System.currentTimeMillis()
+                || selectedEndTime < System.currentTimeMillis() ||
+                (selectedStartTime != 0 && selectedEndTime == 0) ||
+                (selectedEndTime !=0 && selectedStartTime == 0)){
+             Toast.makeText(this, getString(R.string.please_correct_your_start_end_time),
+                     Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         List<String> defaultTextList = Prefs.getDefaultTexts(this);
 
@@ -154,37 +165,13 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 if (resultStatus == 2) {
 
 
-                    if (tvStartTime.getText().toString().contentEquals(getString(R.string.now))) {
-                        User.getInstance(this).setStatus(currentStatus);
-                        User.getInstance(this).setStatusText(etStatus.getText().toString());
-                    }
-
-
-                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-
-//                    String startTime;
-//                    if (selectedStartTime - System.currentTimeMillis() <= 0) {
-//                        startTime = sdf.format(new Date(System.currentTimeMillis()+10000));
-//
-//                    } else {
-//                        startTime = sdf.format(new Date(selectedStartTime));
-//                    }
-                    User.getInstance(this).setStatusStartTime(sdf.format(new Date(selectedStartTime)));
-
-//
-//                    String endTime;
-//                    if (selectedEndTime - System.currentTimeMillis() <= 0) {
-//                        endTime = "2100-01-01T00:00:00";
-//
-//                    } else {
-//                        endTime = sdf.format(new Date(selectedEndTime));
-//                    }
-                    User.getInstance(this).setStatusEndTime(sdf.format(new Date(selectedEndTime)));
-
+                    User.getInstance(this).setTimerStatus(currentStatus);
+                    User.getInstance(this).setStatusStartTime(selectedStartTime);
+                    User.getInstance(this).setStatusEndTime(selectedEndTime);
 
                     Prefs.setUserData(this, User.getInstance(this));
+
+                    TimerBroadcastReceiver.SetAlarm(this, selectedStartTime);
 
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
                             Toast.LENGTH_SHORT).show();
@@ -241,34 +228,90 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
             etStatus.setText(User.getInstance(this).getStatusText());
 
 //        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//        String input = "2100-01-01T00:00:00";
+//        //    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
 //
 //        Date date = null;
 //        try {
-//            date = sdf.parse(input);
+//            date = sdf.parse("2100-01-01T00:00:00");
 //            long milliseconds = date.getTime();
-//            selectedEndTime = milliseconds - (new Date()).getTime();
 //
+//            Log.i(TAG, "milliseconds " + milliseconds);
 //        } catch (ParseException e) {
 //            e.printStackTrace();
 //        }
 
 
+//        String startTimeInput = User.getInstance(this).getStatusStartTime();
+//        String endTimeInput = User.getInstance(this).getStatusEndTime();
+//
+//    //    Log.i(TAG, "startTimeInput " + startTimeInput);
+//
+//        if (startTimeInput.length() > 0) {
+//            try {
+//                Date date = sdf.parse(startTimeInput);
+//                long milliseconds = date.getTime();
+//
+//          //      Log.i(TAG, "startTimeInput milliseconds " + milliseconds);
+//
+//                if (milliseconds > System.currentTimeMillis()){
+//                    selectedStartTime = milliseconds;
+//                    tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+//                            (new java.util.Date(selectedStartTime)));
+//                }
+//
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//      //  Log.i(TAG, "endTimeInput " + endTimeInput);
+//
+//        if (endTimeInput.length() > 0 && !endTimeInput.contentEquals("2100-01-01T00:00:00")) {
+//            try {
+//                Date date = sdf.parse(endTimeInput);
+//                long milliseconds = date.getTime();
+//
+//                if (milliseconds > System.currentTimeMillis()){
+//                    selectedEndTime = milliseconds;
+//                    tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+//                            (new java.util.Date(selectedEndTime)));
+//                }
+//
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
+        long startTimeInput = User.getInstance(this).getStatusStartTime();
+        long endTimeInput = User.getInstance(this).getStatusEndTime();
+
+        if (startTimeInput > 0 && endTimeInput > 0 && endTimeInput > startTimeInput
+                && startTimeInput > System.currentTimeMillis()
+                && endTimeInput > System.currentTimeMillis()) {
+
+            selectedStartTime = startTimeInput;
+            tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+                    (new java.util.Date(selectedStartTime)));
+
+            selectedEndTime = endTimeInput;
+            tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+                    (new java.util.Date(selectedEndTime)));
+
+        }
 
     }
 
     private void showDateTimeDialog() {
         final View dialogView = View.inflate(this, R.layout.date_time_picker_dialog, null);
+        final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+        final TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
+        timePicker.setIs24HourView(DateFormat.is24HourFormat(SetStatusActivity.this));
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
-                TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
 
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(),
                         datePicker.getMonth(),
@@ -278,33 +321,31 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
 
                 if (startTimeclicked) {
-                    selectedStartTime = calendar.getTimeInMillis();
+                    selectedStartTime = calendar.getTimeInMillis()+(1000 * 60);
 
                     Log.i(TAG, "time " + selectedStartTime);
 
-
-                    if (selectedEndTime == 0){
-                        if (selectedStartTime - System.currentTimeMillis() > 0) {
-
-                            tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-                                    (new java.util.Date(selectedStartTime)));
-
-                        } else {
-                            selectedStartTime = 0;
-                            tvStartTime.setText(getString(R.string.now));
-                        }
-                    }else {
-                        if (selectedStartTime < selectedEndTime && selectedStartTime - System.currentTimeMillis() > 0) {
+                    if (selectedStartTime > System.currentTimeMillis()) {
+                        if (selectedEndTime == 0) {
 
                             tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                     (new java.util.Date(selectedStartTime)));
 
                         } else {
-                            selectedStartTime = 0;
-                            tvStartTime.setText(getString(R.string.now));
+                            if (selectedStartTime < selectedEndTime) {
+
+                                tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+                                        (new java.util.Date(selectedStartTime)));
+
+                            } else {
+                                selectedStartTime = 0;
+                                tvStartTime.setText("-:-");
+                            }
                         }
+                    } else {
+                        selectedStartTime = 0;
+                        tvStartTime.setText("-:-");
                     }
-
 
 
                 } else {
@@ -312,7 +353,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     Log.i(TAG, "time " + selectedEndTime);
 
-                    if (selectedEndTime > selectedStartTime && selectedEndTime - System.currentTimeMillis() > 0) {
+                    if (selectedEndTime > selectedStartTime && selectedEndTime > System.currentTimeMillis()) {
                         tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedEndTime)));
                     } else {
@@ -382,13 +423,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        String startTime;
-        if (selectedStartTime - System.currentTimeMillis() <= 0) {
-            startTime = sdf.format(new Date(System.currentTimeMillis() + 10000));
-
-        } else {
-            startTime = sdf.format(new Date(selectedStartTime));
-        }
+        String startTime = sdf.format(new Date(selectedStartTime));
 
         Log.i(TAG, "startTime " + startTime);
 
@@ -398,14 +433,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         pi.setType(String.class);
         request.addProperty(pi);
 
-
-        String endTime;
-        if (selectedEndTime - System.currentTimeMillis() <= 0) {
-            endTime = "2100-01-01T00:00:00";
-
-        } else {
-            endTime = sdf.format(new Date(selectedEndTime));
-        }
+        String endTime = sdf.format(new Date(selectedEndTime));
 
         Log.i(TAG, "endTime " + endTime);
 

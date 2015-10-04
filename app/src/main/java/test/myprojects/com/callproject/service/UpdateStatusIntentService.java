@@ -81,18 +81,6 @@ public class UpdateStatusIntentService extends IntentService {
         request.addProperty(pi);
 
         pi = new PropertyInfo();
-        pi.setName("StartTime");
-        pi.setValue(User.getInstance(this).getStatusStartTime());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("EndTime");
-        pi.setValue(User.getInstance(this).getStatusEndTime());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
         pi.setName("Text");
         pi.setValue(User.getInstance(this).getStatusText());
         pi.setType(String.class);

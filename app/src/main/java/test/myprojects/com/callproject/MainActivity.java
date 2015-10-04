@@ -282,8 +282,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                     User user = User.getInstance(this);
 
-                    user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
-                  //  user.setEndTime("" + result.getProperty("EndTimeStatus"));
                     user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
                     int updateStatusOnList = Integer.valueOf(result.getProperty("UpdateStatusOnList").toString());
@@ -299,17 +297,20 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     }
                     user.setStatusText(statusText);
 
+
+                //    user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
+
                     String statusStartTime = "" + result.getProperty("StartTimeStatus");
                     if (statusStartTime.contentEquals("anyType{}")){
                         statusStartTime = "2000-01-01T00:00:00";
                     }
-                    user.setStatusStartTime(statusStartTime);
+              //      user.setStatusStartTime(statusStartTime);
 
                     String statusEndTime = "" + result.getProperty("EndTimeStatus");
                     if (statusEndTime.contentEquals("anyType{}")){
                         statusEndTime = "2000-01-01T00:00:00";
                     }
-                    user.setStatusEndTime(statusEndTime);
+              //      user.setStatusEndTime(statusEndTime);
 
                  //   Log.i(TAG, "lang user " + user.getLanguage().getValue());
 

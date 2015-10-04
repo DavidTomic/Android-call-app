@@ -28,8 +28,9 @@ public class Prefs {
     private static final String PREFS_USER_LOGED_IN = "user_loged_in";
     private static final String PREFS_I_AM_LIVE_SECONS = "i_am_live_seconds";
     private static final String PREFS_REQUEST_STATUS_INFO_SECONDS = "request_status_info_seconds";
-    private static final String PREFS_USER_STATUS_START_TIME = "status_start_time";
-    private static final String PREFS_USER_STATUS_END_TIME = "status_end_time";
+    private static final String PREFS_USER_STATUS_START_TIME = "status_start_time_2";
+    private static final String PREFS_USER_STATUS_END_TIME = "status_end_time_2";
+    private static final String PREFS_USER_TIMER_STATUS = "status_timer";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time";
     public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
@@ -53,8 +54,9 @@ public class Prefs {
         editor.putBoolean(PREFS_USER_LOGED_IN, user.isLogedIn());
         editor.putInt(PREFS_I_AM_LIVE_SECONS, user.getiAmLiveSeconds());
         editor.putInt(PREFS_REQUEST_STATUS_INFO_SECONDS, user.getRequestStatusInfoSeconds());
-        editor.putString(PREFS_USER_STATUS_START_TIME, user.getStatusStartTime());
-        editor.putString(PREFS_USER_STATUS_END_TIME, user.getStatusEndTime());
+        editor.putLong(PREFS_USER_STATUS_START_TIME, user.getStatusStartTime());
+        editor.putLong(PREFS_USER_STATUS_END_TIME, user.getStatusEndTime());
+        editor.putInt(PREFS_USER_TIMER_STATUS, user.getTimerStatus().getValue());
         editor.commit();
     }
     public static void loadUserData(Context context) {
@@ -73,8 +75,9 @@ public class Prefs {
         user.setLogedIn(prefs.getBoolean(PREFS_USER_LOGED_IN, false));
         user.setiAmLiveSeconds(prefs.getInt(PREFS_I_AM_LIVE_SECONS, 240));
         user.setRequestStatusInfoSeconds(prefs.getInt(PREFS_REQUEST_STATUS_INFO_SECONDS, 60));
-        user.setStatusStartTime(prefs.getString(PREFS_USER_STATUS_START_TIME, "2000-01-01T00:00:00"));
-        user.setStatusEndTime(prefs.getString(PREFS_USER_STATUS_END_TIME, "2000-01-01T00:00:00"));
+        user.setStatusStartTime(prefs.getLong(PREFS_USER_STATUS_START_TIME, 0));
+        user.setStatusEndTime(prefs.getLong(PREFS_USER_STATUS_END_TIME, 0));
+        user.setTimerStatus(Status.values()[prefs.getInt(PREFS_USER_TIMER_STATUS, 1)]);
     }
 
 

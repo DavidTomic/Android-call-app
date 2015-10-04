@@ -50,9 +50,11 @@ import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsActivity;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.Util.WindowSize;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
@@ -68,7 +70,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     private List<Contact> favoritList = new ArrayList<>();
     private FavoritAdapter favoritAdapter;
     private SwipeMenuListView swipeMenuListView;
-    private boolean editEnabled;
+    private boolean editEnabled, swipeCreatorCreated;
 
     private int currentStatus;
 
@@ -184,42 +186,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 }
             });
 
-
-            SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-                @Override
-                public void create(SwipeMenu menu) {
-                    // create "delete" item
-                    SwipeMenuItem deleteItem = new SwipeMenuItem(
-                            getActivity().getApplicationContext());
-                    // set item background
-                    deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                            0x3F, 0x25)));
-                    // set item width
-                    deleteItem.setWidth(120);
-
-                    deleteItem.setTitle("Delete");
-
-                    deleteItem.setTitleSize(18);
-                    // set item title font color
-                    deleteItem.setTitleColor(Color.WHITE);
-                    // add to menu
-                    menu.addMenuItem(deleteItem);
-                }
-            };
-
-            // set creator
-            swipeMenuListView.setMenuCreator(creator);
-
-
-            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                    removeFromFavorites(favoritList.get(position));
-                    // false : close the menu; true : not close the menu
-                    return false;
-                }
-            });
+            setMenuCreator();
 
 
             llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
@@ -319,6 +286,82 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         }
 
         return rootView;
+    }
+
+    private void setMenuCreator(){
+
+        final List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
+
+//        if (checkPhoneList.size() == 0){
+//            return;
+//        }
+//
+//        if (swipeCreatorCreated){
+//            return;
+//        }
+//        swipeCreatorCreated = true;
+
+
+        Log.i(TAG, "HERE");
+
+        final SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+
+                Log.i(TAG, "CREATE " + menu.getViewType());
+
+                Contact contact = favoritList.get(menu.getViewType());
+                String text = getString(R.string.invite);
+
+                if (checkPhoneList.contains(contact.getPhoneNumber())) {
+
+                    if (contact.getStatus() == null) {
+                        text = getString(R.string.add_contact);
+                    } else {
+
+                        Notification notification = DataBase.getNotificationWithPhoneNumber
+                                (DataBase.getInstance(getActivity()).getWritableDatabase(), contact.getPhoneNumber());
+
+                        if (notification != null){
+                            text = getString(R.string.remove_notification);
+                        }else {
+                            text = getString(R.string.set_notification);
+                        }
+
+                    }
+
+                }
+
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getActivity().getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(getResources().getColor(R.color.blue_default)));
+                // set item width
+                deleteItem.setWidth(120);
+
+                deleteItem.setTitle(text);
+
+                deleteItem.setTitleSize(16);
+                // set item title font color
+                deleteItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+        // set creator
+        swipeMenuListView.setMenuCreator(creator);
+
+        swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                removeFromFavorites(favoritList.get(position));
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
     }
 
     private void closeSwipeView(){
@@ -474,6 +517,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.vStatusGreen.setSelected(false);
             }
 
+
             return convertView;
         }
 
@@ -489,6 +533,11 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             View vStatusYellow;
             View vStatusGreen;
             TextView tvOnPhone;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
         }
     }
 
@@ -508,6 +557,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
          //   Log.i(TAG, "statusUpdateBroadcastReceiver");
             refreshFavorits();
+            refreshStatusUI();
+          //  setMenuCreator();
         }
     };
 
@@ -531,12 +582,19 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         return bitmap;
     }
 
-
     private void refreshStatusUI(){
 
         Status status = User.getInstance(getActivity()).getStatus();
 
-    //    Log.i(TAG, "myStatus " + status);
+        long currentMillies = System.currentTimeMillis();
+
+        if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+            status = User.getInstance(getActivity()).getTimerStatus();
+
+     //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
+        }
+     //   Log.i(TAG, "refreshStatusUI " + status);
 
         if (status != null) {
             switch (status) {

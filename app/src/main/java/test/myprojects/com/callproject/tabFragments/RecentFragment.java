@@ -640,6 +640,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
             Log.i(TAG, "statusUpdateBroadcastReceiver");
             recentAdapter.notifyDataSetChanged();
+            refreshStatusUI();
         }
     };
 
@@ -647,6 +648,14 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
         Status status = User.getInstance(getActivity()).getStatus();
 
+        long currentMillies = System.currentTimeMillis();
+
+        if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+            status = User.getInstance(getActivity()).getTimerStatus();
+
+            //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
+        }
         Log.i(TAG, "myStatus " + status);
 
         if (status != null) {
