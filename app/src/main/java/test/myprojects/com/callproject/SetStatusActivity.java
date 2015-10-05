@@ -195,6 +195,8 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
                     Prefs.setUserData(this, User.getInstance(this));
 
+                    TimerBroadcastReceiver.CancelAlarmIfNeed(this);
+
                     Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
                             Toast.LENGTH_SHORT).show();
                 }

@@ -39,11 +39,21 @@ public class TimerBroadcastReceiver extends BroadcastReceiver {
         am.set(AlarmManager.RTC_WAKEUP, time, pi);
     }
 
-    public static  void CancelAlarm(Context context)
+    public static void CancelAlarmIfNeed(Context context)
     {
-        Intent intent = new Intent(context, TimerBroadcastReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
+
+        long currentMillies = System.currentTimeMillis();
+
+        if (currentMillies > User.getInstance(context).getStatusStartTime()
+                && currentMillies < User.getInstance(context).getStatusEndTime()){
+
+            Intent intent = new Intent(context, TimerBroadcastReceiver.class);
+            PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(sender);
+        }
+
+
+
     }
 }

@@ -150,11 +150,11 @@
         android:layout_height="1px"
         android:background="@color/tab_bar_background" />
 
-    <com.baoyz.swipemenulistview.SwipeMenuListView
-        android:id="@+id/swipeMenuListView"
+    <test.myprojects.com.callproject.view.PullToRefreshStickyList
+        android:id="@+id/stickSwipeList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/favorit_list_divider"
-        android:dividerHeight="1px" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
 </LinearLayout>

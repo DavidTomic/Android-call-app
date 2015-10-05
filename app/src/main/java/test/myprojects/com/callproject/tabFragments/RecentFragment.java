@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -40,18 +43,24 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.SetStatusActivity;
 import test.myprojects.com.callproject.SettingsActivity;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.Util.WindowSize;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
+import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
+import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,6 +80,9 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     private int rightMargin = 0;
     private boolean moveWasActive = false;
 
+    private PullToRefreshStickyList stlist;
+    private StickyAdapter adapter;
+
     @Bind(R.id.llStatusHolder)
     LinearLayout llStatusHolder;
 
@@ -88,8 +100,8 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         startActivity(new Intent(getActivity(), SetStatusActivity.class));
     }
 
-    @Bind(R.id.swipeMenuListView)
-    SwipeMenuListView swipeMenuListView;
+//    @Bind(R.id.swipeMenuListView)
+//    SwipeMenuListView swipeMenuListView;
 
     @Bind(R.id.bAll) Button bAll;
     @Bind(R.id.bUnanswer) Button bUnanswer;
@@ -126,14 +138,22 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         if (editEnabled){
             bEdit.setText(getString(R.string.edit));
             editEnabled=false;
-            swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+         //   swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
         }else {
-            swipeMenuListView.setSwipeDirection(0);
+          //  swipeMenuListView.setSwipeDirection(0);
             bEdit.setText(getString(R.string.done));
             editEnabled=true;
         }
 
-        recentAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void createListAdapter(int position) {
+
+        adapter = new StickyAdapter(getActivity());
+        stlist.getRefreshableView().setAdapter(adapter);
+
+        stlist.getRefreshableView().setSelection(position);
     }
 
     @Bind(R.id.bStatusRed) ImageView bStatusRed;
@@ -145,8 +165,6 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     public void settingsClicked(){
         startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
-
-    private RecentAdapter recentAdapter;
 
     public RecentFragment() {
         // Required empty public constructor
@@ -162,52 +180,19 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             //       Log.i(TAG, "onCreateView inflate");
             rootView = inflater.inflate(R.layout.fragment_recent, container, false);
             ButterKnife.bind(this, rootView);
-            recentAdapter = new RecentAdapter(getActivity());
-            swipeMenuListView.setAdapter(recentAdapter);
+            stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
 
-            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    dialNumber(recentList.get(position).getPhoneNumber());
-                }
-            });
+            createListAdapter(0);
 
-
-            SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-                @Override
-                public void create(SwipeMenu menu) {
-                    // create "delete" item
-                    SwipeMenuItem deleteItem = new SwipeMenuItem(
-                            getActivity().getApplicationContext());
-                    // set item background
-                    deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                            0x3F, 0x25)));
-                    // set item width
-                    deleteItem.setWidth(120);
-
-                    deleteItem.setTitle("Delete");
-
-                    deleteItem.setTitleSize(18);
-                    // set item title font color
-                    deleteItem.setTitleColor(Color.WHITE);
-                    // add to menu
-                    menu.addMenuItem(deleteItem);
-                }
-            };
-
-            // set creator
-            swipeMenuListView.setMenuCreator(creator);
-
-            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                    DeleteCallById(recentList.get(position).getCallId() + "");
-
-                    // false : close the menu; true : not close the menu
-                    return false;
-                }
-            });
+//            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+//                @Override
+//                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+//                    DeleteCallById(recentList.get(position).getCallId() + "");
+//
+//                    // false : close the menu; true : not close the menu
+//                    return false;
+//                }
+//            });
 
             llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -308,6 +293,76 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         return rootView;
     }
 
+
+    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+
+
+        private LayoutInflater inflater;
+        //  private Context mContext;
+
+        public StickyAdapter(Context context) {
+            //  mContext = context;
+            inflater = LayoutInflater.from(context);
+        }
+
+
+        @Override
+        public int getCount() {
+            // TODO Auto-generated method stub
+            //       Log.i(TAG, "contactList getCount " + contactList.size());
+            //        Log.i(TAG, "contactListid " + java.lang.System.identityHashCode(contactList));
+            return recentList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            // TODO Auto-generated method stub
+            return recentList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // TODO Auto-generated method stub
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.common_list_item, parent, false);
+                holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+            RecentAdapter sadapter = new RecentAdapter(getActivity().getApplicationContext(), position);
+
+            holder.swipelist.setAdapter(sadapter);
+            return convertView;
+        }
+
+        class ViewHolder {
+            SwipeListView swipelist;
+        }
+
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup parent) {
+            return new View(parent.getContext());
+        }
+
+        @Override
+        public long getHeaderId(int i) {
+            return 0;
+        }
+    }
+
+
     private void closeSwipeView(){
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
         rightMargin = 0;
@@ -325,19 +380,23 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     public class RecentAdapter extends BaseAdapter {
 
         private LayoutInflater inflater;
+        int parent_postion;
+        SQLiteDatabase db;
 
-        public RecentAdapter(Context context) {
+        public RecentAdapter(Context context, int parent_postion) {
             inflater = LayoutInflater.from(context);
+            this.parent_postion = parent_postion;
+            db = DataBase.getInstance(context).getWritableDatabase();
         }
 
         @Override
         public int getCount() {
-            return recentList.size();
+            return 1;
         }
 
         @Override
         public Object getItem(int position) {
-            return recentList.get(position);
+            return null;
         }
 
         @Override
@@ -347,7 +406,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.recent_list_item, parent, false);
@@ -362,12 +421,14 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
                 holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
+                holder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
+                holder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            final Contact contact = recentList.get(position);
+            final Contact contact = recentList.get(parent_postion);
 
             String name = contact.getName();
             if (name == null) name = contact.getPhoneNumber();
@@ -402,26 +463,6 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                     (new java.util.Date(contact.getDate()));
             holder.date.setText(date);
 
-            holder.infoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "info " + contact.getName());
-                    Log.i(TAG, "contactId " + contact.getRecordId());
-
-                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
-                    contactDetailIntent.putExtra("name", contact.getName());
-                    contactDetailIntent.putExtra("contactId", contact.getRecordId());
-                    getActivity().startActivity(contactDetailIntent);
-                }
-            });
-
-            holder.bDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DeleteCallById(contact.getCallId() + "");
-                }
-            });
-
 
             if (editEnabled){
                 holder.bDelete.setVisibility(View.VISIBLE);
@@ -439,7 +480,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 holder.statusText.setVisibility(View.GONE);
             }
 
-         //   Log.i(TAG, "status " + contact.getStatus());
+            Log.i(TAG, "status " + contact.getStatus());
 
             Status status = contact.getStatus();
 
@@ -500,6 +541,112 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 }
             }
 
+
+            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
+
+            if (checkPhoneList.contains(contact.getPhoneNumber())) {
+
+                if (contact.getStatus() == null) {
+                    holder.edit_btn.setText(getString(R.string.add_contact));
+                } else {
+
+                    Notification notification = DataBase.getNotificationWithPhoneNumber
+                            (db, contact.getPhoneNumber());
+
+                    if (notification != null){
+                        holder.edit_btn.setText(getString(R.string.remove_notification));
+                    }else {
+                        holder.edit_btn.setText(getString(R.string.set_notification));
+                    }
+
+                }
+
+            } else {
+                holder.edit_btn.setText(getString(R.string.invite));
+            }
+
+
+            holder.edit_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
+
+                    String text = holder.edit_btn.getText().toString();
+
+                    Log.i(TAG, "text " + text);
+
+                    if (text.contentEquals(getString(R.string.invite))) {
+
+                        String smsText = User.getInstance(getActivity()).getSmsInviteText();
+
+                        if (smsText == null || smsText.length() == 0) {
+                            smsText = getString(R.string.invite_user_text);
+                        }
+
+                        Uri uri = Uri.parse("smsto:" + recentList.get(parent_postion).getPhoneNumber());
+                        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+                        it.putExtra("sms_body", smsText);
+                        it.putExtra(Intent.EXTRA_TEXT, smsText);
+                        //  it.putExtra("exit_on_sent", true);
+                        startActivity(it);
+
+
+                    } else if (text.contentEquals(getString(R.string.set_notification))) {
+                        holder.edit_btn.setText(getString(R.string.remove_notification));
+
+                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                recentList.get(parent_postion).getName(), recentList.get(parent_postion).getPhoneNumber(),
+                                recentList.get(parent_postion).getStatus().getValue());
+
+
+                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
+                        getActivity().startService(pushIntent);
+                    }else if (text.contentEquals(getString(R.string.remove_notification))) {
+                        holder.edit_btn.setText(getString(R.string.set_notification));
+
+                        Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                recentList.get(parent_postion).getPhoneNumber());
+
+                        if (notification != null)
+                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+
+                    }
+
+
+                    createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+
+                }
+            });
+
+
+            holder.infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "info " + contact.getName());
+                    Log.i(TAG, "contactId " + contact.getRecordId());
+
+                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                    contactDetailIntent.putExtra("name", contact.getName());
+                    contactDetailIntent.putExtra("contactId", contact.getRecordId());
+                    getActivity().startActivity(contactDetailIntent);
+                }
+            });
+
+            holder.bDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DeleteCallById(contact.getCallId() + "");
+                }
+            });
+
+
+            holder.rlHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialNumber(recentList.get(parent_postion).getPhoneNumber());
+                }
+            });
+
             return convertView;
         }
 
@@ -515,6 +662,8 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             View vStatusYellow;
             View vStatusGreen;
             TextView tvOnPhone;
+            Button edit_btn;
+            RelativeLayout rlHolder;
         }
     }
 
@@ -591,6 +740,15 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             int cId = User.getContactIDFromNumber(contact.getPhoneNumber(), getActivity());
             contact.setRecordId(cId);
 
+
+            if (cId != -1){
+                for (Contact c : User.getInstance(getActivity()).getContactList()) {
+                    if (c.getRecordId() == contact.getRecordId()) {
+                       contact.setStatus(c.getStatus());
+                    }
+                }
+            }
+
           //  Log.i(TAG, "cID " + contact.getRecordId());
 
             switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))) {
@@ -609,7 +767,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
         }
         cursor.close();
-        recentAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -638,8 +796,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Log.i(TAG, "statusUpdateBroadcastReceiver");
-            recentAdapter.notifyDataSetChanged();
+            refreshRecents();
             refreshStatusUI();
         }
     };
@@ -733,7 +890,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                 Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
 
-
+                TimerBroadcastReceiver.CancelAlarmIfNeed(getActivity());
             }
 
         } catch (NullPointerException ne) {

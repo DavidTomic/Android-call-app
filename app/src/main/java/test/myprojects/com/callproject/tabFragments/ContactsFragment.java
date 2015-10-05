@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,7 +21,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +53,7 @@ import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
 import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
@@ -442,7 +441,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.contact_swipe_list_item, parent, false);
+                convertView = inflater.inflate(R.layout.common_list_item, parent, false);
                 holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
             } else {
@@ -633,6 +632,8 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
                             String smsText = User.getInstance(getActivity()).getSmsInviteText();
 
+                            Log.i(TAG, "smsText " + smsText);
+
                             if (smsText == null || smsText.length() == 0) {
                                 smsText = getString(R.string.invite_user_text);
                             }
@@ -640,14 +641,17 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                             Uri uri = Uri.parse("smsto:" + contactList.get(parent_postion).getPhoneNumber());
                             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
                             it.putExtra("sms_body", smsText);
-                            it.putExtra("exit_on_sent", true);
+                            it.putExtra(Intent.EXTRA_TEXT, smsText);
+                           // it.putExtra("exit_on_sent", true);
                             startActivity(it);
 
 
-                        } else if (text.contentEquals(getString(R.string.add_contact))) {
-                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
-
-                        } else if (text.contentEquals(getString(R.string.set_notification))) {
+                        }
+//                        else if (text.contentEquals(getString(R.string.add_contact))) {
+//                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
+//
+//                        }
+                        else if (text.contentEquals(getString(R.string.set_notification))) {
                             swipeholder.edit_btn.setText(getString(R.string.remove_notification));
 
                             DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
@@ -763,6 +767,9 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
             return convertView;
         }
     }
+
+
+
 
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
@@ -924,7 +931,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                     User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                     Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
 
-
+                    TimerBroadcastReceiver.CancelAlarmIfNeed(getActivity());
                 }
 
             } catch (NullPointerException ne) {

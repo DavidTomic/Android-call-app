@@ -200,7 +200,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                                 c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
 
                                 String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
-                                if (statusText.contentEquals("anyType{}")){
+                                if (statusText.contentEquals("anyType{}") || statusText.contentEquals("(null)")){
                                     statusText = "";
                                 }
 
@@ -281,7 +281,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 }else if (resultStatus == 2){
 
                     User user = User.getInstance(this);
-
                     user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
 
                     int updateStatusOnList = Integer.valueOf(result.getProperty("UpdateStatusOnList").toString());
@@ -298,21 +297,27 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     user.setStatusText(statusText);
 
 
+
+
                 //    user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
 
-                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
-                    if (statusStartTime.contentEquals("anyType{}")){
-                        statusStartTime = "2000-01-01T00:00:00";
-                    }
-              //      user.setStatusStartTime(statusStartTime);
-
-                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
-                    if (statusEndTime.contentEquals("anyType{}")){
-                        statusEndTime = "2000-01-01T00:00:00";
-                    }
+//                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
+//                    if (statusStartTime.contentEquals("anyType{}")){
+//                        statusStartTime = "2000-01-01T00:00:00";
+//                    }
+//              //      user.setStatusStartTime(statusStartTime);
+//
+//                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
+//                    if (statusEndTime.contentEquals("anyType{}")){
+//                        statusEndTime = "2000-01-01T00:00:00";
+//                    }
               //      user.setStatusEndTime(statusEndTime);
 
-                 //   Log.i(TAG, "lang user " + user.getLanguage().getValue());
+
+
+
+
+                //    Log.i(TAG, "lang user " + user.getLanguage().getValue());
 
                     SoapObject inviteSMSSoapObject = (SoapObject) result.getProperty("InviteSMS");
                     for (int i = 0; i < inviteSMSSoapObject.getPropertyCount(); i++) {
@@ -320,10 +325,11 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                         int lang = Integer.parseInt(csInviteSMSSoapObject.getProperty("Language").toString());
 
-                    //    Log.i(TAG, "lang login " + lang);
+                      //  Log.i(TAG, "lang login " + lang);
 
                         if (lang == user.getLanguage().getValue()){
                             user.setSmsInviteText(csInviteSMSSoapObject.getProperty("SMSText").toString());
+                    //        Log.i(TAG, "getSmsInviteText " + user.getSmsInviteText());
                             break;
                         }
 

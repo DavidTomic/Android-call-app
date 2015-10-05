@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,6 +17,7 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,9 +25,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,6 +38,7 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -45,6 +51,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import test.myprojects.com.callproject.ContactDetailActivity;
 import test.myprojects.com.callproject.MainActivity;
 import test.myprojects.com.callproject.R;
@@ -58,7 +65,10 @@ import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
+import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
+import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.task.SendMessageTask;
+import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,9 +78,12 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     private static final String TAG = "FavoritFragment";
     private View rootView;
     private List<Contact> favoritList = new ArrayList<>();
-    private FavoritAdapter favoritAdapter;
-    private SwipeMenuListView swipeMenuListView;
-    private boolean editEnabled, swipeCreatorCreated;
+  //  private FavoritAdapter favoritAdapter;
+  //  private SwipeMenuListView swipeMenuListView;
+    private boolean editEnabled;
+
+    private PullToRefreshStickyList stlist;
+    private StickyAdapter adapter;
 
     private int currentStatus;
 
@@ -91,14 +104,14 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         if (editEnabled){
             bEdit.setText(getString(R.string.edit));
             editEnabled=false;
-            swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+          //  swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
         }else {
-            swipeMenuListView.setSwipeDirection(0);
+          //  swipeMenuListView.setSwipeDirection(0);
             bEdit.setText(getString(R.string.done));
             editEnabled=true;
         }
 
-        favoritAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     @Bind(R.id.bStatusRed)
@@ -127,6 +140,13 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
 
+    private void createListAdapter(int position) {
+
+        adapter = new StickyAdapter(getActivity());
+        stlist.getRefreshableView().setAdapter(adapter);
+
+        stlist.getRefreshableView().setSelection(position);
+    }
 
     @Override
     public void onResume() {
@@ -152,15 +172,13 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     private void refreshFavorits() {
         favoritList.clear();
 
-    //    Log.i(TAG, "refreshFavorits getContactList() " + User.getInstance(getActivity()).getContactList().size());
-
         for (Contact c : User.getInstance(getActivity()).getContactList()) {
             if (c.isFavorit()) {
                 favoritList.add(c);
             }
         }
 
-        favoritAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -172,21 +190,27 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             //       Log.i(TAG, "onCreateView inflate");
             rootView = inflater.inflate(R.layout.fragment_favorit, container, false);
             ButterKnife.bind(this, rootView);
-            swipeMenuListView = (SwipeMenuListView) rootView.
-                    findViewById(R.id.swipeMenuListView);
-            favoritAdapter = new FavoritAdapter(getActivity());
-            swipeMenuListView.setAdapter(favoritAdapter);
+            stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
+
+            createListAdapter(0);
 
 
-            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.i(TAG, "onItemClick");
-                    dialNumber(favoritList.get(position).getPhoneNumber());
-                }
-            });
 
-            setMenuCreator();
+//            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    Log.i(TAG, "onItemClick");
+//                    dialNumber(favoritList.get(position).getPhoneNumber());
+//                }
+//            });
+//
+//            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+//                @Override
+//                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+//                    removeFromFavorites(favoritList.get(position));
+//                    return false;
+//                }
+//            });
 
 
             llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
@@ -288,82 +312,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         return rootView;
     }
 
-    private void setMenuCreator(){
-
-        final List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
-
-//        if (checkPhoneList.size() == 0){
-//            return;
-//        }
-//
-//        if (swipeCreatorCreated){
-//            return;
-//        }
-//        swipeCreatorCreated = true;
-
-
-        Log.i(TAG, "HERE");
-
-        final SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-            @Override
-            public void create(SwipeMenu menu) {
-
-                Log.i(TAG, "CREATE " + menu.getViewType());
-
-                Contact contact = favoritList.get(menu.getViewType());
-                String text = getString(R.string.invite);
-
-                if (checkPhoneList.contains(contact.getPhoneNumber())) {
-
-                    if (contact.getStatus() == null) {
-                        text = getString(R.string.add_contact);
-                    } else {
-
-                        Notification notification = DataBase.getNotificationWithPhoneNumber
-                                (DataBase.getInstance(getActivity()).getWritableDatabase(), contact.getPhoneNumber());
-
-                        if (notification != null){
-                            text = getString(R.string.remove_notification);
-                        }else {
-                            text = getString(R.string.set_notification);
-                        }
-
-                    }
-
-                }
-
-                // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getActivity().getApplicationContext());
-                // set item background
-                deleteItem.setBackground(new ColorDrawable(getResources().getColor(R.color.blue_default)));
-                // set item width
-                deleteItem.setWidth(120);
-
-                deleteItem.setTitle(text);
-
-                deleteItem.setTitleSize(16);
-                // set item title font color
-                deleteItem.setTitleColor(Color.WHITE);
-                // add to menu
-                menu.addMenuItem(deleteItem);
-            }
-        };
-
-        // set creator
-        swipeMenuListView.setMenuCreator(creator);
-
-        swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                removeFromFavorites(favoritList.get(position));
-                // false : close the menu; true : not close the menu
-                return false;
-            }
-        });
-    }
-
     private void closeSwipeView(){
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
         rightMargin = 0;
@@ -378,6 +326,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         return false;
     }
 
+
     private void dialNumber(String phoneNumber) {
 
         if (phoneNumber.length() > 0) {
@@ -386,22 +335,96 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         }
     }
 
-    private class FavoritAdapter extends BaseAdapter {
+
+    public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+
 
         private LayoutInflater inflater;
+      //  private Context mContext;
 
-        public FavoritAdapter(Context context) {
+        public StickyAdapter(Context context) {
+          //  mContext = context;
             inflater = LayoutInflater.from(context);
         }
 
+
         @Override
         public int getCount() {
+            // TODO Auto-generated method stub
+            //       Log.i(TAG, "contactList getCount " + contactList.size());
+            //        Log.i(TAG, "contactListid " + java.lang.System.identityHashCode(contactList));
             return favoritList.size();
         }
 
         @Override
         public Object getItem(int position) {
+            // TODO Auto-generated method stub
             return favoritList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // TODO Auto-generated method stub
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = inflater.inflate(R.layout.common_list_item, parent, false);
+                holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+            FavoritAdapter sadapter = new FavoritAdapter(getActivity().getApplicationContext(), position);
+
+            holder.swipelist.setAdapter(sadapter);
+            return convertView;
+        }
+
+        class ViewHolder {
+            SwipeListView swipelist;
+        }
+
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup parent) {
+            return new View(parent.getContext());
+        }
+
+        @Override
+        public long getHeaderId(int i) {
+            return 0;
+        }
+    }
+
+
+    private class FavoritAdapter extends BaseAdapter {
+
+        private LayoutInflater inflater;
+        int parent_postion;
+        SQLiteDatabase db;
+
+        public FavoritAdapter(Context context, int parent_postion) {
+            inflater = LayoutInflater.from(context);
+            this.parent_postion = parent_postion;
+            db = DataBase.getInstance(context).getWritableDatabase();
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
         }
 
         @Override
@@ -411,7 +434,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.favorit_list_item, parent, false);
@@ -426,12 +449,17 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.vStatusYellow = convertView.findViewById(R.id.vStatusYellow);
                 holder.vStatusGreen = convertView.findViewById(R.id.vStatusGreen);
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
+                holder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
+                holder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
+
+
+
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            final Contact contact = favoritList.get(position);
+            final Contact contact = favoritList.get(parent_postion);
 
             holder.name.setText(contact.getName());
 
@@ -448,25 +476,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.ivProfile.setVisibility(View.INVISIBLE);
                 holder.tvProfile.setVisibility(View.VISIBLE);
             }
-
-            holder.infoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "info " + contact.getName());
-                    Log.i(TAG, "contactId " + contact.getRecordId());
-
-                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
-                    contactDetailIntent.putExtra("contactId", contact.getRecordId());
-                    getActivity().startActivity(contactDetailIntent);
-                }
-            });
-
-            holder.bDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeFromFavorites(contact);
-                }
-            });
 
 
             if (editEnabled){
@@ -518,6 +527,111 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             }
 
 
+            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
+
+            if (checkPhoneList.contains(contact.getPhoneNumber())) {
+
+                if (contact.getStatus() == null) {
+                    holder.edit_btn.setText(getString(R.string.add_contact));
+                } else {
+
+                    Notification notification = DataBase.getNotificationWithPhoneNumber
+                            (db, contact.getPhoneNumber());
+
+                    if (notification != null){
+                        holder.edit_btn.setText(getString(R.string.remove_notification));
+                    }else {
+                        holder.edit_btn.setText(getString(R.string.set_notification));
+                    }
+
+                }
+
+            } else {
+                holder.edit_btn.setText(getString(R.string.invite));
+            }
+
+
+            holder.edit_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
+
+                    String text = holder.edit_btn.getText().toString();
+
+                    Log.i(TAG, "text " + text);
+
+                    if (text.contentEquals(getString(R.string.invite))) {
+
+                        String smsText = User.getInstance(getActivity()).getSmsInviteText();
+
+                        if (smsText == null || smsText.length() == 0) {
+                            smsText = getString(R.string.invite_user_text);
+                        }
+
+                        Uri uri = Uri.parse("smsto:" + favoritList.get(parent_postion).getPhoneNumber());
+                        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+                        it.putExtra("sms_body", smsText);
+                        it.putExtra(Intent.EXTRA_TEXT, smsText);
+                      //  it.putExtra("exit_on_sent", true);
+                        startActivity(it);
+
+
+                    } else if (text.contentEquals(getString(R.string.set_notification))) {
+                        holder.edit_btn.setText(getString(R.string.remove_notification));
+
+                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                favoritList.get(parent_postion).getName(), favoritList.get(parent_postion).getPhoneNumber(),
+                                favoritList.get(parent_postion).getStatus().getValue());
+
+
+                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
+                        getActivity().startService(pushIntent);
+                    }else if (text.contentEquals(getString(R.string.remove_notification))) {
+                        holder.edit_btn.setText(getString(R.string.set_notification));
+
+                        Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                favoritList.get(parent_postion).getPhoneNumber());
+
+                        if (notification != null)
+                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+
+                    }
+
+
+                    createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+
+                }
+            });
+
+
+            holder.infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "info " + contact.getName());
+                    Log.i(TAG, "contactId " + contact.getRecordId());
+
+                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                    contactDetailIntent.putExtra("contactId", contact.getRecordId());
+                    getActivity().startActivity(contactDetailIntent);
+                }
+            });
+
+            holder.bDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeFromFavorites(contact);
+                }
+            });
+
+
+            holder.rlHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                   dialNumber(favoritList.get(parent_postion).getPhoneNumber());
+                }
+            });
+
+
             return convertView;
         }
 
@@ -533,13 +647,13 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             View vStatusYellow;
             View vStatusGreen;
             TextView tvOnPhone;
+            Button edit_btn;
+            RelativeLayout rlHolder;
         }
 
-        @Override
-        public int getItemViewType(int position) {
-            return position;
-        }
     }
+
+
 
     private void removeFromFavorites(Contact contact) {
         User.getInstance(getActivity()).getContactWithId(contact.getRecordId()).setFavorit(false);
@@ -558,9 +672,9 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
          //   Log.i(TAG, "statusUpdateBroadcastReceiver");
             refreshFavorits();
             refreshStatusUI();
-          //  setMenuCreator();
         }
     };
+
 
     private Bitmap getUserImage(int contactId){
 
@@ -671,6 +785,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                 Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
 
+                TimerBroadcastReceiver.CancelAlarmIfNeed(getActivity());
             }
 
         } catch (NullPointerException ne) {
