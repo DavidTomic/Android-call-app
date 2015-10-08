@@ -75,6 +75,7 @@
             android:layout_height="match_parent"
             android:background="@color/gray_light_2">
 
+            <!--
             <Button
                 android:id="@+id/bSetTime"
                 android:layout_width="80dp"
@@ -88,7 +89,7 @@
                 android:text="@string/set_time"
                 android:textColor="@color/blue_default"
                 android:textSize="14sp" />
-
+            -->
         </RelativeLayout>
 
         <LinearLayout

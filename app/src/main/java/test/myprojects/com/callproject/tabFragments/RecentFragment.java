@@ -65,7 +65,7 @@ import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecentFragment extends Fragment implements MessageInterface, View.OnTouchListener  {
+public class RecentFragment extends Fragment implements MessageInterface, View.OnTouchListener {
 
 
     private static final String TAG = "RecentFragment";
@@ -94,22 +94,15 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     LinearLayout llGreenStatus;
 
 
-    @OnClick(R.id.bSetTime)
-    public void bSetTimeClicked() {
-        closeSwipeView();
-        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-    }
-
-//    @Bind(R.id.swipeMenuListView)
-//    SwipeMenuListView swipeMenuListView;
-
-    @Bind(R.id.bAll) Button bAll;
-    @Bind(R.id.bUnanswer) Button bUnanswer;
+    @Bind(R.id.bAll)
+    Button bAll;
+    @Bind(R.id.bUnanswer)
+    Button bUnanswer;
 
     private boolean editEnabled;
 
     @OnClick(R.id.bAll)
-    public void bAllClicked(){
+    public void bAllClicked() {
         bAll.setBackgroundDrawable(getResources().getDrawable(R.drawable.all_contacts_bg_full));
         bAll.setTextColor(getResources().getColor(R.color.black));
         bUnanswer.setTextColor(getResources().getColor(R.color.nav_bar_button_color));
@@ -120,7 +113,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     }
 
     @OnClick(R.id.bUnanswer)
-    public void bUnanswerClicked(){
+    public void bUnanswerClicked() {
         bAll.setBackgroundDrawable(null);
         bUnanswer.setBackgroundDrawable(getResources().getDrawable(R.drawable.unanswer_bg_full));
         bAll.setTextColor(getResources().getColor(R.color.nav_bar_button_color));
@@ -131,18 +124,19 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     }
 
 
-    @Bind(R.id.bEdit) Button bEdit;
+    @Bind(R.id.bEdit)
+    Button bEdit;
 
     @OnClick(R.id.bEdit)
-    public void editFavorites(){
-        if (editEnabled){
+    public void editFavorites() {
+        if (editEnabled) {
             bEdit.setText(getString(R.string.edit));
-            editEnabled=false;
-         //   swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
-        }else {
-          //  swipeMenuListView.setSwipeDirection(0);
+            editEnabled = false;
+            //   swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        } else {
+            //  swipeMenuListView.setSwipeDirection(0);
             bEdit.setText(getString(R.string.done));
-            editEnabled=true;
+            editEnabled = true;
         }
 
         adapter.notifyDataSetChanged();
@@ -156,13 +150,16 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         stlist.getRefreshableView().setSelection(position);
     }
 
-    @Bind(R.id.bStatusRed) ImageView bStatusRed;
-    @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
-    @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
+    @Bind(R.id.bStatusRed)
+    ImageView bStatusRed;
+    @Bind(R.id.bStatusYellow)
+    ImageView bStatusYellow;
+    @Bind(R.id.bStatusGreen)
+    ImageView bStatusGreen;
 
 
     @OnClick(R.id.llSettings)
-    public void settingsClicked(){
+    public void settingsClicked() {
         startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
 
@@ -211,7 +208,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                         case MotionEvent.ACTION_MOVE:
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
-                          //  Log.i(TAG, "rMargin " + rightMargin);
+                            //  Log.i(TAG, "rMargin " + rightMargin);
 
                             if (rightMargin >= 0 && rightMargin < WindowSize.convertDpToPixel(120)) {
                                 params.rightMargin = rightMargin;
@@ -260,13 +257,10 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                             } else {
 
                                 if (rightMargin > WindowSize.convertDpToPixel(30)) {
-                                    rightMargin = WindowSize.convertDpToPixel(100);
-                                    params.rightMargin = rightMargin;
-                                    params.leftMargin = -rightMargin;
-                                    llStatusHolder.setLayoutParams(params);
-                                } else {
-                                    closeSwipeView();
+                                    startActivity(new Intent(getActivity(), SetStatusActivity.class));
                                 }
+                                closeSwipeView();
+
 
                             }
 
@@ -363,7 +357,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     }
 
 
-    private void closeSwipeView(){
+    private void closeSwipeView() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
         rightMargin = 0;
         params.rightMargin = rightMargin;
@@ -423,6 +417,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 holder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
                 holder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
+                holder.ivEnvelop = (ImageView) convertView.findViewById(R.id.ivEnvelop);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -445,10 +440,10 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 if (contact.getContactType() == Contact.ContactType.OUTGOING) {
                     holder.image.setImageDrawable(getResources().getDrawable(R.drawable.outcoming_call_icon));
                     holder.image.setVisibility(View.VISIBLE);
-                } else if (contact.getContactType() == Contact.ContactType.INCOMING){
+                } else if (contact.getContactType() == Contact.ContactType.INCOMING) {
                     holder.image.setImageDrawable(getResources().getDrawable(R.drawable.incoming_call_icon));
                     holder.image.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     holder.image.setVisibility(View.INVISIBLE);
                 }
 
@@ -464,30 +459,30 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             holder.date.setText(date);
 
 
-            if (editEnabled){
+            if (editEnabled) {
                 holder.bDelete.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.bDelete.setVisibility(View.GONE);
             }
 
 
             String statusText = contact.getStatusText();
-            if (statusText!=null){
+            if (statusText != null) {
                 holder.statusText.setText(contact.getStatusText());
                 holder.statusText.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.statusText.setText("");
                 holder.statusText.setVisibility(View.GONE);
             }
 
-            Log.i(TAG, "status " + contact.getStatus());
+            //  Log.i(TAG, "status " + contact.getStatus());
 
             Status status = contact.getStatus();
 
 //            Log.i(TAG, "getRecordId " + contact.getRecordId());
 //            Log.i(TAG, "name " + name);
 
-            if (contact.getRecordId() == -1){
+            if (contact.getRecordId() == -1) {
                 holder.infoButton.setVisibility(View.INVISIBLE);
 //                holder.vStatus.setVisibility(View.GONE);
                 holder.tvOnPhone.setVisibility(View.GONE);
@@ -499,7 +494,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 //                params.setMargins(0,0,WindowSize.convertDpToPixel(14),0);
 //                holder.date.setLayoutParams(params);
 
-            }else {
+            } else {
                 holder.infoButton.setVisibility(View.VISIBLE);
 
 //                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
@@ -546,23 +541,20 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
             if (checkPhoneList.contains(contact.getPhoneNumber())) {
 
-                if (contact.getStatus() == null) {
-                    holder.edit_btn.setText(getString(R.string.add_contact));
+                Notification notification = DataBase.getNotificationWithPhoneNumber
+                        (db, contact.getPhoneNumber());
+
+                if (notification != null) {
+                    holder.edit_btn.setText(getString(R.string.remove_notification));
+                    holder.ivEnvelop.setVisibility(View.VISIBLE);
                 } else {
-
-                    Notification notification = DataBase.getNotificationWithPhoneNumber
-                            (db, contact.getPhoneNumber());
-
-                    if (notification != null){
-                        holder.edit_btn.setText(getString(R.string.remove_notification));
-                    }else {
-                        holder.edit_btn.setText(getString(R.string.set_notification));
-                    }
-
+                    holder.edit_btn.setText(getString(R.string.set_notification));
+                    holder.ivEnvelop.setVisibility(View.GONE);
                 }
 
             } else {
                 holder.edit_btn.setText(getString(R.string.invite));
+                holder.ivEnvelop.setVisibility(View.GONE);
             }
 
 
@@ -601,7 +593,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
                         Intent pushIntent = new Intent(getActivity(), NotificationService.class);
                         getActivity().startService(pushIntent);
-                    }else if (text.contentEquals(getString(R.string.remove_notification))) {
+                    } else if (text.contentEquals(getString(R.string.remove_notification))) {
                         holder.edit_btn.setText(getString(R.string.set_notification));
 
                         Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
@@ -664,6 +656,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             TextView tvOnPhone;
             Button edit_btn;
             RelativeLayout rlHolder;
+            ImageView ivEnvelop;
         }
     }
 
@@ -741,15 +734,15 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             contact.setRecordId(cId);
 
 
-            if (cId != -1){
+            if (cId != -1) {
                 for (Contact c : User.getInstance(getActivity()).getContactList()) {
                     if (c.getRecordId() == contact.getRecordId()) {
-                       contact.setStatus(c.getStatus());
+                        contact.setStatus(c.getStatus());
                     }
                 }
             }
 
-          //  Log.i(TAG, "cID " + contact.getRecordId());
+            //  Log.i(TAG, "cID " + contact.getRecordId());
 
             switch (Integer.parseInt(cursor.getString(cursor.getColumnIndex(CallLog.Calls.TYPE)))) {
                 case CallLog.Calls.INCOMING_TYPE:
@@ -801,14 +794,14 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         }
     };
 
-    private void refreshStatusUI(){
+    private void refreshStatusUI() {
 
         Status status = User.getInstance(getActivity()).getStatus();
 
         long currentMillies = System.currentTimeMillis();
 
         if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
-                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()) {
             status = User.getInstance(getActivity()).getTimerStatus();
 
             //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
@@ -877,7 +870,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
-        if (result == null){
+        if (result == null) {
             return;
         }
 

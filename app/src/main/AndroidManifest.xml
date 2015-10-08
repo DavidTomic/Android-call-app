@@ -44,22 +44,22 @@
         <activity
             android:name=".SettingsDetailActivity"
             android:label="@string/title_activity_settings_detail"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".DefaultTextActivity"
             android:label="@string/title_activity_default_text"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".DefaultTextDetailActivity"
             android:label="@string/title_activity_default_text_detail"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".AddContactsActivity"
             android:label="@string/title_activity_add_contacts"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
 
         <receiver android:name=".receiver.CallStateReceiver" >
@@ -81,17 +81,21 @@
         <activity
             android:name=".EditNotificationsActivity"
             android:label="@string/title_activity_edit_notifications"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
 
-        <receiver
-            android:name=".receiver.TimerBroadcastReceiver" >
+        <receiver android:name=".receiver.TimerBroadcastReceiver" >
         </receiver>
+
+        <activity
+            android:name=".SelectLanguageActivity"
+            android:label="@string/title_activity_select_language" >
+        </activity>
     </application>
 
 </manifest>

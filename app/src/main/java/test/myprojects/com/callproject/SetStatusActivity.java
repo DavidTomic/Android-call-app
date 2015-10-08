@@ -91,14 +91,27 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
     @OnClick(R.id.bConfirm)
     public void confirm() {
 
-        if (selectedStartTime < System.currentTimeMillis()
-                || selectedEndTime < System.currentTimeMillis() ||
-                (selectedStartTime != 0 && selectedEndTime == 0) ||
-                (selectedEndTime !=0 && selectedStartTime == 0)){
-             Toast.makeText(this, getString(R.string.please_correct_your_start_end_time),
-                     Toast.LENGTH_SHORT).show();
-            return;
+        Log.i(TAG, "selectedEndTime " + selectedEndTime);
+        Log.i(TAG, "selectedStartTime " + selectedStartTime);
+
+        if (selectedEndTime == 0 && selectedStartTime == 0) {
+            SendMessageTask task = new SendMessageTask(this, getUpdateStatusParams(currentStatus.getValue()));
+            task.execute();
+        } else {
+
+            if (selectedStartTime < System.currentTimeMillis()
+                    || selectedEndTime < System.currentTimeMillis() ||
+                    (selectedStartTime != 0 && selectedEndTime == 0) ||
+                    (selectedEndTime !=0 && selectedStartTime == 0)){
+                Toast.makeText(this, getString(R.string.please_correct_your_start_end_time),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SendMessageTask task = new SendMessageTask(this, getUpdateStatusParamsWithTimeStamp());
+            task.execute();
         }
+
 
         List<String> defaultTextList = Prefs.getDefaultTexts(this);
 
@@ -114,17 +127,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 SendMessageTask task = new SendMessageTask(this, getDefaultTextParams());
                 task.execute();
             }
-        }
-
-        Log.i(TAG, "selectedEndTime " + selectedEndTime);
-        Log.i(TAG, "selectedStartTime " + selectedStartTime);
-
-        if (selectedEndTime == 0 && selectedStartTime == 0) {
-            SendMessageTask task = new SendMessageTask(this, getUpdateStatusParams(currentStatus.getValue()));
-            task.execute();
-        } else {
-            SendMessageTask task = new SendMessageTask(this, getUpdateStatusParamsWithTimeStamp());
-            task.execute();
         }
 
     }
@@ -148,67 +150,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     }
 
-    @Override
-    public void responseToSendMessage(SoapObject result, String methodName) {
-
-        if (result == null) {
-            Toast.makeText(SetStatusActivity.this, getString(R.string.status_not_updated),
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS_WITH_TIMESTAMP)) {
-            try {
-
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 2) {
-
-
-                    User.getInstance(this).setTimerStatus(currentStatus);
-                    User.getInstance(this).setStatusStartTime(selectedStartTime);
-                    User.getInstance(this).setStatusEndTime(selectedEndTime);
-
-                    Prefs.setUserData(this, User.getInstance(this));
-
-                    TimerBroadcastReceiver.SetAlarm(this, selectedStartTime);
-
-                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
-                            Toast.LENGTH_SHORT).show();
-
-                }
-
-
-            } catch (Exception ne) {
-                ne.printStackTrace();
-            }
-
-        } else if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
-
-            try {
-
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 2) {
-
-                    User.getInstance(this).setStatus(currentStatus);
-                    User.getInstance(this).setStatusText(etStatus.getText().toString());
-                    Prefs.setUserData(this, User.getInstance(this));
-
-                    TimerBroadcastReceiver.CancelAlarmIfNeed(this);
-
-                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
-                            Toast.LENGTH_SHORT).show();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        finish();
-
-    }
 
     private Status currentStatus;
 
@@ -229,67 +170,14 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 !User.getInstance(this).getStatusText().contentEquals("(null)"))
             etStatus.setText(User.getInstance(this).getStatusText());
 
-//        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//        //    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//
-//        Date date = null;
-//        try {
-//            date = sdf.parse("2100-01-01T00:00:00");
-//            long milliseconds = date.getTime();
-//
-//            Log.i(TAG, "milliseconds " + milliseconds);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-
-
-//        String startTimeInput = User.getInstance(this).getStatusStartTime();
-//        String endTimeInput = User.getInstance(this).getStatusEndTime();
-//
-//    //    Log.i(TAG, "startTimeInput " + startTimeInput);
-//
-//        if (startTimeInput.length() > 0) {
-//            try {
-//                Date date = sdf.parse(startTimeInput);
-//                long milliseconds = date.getTime();
-//
-//          //      Log.i(TAG, "startTimeInput milliseconds " + milliseconds);
-//
-//                if (milliseconds > System.currentTimeMillis()){
-//                    selectedStartTime = milliseconds;
-//                    tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-//                            (new java.util.Date(selectedStartTime)));
-//                }
-//
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//      //  Log.i(TAG, "endTimeInput " + endTimeInput);
-//
-//        if (endTimeInput.length() > 0 && !endTimeInput.contentEquals("2100-01-01T00:00:00")) {
-//            try {
-//                Date date = sdf.parse(endTimeInput);
-//                long milliseconds = date.getTime();
-//
-//                if (milliseconds > System.currentTimeMillis()){
-//                    selectedEndTime = milliseconds;
-//                    tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-//                            (new java.util.Date(selectedEndTime)));
-//                }
-//
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
         long startTimeInput = User.getInstance(this).getStatusStartTime();
         long endTimeInput = User.getInstance(this).getStatusEndTime();
 
+        Log.i(TAG, "startTimeInput " + startTimeInput);
+        Log.i(TAG, "endTimeInput " + endTimeInput);
+
         if (startTimeInput > 0 && endTimeInput > 0 && endTimeInput > startTimeInput
-                && startTimeInput > System.currentTimeMillis()
                 && endTimeInput > System.currentTimeMillis()) {
 
             selectedStartTime = startTimeInput;
@@ -553,4 +441,70 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
         return request;
     }
+
+    @Override
+    public void responseToSendMessage(SoapObject result, String methodName) {
+
+        if (result == null) {
+            Toast.makeText(SetStatusActivity.this, getString(R.string.status_not_updated),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS_WITH_TIMESTAMP)) {
+            try {
+
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+
+                    User.getInstance(this).setTimerStatus(currentStatus);
+                    User.getInstance(this).setStatusStartTime(selectedStartTime);
+                    User.getInstance(this).setStatusEndTime(selectedEndTime);
+
+                    Log.i(TAG, "selectedStartTime " + selectedStartTime);
+                    Log.i(TAG, "selectedEndTime " + selectedEndTime);
+
+                    Prefs.setUserData(this, User.getInstance(this));
+
+                    TimerBroadcastReceiver.SetAlarm(this, selectedStartTime);
+
+                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
+                            Toast.LENGTH_SHORT).show();
+
+                }
+
+
+            } catch (Exception ne) {
+                ne.printStackTrace();
+            }
+
+        } else if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
+
+            try {
+
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+                    User.getInstance(this).setStatus(currentStatus);
+                    User.getInstance(this).setStatusText(etStatus.getText().toString());
+                    Prefs.setUserData(this, User.getInstance(this));
+
+                    TimerBroadcastReceiver.CancelAlarmIfNeed(this);
+
+                    Toast.makeText(SetStatusActivity.this, getString(R.string.status_updated),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        finish();
+
+    }
+
 }

@@ -81,10 +81,12 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
             startActivity(it);
 
 
-        }else if (text.contentEquals(getString(R.string.add_contact))){
-            new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
-
-        }else if (text.contentEquals(getString(R.string.set_notification))){
+        }
+//        else if (text.contentEquals(getString(R.string.add_contact))){
+//            new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
+//
+//        }
+        else if (text.contentEquals(getString(R.string.set_notification))){
             bConfirm.setText(getString(R.string.remove_notification));
 
             DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
@@ -210,9 +212,9 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
             if (checkPhoneList.contains(contact.getPhoneNumber())){
 
-                if (contact.getStatus()==null){
-                    bConfirm.setText(getString(R.string.add_contact));
-                }else {
+//                if (contact.getStatus()==null){
+//                    bConfirm.setText(getString(R.string.add_contact));
+//                }else {
 
                     notification = DataBase.getNotificationWithPhoneNumber
                             (DataBase.getInstance(this).getWritableDatabase(), contact.getPhoneNumber());
@@ -223,7 +225,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                         bConfirm.setText(getString(R.string.set_notification));
                     }
 
-                }
+              //  }
 
             }else {
                 bConfirm.setText(getString(R.string.invite));

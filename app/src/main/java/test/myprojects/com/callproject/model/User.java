@@ -242,7 +242,13 @@ public class User {
 
 
             String phoneNumberOnlyDigit = contact.getPhoneNumber();
+            String firstSign = phoneNumberOnlyDigit.substring(0,1);
             phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+            if (firstSign.contentEquals("+")){
+                phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+            }
+
+
             contact.setPhoneNumber(phoneNumberOnlyDigit);
 
             contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
@@ -266,47 +272,7 @@ public class User {
         phones.close();
 
         Log.i(TAG, "contactList.size() " + contactList.size());
-        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(context));
 
-
-//        if (Prefs.getLastContactCount(context) < contactList.size()){
-//            Prefs.setLastContactCount(context, contactList.size());
-//
-//            new SendMessageTask(null, getAddContactsParams()).execute();
-//
-//            if (context instanceof MainActivity){
-//
-//                //for case if connection on server not working to show new added contact in list
-//                Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
-//                context.sendBroadcast(returnIntent);
-//
-//                ((MainActivity)context).refreshStatuses();
-//                ((MainActivity)context).refreshCheckPhoneNumbers();
-//            }
-//        }
-
-//        if (context instanceof MainActivity){
-//            Log.i(TAG, "instanceof");
-//
-//            if (oldContactList.size() != contactList.size()){
-//                for (Contact newContact : contactList){
-//                    boolean match = false;
-//                    for (Contact oldContact : oldContactList){
-//                        if (newContact.getPhoneNumber().contentEquals(oldContact.getPhoneNumber())){
-//                            match = true;
-//                            break;
-//                        }
-//                    }
-//
-//                    if (!match){
-//                    //    Log.i(TAG, "not match " + newContact.getName());
-//                        new SendMessageTask(null, getAddContactsParams(newContact.getPhoneNumber()));
-//                        break;
-//                    }
-//                }
-//            }
-//
-//        }
 
     }
 

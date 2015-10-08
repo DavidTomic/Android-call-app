@@ -66,15 +66,15 @@ public class StartActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        String DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
-        final SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
-
-        Log.i(TAG, "localTime " + sdf.format(new Date()));
-
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        final String utcTime = sdf.format(new Date());
-
-        Log.i(TAG, "utcTime " + utcTime);
+//        String DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
+//        final SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
+//
+//        Log.i(TAG, "localTime " + sdf.format(new Date()));
+//
+//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        final String utcTime = sdf.format(new Date());
+//
+//        Log.i(TAG, "utcTime " + utcTime);
 
         new Handler().postDelayed(new Runnable() {
             @Override

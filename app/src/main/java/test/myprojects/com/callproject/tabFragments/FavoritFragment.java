@@ -129,11 +129,11 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     @Bind(R.id.llGreenStatus)
     LinearLayout llGreenStatus;
 
-    @OnClick(R.id.bSetTime)
-    public void bSetTimeClicked() {
-        closeSwipeView();
-        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-    }
+//    @OnClick(R.id.bSetTime)
+//    public void bSetTimeClicked() {
+//        closeSwipeView();
+//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
+//    }
 
     @OnClick(R.id.llSettings)
     public void settingsClicked(){
@@ -193,6 +193,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
 
             createListAdapter(0);
+
+          //  stlist.getRefreshableView().sets
 
 
 
@@ -278,15 +280,19 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                                 closeSwipeView();
                             } else {
 
+//                                if (rightMargin > WindowSize.convertDpToPixel(30)) {
+//                                    rightMargin = WindowSize.convertDpToPixel(100);
+//                                    params.rightMargin = rightMargin;
+//                                    params.leftMargin = -rightMargin;
+//                                    llStatusHolder.setLayoutParams(params);
+//                                } else {
+//                                    closeSwipeView();
+//                                }
                                 if (rightMargin > WindowSize.convertDpToPixel(30)) {
-                                    rightMargin = WindowSize.convertDpToPixel(100);
-                                    params.rightMargin = rightMargin;
-                                    params.leftMargin = -rightMargin;
-                                    llStatusHolder.setLayoutParams(params);
-                                } else {
-                                    closeSwipeView();
+                                    startActivity(new Intent(getActivity(), SetStatusActivity.class));
                                 }
 
+                                closeSwipeView();
                             }
 
                             break;
@@ -384,8 +390,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
             FavoritAdapter sadapter = new FavoritAdapter(getActivity().getApplicationContext(), position);
-
             holder.swipelist.setAdapter(sadapter);
+
             return convertView;
         }
 
@@ -451,8 +457,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.tvOnPhone = (TextView) convertView.findViewById(R.id.tvOnPhone);
                 holder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
                 holder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
-
-
+                holder.ivEnvelop = (ImageView) convertView.findViewById(R.id.ivEnvelop);
 
                 convertView.setTag(holder);
             } else {
@@ -460,6 +465,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             }
 
             final Contact contact = favoritList.get(parent_postion);
+
+         //   Log.i(TAG, "status " + contact.getStatus());
 
             holder.name.setText(contact.getName());
 
@@ -531,23 +538,20 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
             if (checkPhoneList.contains(contact.getPhoneNumber())) {
 
-                if (contact.getStatus() == null) {
-                    holder.edit_btn.setText(getString(R.string.add_contact));
-                } else {
-
                     Notification notification = DataBase.getNotificationWithPhoneNumber
                             (db, contact.getPhoneNumber());
 
                     if (notification != null){
                         holder.edit_btn.setText(getString(R.string.remove_notification));
+                        holder.ivEnvelop.setVisibility(View.VISIBLE);
                     }else {
                         holder.edit_btn.setText(getString(R.string.set_notification));
+                        holder.ivEnvelop.setVisibility(View.GONE);
                     }
-
-                }
 
             } else {
                 holder.edit_btn.setText(getString(R.string.invite));
+                holder.ivEnvelop.setVisibility(View.GONE);
             }
 
 
@@ -557,8 +561,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                     //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
 
                     String text = holder.edit_btn.getText().toString();
-
-                    Log.i(TAG, "text " + text);
 
                     if (text.contentEquals(getString(R.string.invite))) {
 
@@ -649,6 +651,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             TextView tvOnPhone;
             Button edit_btn;
             RelativeLayout rlHolder;
+            ImageView ivEnvelop;
         }
 
     }

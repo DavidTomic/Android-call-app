@@ -37,64 +37,87 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     @Override
     protected Boolean doInBackground(Void... params) {
 
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        try {
+            Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 
-        String[] projection = new String[]{
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
-                ContactsContract.CommonDataKinds.Phone.STARRED,
-                ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
-        };
+            String[] projection = new String[]{
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER,
+                    ContactsContract.CommonDataKinds.Phone.PHOTO_ID,
+                    ContactsContract.CommonDataKinds.Phone.STARRED,
+                    ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
+            };
 
-        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+            String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
 
-        Cursor phones = mainActivity.getContentResolver().
-                query(uri, projection, null, null, sortOrder);
-
-
-        while (phones.moveToNext()) {
-            Contact contact = new Contact();
-            contact.setName(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
-            contact.setPhoneNumber(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-
-            if (contact.getPhoneNumber() == null || contact.getName() == null ||
-                    TextUtils.isDigitsOnly(String.valueOf(contact.getName().charAt(0)))) continue;
+            Cursor phones = mainActivity.getContentResolver().
+                    query(uri, projection, null, null, sortOrder);
 
 
-            String phoneNumberOnlyDigit = contact.getPhoneNumber();
-            phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
-            contact.setPhoneNumber(phoneNumberOnlyDigit);
+            while (phones.moveToNext()) {
+                Contact contact = new Contact();
+                contact.setName(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
+                contact.setPhoneNumber(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
 
-            contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
+                if (contact.getPhoneNumber() == null || contact.getName() == null ||
+                        TextUtils.isDigitsOnly(String.valueOf(contact.getName().charAt(0))))
+                    continue;
 
-            contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
 
-            int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID);
-            if (colPhotoIndex != -1) {
-                contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID)));
+                String phoneNumberOnlyDigit = contact.getPhoneNumber();
+                String firstSign = phoneNumberOnlyDigit.substring(0, 1);
+                phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+                if (firstSign.contentEquals("+")) {
+                    phoneNumberOnlyDigit = firstSign + phoneNumberOnlyDigit;
+                }
+
+                contact.setPhoneNumber(phoneNumberOnlyDigit);
+
+                contact.setName(Character.toUpperCase(contact.getName().charAt(0)) + contact.getName().substring(1));
+
+                contact.setRecordId(Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))));
+
+                int colPhotoIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID);
+                if (colPhotoIndex != -1) {
+                    contact.setImage(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID)));
+                }
+
+
+                int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
+                contact.setFavorit(starred == 1 ? true : false);
+
+                contact.setLookupKey(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY)));
+
+                //      Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
+                contactList.add(contact);
             }
-
-
-            int starred = Integer.valueOf(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.STARRED)));
-            contact.setFavorit(starred == 1 ? true : false);
-
-            contact.setLookupKey(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY)));
-
-      //      Log.i(TAG, "id " + contact.getRecordId() + " name " + contact.getName() + " NUMBER " + contact.getPhoneNumber() + "  photoUri " + contact.getImage());
-            contactList.add(contact);
+            phones.close();
+        }catch (Exception e){
+            e.printStackTrace();
+            return  false;
         }
-        phones.close();
 
         Log.i(TAG, "contactList.size() " + contactList.size());
-        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
+      //  Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
 
-        if (Prefs.getLastContactCount(mainActivity) < contactList.size()) {
-            return true;
+//        if (Prefs.getLastContactCount(mainActivity) < contactList.size()) {
+//            return true;
+//        }
+
+        List<Contact> originalList = User.getInstance(mainActivity).getContactList();
+
+        for (Contact originalContact : originalList){
+            for (Contact c : contactList){
+                if (originalContact.getRecordId() == c.getRecordId()){
+                    c.setStatus(originalContact.getStatus());
+                    c.setStatusText(originalContact.getStatusText());
+                    break;
+                }
+            }
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -103,20 +126,13 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
      //   Log.i(TAG, "result " + result);
 
         if (result) {
-            Prefs.setLastContactCount(mainActivity, contactList.size());
-
+         //   Prefs.setLastContactCount(mainActivity, contactList.size());
             List<Contact> originalList = User.getInstance(mainActivity).getContactList();
-        //    Log.i(TAG, "originalListBid " + java.lang.System.identityHashCode(originalList));
             originalList.clear();
-         //   Log.i(TAG, "originalListAid " + java.lang.System.identityHashCode(originalList));
 
             for (Contact c : contactList) {
                 originalList.add(c);
             }
-
-       //     Log.i(TAG, "originalList size " + originalList.size());
-       //     Log.i(TAG, "originalListid " + java.lang.System.identityHashCode(originalList));
-
 
             //for case if connection on server not working to show new added contact in list
             Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
@@ -149,11 +165,11 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
         List<Contact> cList = User.getInstance(mainActivity).getContactList();
 
-//        int i = 0;
+        int i = 0;
         for (Contact contact : cList) {
-//            if (++i == 3){
-//                break;
-//            }
+            if (++i == 3){
+                break;
+            }
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
@@ -221,12 +237,11 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
     }
 
-
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
         if (result == null) {
-            Prefs.setLastContactCount(mainActivity, 0);
+         //   Prefs.setLastContactCount(mainActivity, 0);
             return;
         }
 
@@ -240,9 +255,10 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
                 mainActivity.refreshStatuses();
                 mainActivity.refreshCheckPhoneNumbers();
 
-            }else {
-                Prefs.setLastContactCount(mainActivity, 0);
             }
+//            else {
+//                Prefs.setLastContactCount(mainActivity, 0);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

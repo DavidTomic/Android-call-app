@@ -68,7 +68,7 @@ public class ImALiveService extends Service {
         @Override
         protected Void doInBackground(Void... params) {
 
-            SoapObject request = getIamLivearams();
+            SoapObject request = getIamLiveparams();
 
             SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
             soapEnvelope.dotNet = true;
@@ -96,7 +96,7 @@ public class ImALiveService extends Service {
         }
     }
 
-    private SoapObject getIamLivearams() {
+    private SoapObject getIamLiveparams() {
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.I_AM_LIVE);
 

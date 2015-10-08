@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import test.myprojects.com.callproject.MainActivity;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.User;
 
 /**
@@ -44,16 +45,25 @@ public class TimerBroadcastReceiver extends BroadcastReceiver {
 
         long currentMillies = System.currentTimeMillis();
 
+        Log.i(TAG, "currentMillies " + currentMillies);
+        Log.i(TAG, "getStatusStartTime " + User.getInstance(context).getStatusStartTime());
+        Log.i(TAG, "getStatusEndTime " + User.getInstance(context).getStatusEndTime());
+
         if (currentMillies > User.getInstance(context).getStatusStartTime()
                 && currentMillies < User.getInstance(context).getStatusEndTime()){
+
+            Log.i(TAG, "CANCEL TIMER");
 
             Intent intent = new Intent(context, TimerBroadcastReceiver.class);
             PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(sender);
+
+            User.getInstance(context).setStatusStartTime(0);
+            User.getInstance(context).setStatusEndTime(0);
+
+            Prefs.setUserData(context, User.getInstance(context));
         }
-
-
 
     }
 }

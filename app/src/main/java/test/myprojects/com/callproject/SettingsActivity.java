@@ -38,8 +38,7 @@ public class SettingsActivity extends Activity {
 
     @OnClick(R.id.rlLanguage)
     public void languageClicked() {
-        Intent intent = new Intent(this, SettingsDetailActivity.class);
-        intent.putExtra("key", SettingsDetailActivity.EDIT_LANGUAGE);
+        Intent intent = new Intent(this, SelectLanguageActivity.class);
         startActivity(intent);
 
     }

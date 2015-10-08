@@ -3,18 +3,16 @@ package test.myprojects.com.callproject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.ksoap2.serialization.PropertyInfo;
@@ -186,7 +184,11 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+        String firstSign = phoneNumberOnlyDigit.substring(0, 1);
         phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+        if (firstSign.contentEquals("+")){
+            phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+        }
         pi.setValue(phoneNumberOnlyDigit);
         pi.setType(String.class);
         request.addProperty(pi);
@@ -209,11 +211,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         pi.setType(String.class);
         request.addProperty(pi);
 
-        String countryCode = Locale.getDefault().getCountry();
+        String countryCode = Locale.getDefault().getCountry().toLowerCase();
 
-        if (countryCode.contains("en")){
-            language = Language.ENGLISH;
-        }else if (countryCode.contentEquals("da") || countryCode.contentEquals("en")){
+        if (countryCode.contentEquals("da") || countryCode.contentEquals("dk")){
             language = Language.DANISH;
         }else {
             language = Language.ENGLISH;
@@ -234,7 +234,11 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+        String firstSign = phoneNumberOnlyDigit.substring(0, 1);
         phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+        if (firstSign.contentEquals("+")){
+            phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+        }
         pi.setValue(phoneNumberOnlyDigit);
         pi.setType(String.class);
         request.addProperty(pi);
@@ -254,7 +258,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         PropertyInfo pi1 = new PropertyInfo();
         pi1.setName("Phonenumber");
-        pi1.setValue(etPhoneNumber.getText().toString());
+        String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+        String firstSign = phoneNumberOnlyDigit.substring(0, 1);
+        phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+        if (firstSign.contentEquals("+")){
+            phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+        }
+        pi1.setValue(phoneNumberOnlyDigit);
         pi1.setType(String.class);
         request.addProperty(pi1);
 
@@ -268,8 +278,11 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         List<Contact> cList = User.getInstance(this).getContactList();
 
-
+        int i = 0;
         for (Contact contact : cList) {
+            if (++i == 3){
+                break;
+            }
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
@@ -367,19 +380,54 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     Prefs.saveDefaultTexts(this, list);
 
                     SoapObject accountSetupSoapObject = (SoapObject) result.getProperty("AccountSetup");
-
                     User user = User.getInstance(this);
+
                     String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+                    String firstSign = phoneNumberOnlyDigit.substring(0, 1);
                     phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+                    if (firstSign.contentEquals("+")){
+                        phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+                    }
                     user.setPhoneNumber(phoneNumberOnlyDigit);
                     user.setPassword(etPassword.getText().toString());
                     user.setName(accountSetupSoapObject.getProperty("Name").toString());
                     user.setEmail(accountSetupSoapObject.getProperty("Email").toString());
-                    user.setLanguage(Language.values()[Integer.valueOf(accountSetupSoapObject.getProperty("Language").toString())]);
+                //    user.setLanguage(Language.values()[Integer.valueOf(accountSetupSoapObject.getProperty("Language").toString())]);
                     user.setLogedIn(true);
 
-                    Prefs.setUserData(this, User.getInstance(this));
-                    startActivity(new Intent(this, MainActivity.class));
+//                    String lang = "en";
+//                    if (user.getLanguage() == Language.DANISH){
+//                        lang = "da";
+//                    }
+//
+//                    Prefs.setLanguageCountryCode(this, lang);
+//
+//                    Locale myLocale = new Locale(lang);
+//                    Locale.setDefault(myLocale);
+//                    Resources res = getResources();
+//                    DisplayMetrics dm = res.getDisplayMetrics();
+//                    Configuration conf = res.getConfiguration();
+//                    conf.locale = myLocale;
+//                    res.updateConfiguration(conf, dm);
+
+//                    Prefs.setUserData(this, User.getInstance(this));
+//                    startActivity(new Intent(this, MainActivity.class));
+//                    finish();
+                    String countryCode = Locale.getDefault().getCountry().toLowerCase();
+
+                    Log.i(TAG, "CCC + " + countryCode);
+
+                    if (countryCode.contentEquals("da") || countryCode.contentEquals("dk")){
+                        user.setLanguage(Language.DANISH);
+                        Prefs.setLanguageCountryCode(this, countryCode);
+                    }else {
+                        user.setLanguage(Language.ENGLISH);
+                        Prefs.setLanguageCountryCode(this, "en");
+                    }
+
+                    Intent intent = new Intent(this, SelectLanguageActivity.class);
+                    intent.putExtra("startedFromRegistration", true);
+                    startActivity(intent);
                     finish();
 
 
@@ -428,7 +476,12 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                     User user = User.getInstance(this);
                     String phoneNumberOnlyDigit = etPhoneNumber.getText().toString();
+                    String firstSign = phoneNumberOnlyDigit.substring(0, 1);
                     phoneNumberOnlyDigit = phoneNumberOnlyDigit.replaceAll("[^0-9.]", "");
+                    if (firstSign.contentEquals("+")){
+                        phoneNumberOnlyDigit = firstSign+phoneNumberOnlyDigit;
+                    }
+
                     user.setPhoneNumber(phoneNumberOnlyDigit);
                     user.setPassword(etPassword.getText().toString());
                     user.setName(etName.getText().toString());
@@ -437,9 +490,16 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
-                    Prefs.setLastContactCount(this, user.getContactList().size());
+                //    Prefs.setLastContactCount(this, user.getContactList().size());
 
-                    Intent intent = new Intent(this, MainActivity.class);
+                    String lang = "en";
+                    if (user.getLanguage() == Language.DANISH){
+                        lang = Locale.getDefault().getCountry().toLowerCase();
+                    }
+                    Prefs.setLanguageCountryCode(this, lang);
+
+                    Intent intent = new Intent(this, SelectLanguageActivity.class);
+                    intent.putExtra("startedFromRegistration", true);
                     startActivity(intent);
                     finish();
 

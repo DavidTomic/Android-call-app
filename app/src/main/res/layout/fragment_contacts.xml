@@ -90,20 +90,6 @@
             android:layout_height="match_parent"
             android:background="@color/gray_light_2">
 
-            <Button
-                android:id="@+id/bSetTime"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:background="@null"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:layout_marginRight="5dp"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:text="@string/set_time"
-                android:textColor="@color/blue_default" />
-
         </RelativeLayout>
 
 

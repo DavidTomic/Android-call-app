@@ -45,7 +45,7 @@ public class DefaultTextDetailActivity extends Activity implements MessageInterf
     @OnClick(R.id.bSave)
     public void save() {
 
-        if (etValue.getText().toString().length() < 4) {
+        if (etValue.getText().toString().length() < 1) {
             Toast.makeText(this, getString(R.string.enter_correct_data), Toast.LENGTH_SHORT).show();
             return;
         }

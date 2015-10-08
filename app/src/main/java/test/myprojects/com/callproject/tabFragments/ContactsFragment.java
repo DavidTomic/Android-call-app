@@ -102,15 +102,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
     @Bind(R.id.llGreenStatus)
     LinearLayout llGreenStatus;
 
-
-    @OnClick(R.id.bSetTime)
-    public void bSetTimeClicked() {
-        closeSwipeView();
-        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-    }
-
-
-
     @OnClick(R.id.ibAddContact)
     public void addContact() {
 
@@ -213,7 +204,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                         case MotionEvent.ACTION_MOVE:
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
-                          //  Log.i(TAG, "rMargin " + rightMargin);
+                            //  Log.i(TAG, "rMargin " + rightMargin);
 
                             if (rightMargin >= 0 && rightMargin < WindowSize.convertDpToPixel(120)) {
                                 params.rightMargin = rightMargin;
@@ -228,7 +219,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
                             if (!moveWasActive) {
                                 if (currentView == llRedStatus) {
-                               //     Log.i(TAG, "llRedStatus");
+                                    //     Log.i(TAG, "llRedStatus");
                                     bStatusRed.setSelected(true);
                                     bStatusYellow.setSelected(false);
                                     bStatusGreen.setSelected(false);
@@ -236,7 +227,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                                     currentStatus = 0;
                                     new SendMessageTask(ContactsFragment.this, getUpdateStatusParams(currentStatus)).execute();
                                 } else if (currentView == llYellowStatus) {
-                                 //   Log.i(TAG, "llYellowStatus");
+                                    //   Log.i(TAG, "llYellowStatus");
                                     bStatusRed.setSelected(false);
                                     bStatusYellow.setSelected(true);
                                     bStatusGreen.setSelected(false);
@@ -244,7 +235,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                                     currentStatus = 2;
                                     new SendMessageTask(ContactsFragment.this, getUpdateStatusParams(currentStatus)).execute();
                                 } else {
-                                //    Log.i(TAG, "llGreenStatus");
+                                    //    Log.i(TAG, "llGreenStatus");
                                     bStatusRed.setSelected(false);
                                     bStatusYellow.setSelected(false);
                                     bStatusGreen.setSelected(true);
@@ -262,13 +253,10 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                             } else {
 
                                 if (rightMargin > WindowSize.convertDpToPixel(30)) {
-                                    rightMargin = WindowSize.convertDpToPixel(100);
-                                    params.rightMargin = rightMargin;
-                                    params.leftMargin = -rightMargin;
-                                    llStatusHolder.setLayoutParams(params);
-                                } else {
-                                    closeSwipeView();
+                                    startActivity(new Intent(getActivity(), SetStatusActivity.class));
                                 }
+                                closeSwipeView();
+
 
                             }
 
@@ -295,7 +283,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         return rootView;
     }
 
-    private void closeSwipeView(){
+    private void closeSwipeView() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
         rightMargin = 0;
         params.rightMargin = rightMargin;
@@ -345,7 +333,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         long currentMillies = System.currentTimeMillis();
 
         if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
-                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()) {
             status = User.getInstance(getActivity()).getTimerStatus();
 
             //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
@@ -554,6 +542,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         TextView tvOnPhone;
         Button edit_btn;
         RelativeLayout rlHolder;
+        ImageView ivEnvelop;
     }
 
     public class SwipeAdapter extends BaseAdapter {
@@ -604,79 +593,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
                 swipeholder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
                 swipeholder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
-
-                /* button action */
-
-
-	            /* item click action*/
-
-                swipeholder.rlHolder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
-                        contactDetailIntent.putExtra("contactId", contactList.get(parent_postion).getRecordId());
-                        getActivity().startActivity(contactDetailIntent);
-                    }
-                });
-
-                swipeholder.edit_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
-
-                        String text = swipeholder.edit_btn.getText().toString();
-
-                        Log.i(TAG, "text " + text);
-
-                        if (text.contentEquals(getString(R.string.invite))) {
-
-                            String smsText = User.getInstance(getActivity()).getSmsInviteText();
-
-                            Log.i(TAG, "smsText " + smsText);
-
-                            if (smsText == null || smsText.length() == 0) {
-                                smsText = getString(R.string.invite_user_text);
-                            }
-
-                            Uri uri = Uri.parse("smsto:" + contactList.get(parent_postion).getPhoneNumber());
-                            Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                            it.putExtra("sms_body", smsText);
-                            it.putExtra(Intent.EXTRA_TEXT, smsText);
-                           // it.putExtra("exit_on_sent", true);
-                            startActivity(it);
-
-
-                        }
-//                        else if (text.contentEquals(getString(R.string.add_contact))) {
-//                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
-//
-//                        }
-                        else if (text.contentEquals(getString(R.string.set_notification))) {
-                            swipeholder.edit_btn.setText(getString(R.string.remove_notification));
-
-                            DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
-                                    contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(),
-                                    contactList.get(parent_postion).getStatus().getValue());
-
-
-                            Intent pushIntent = new Intent(getActivity(), NotificationService.class);
-                            getActivity().startService(pushIntent);
-                        }else if (text.contentEquals(getString(R.string.remove_notification))) {
-                            swipeholder.edit_btn.setText(getString(R.string.set_notification));
-
-                            Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
-                                    contactList.get(parent_postion).getPhoneNumber());
-
-                            if (notification != null)
-                                DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
-
-                        }
-
-
-                        createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
-
-                    }
-                });
+                swipeholder.ivEnvelop = (ImageView) convertView.findViewById(R.id.ivEnvelop);
 
 
                 convertView.setTag(swipeholder);
@@ -738,38 +655,100 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             if (checkPhoneList.contains(contact.getPhoneNumber())) {
 
-                if (contact.getStatus() == null) {
-                    swipeholder.edit_btn.setText(getString(R.string.add_contact));
+                boolean contains = false;
+
+                for (Notification notification : nList) {
+                    if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())) {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                if (contains) {
+                    swipeholder.edit_btn.setText(getString(R.string.remove_notification));
+                    swipeholder.ivEnvelop.setVisibility(View.VISIBLE);
                 } else {
-
-                    boolean contains = false;
-
-                    for (Notification notification : nList) {
-                        if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())) {
-                            contains = true;
-                            break;
-                        }
-                    }
-
-                    if (contains) {
-                        swipeholder.edit_btn.setText(getString(R.string.remove_notification));
-                    } else {
-                        swipeholder.edit_btn.setText(getString(R.string.set_notification));
-                    }
-
+                    swipeholder.edit_btn.setText(getString(R.string.set_notification));
+                    swipeholder.ivEnvelop.setVisibility(View.GONE);
                 }
 
             } else {
                 swipeholder.edit_btn.setText(getString(R.string.invite));
+                swipeholder.ivEnvelop.setVisibility(View.GONE);
             }
 
+
+            swipeholder.rlHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent contactDetailIntent = new Intent(getActivity(), ContactDetailActivity.class);
+                    contactDetailIntent.putExtra("contactId", contactList.get(parent_postion).getRecordId());
+                    getActivity().startActivity(contactDetailIntent);
+                }
+            });
+
+            swipeholder.edit_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //      Toast.makeText(getActivity().getApplicationContext(), "Edit " + contactList.get(parent_postion).getName(), Toast.LENGTH_SHORT).show();
+
+                    String text = swipeholder.edit_btn.getText().toString();
+
+                    Log.i(TAG, "text " + text);
+
+                    if (text.contentEquals(getString(R.string.invite))) {
+
+                        String smsText = User.getInstance(getActivity()).getSmsInviteText();
+
+                        Log.i(TAG, "smsText " + smsText);
+
+                        if (smsText == null || smsText.length() == 0) {
+                            smsText = getString(R.string.invite_user_text);
+                        }
+
+                        Uri uri = Uri.parse("smsto:" + contactList.get(parent_postion).getPhoneNumber());
+                        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+                        it.putExtra("sms_body", smsText);
+                        it.putExtra(Intent.EXTRA_TEXT, smsText);
+                        // it.putExtra("exit_on_sent", true);
+                        startActivity(it);
+
+
+                    }
+//                        else if (text.contentEquals(getString(R.string.add_contact))) {
+//                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
+//
+//                        }
+                    else if (text.contentEquals(getString(R.string.set_notification))) {
+                        swipeholder.edit_btn.setText(getString(R.string.remove_notification));
+
+                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(),
+                                contactList.get(parent_postion).getStatus().getValue());
+
+
+                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
+                        getActivity().startService(pushIntent);
+                    } else if (text.contentEquals(getString(R.string.remove_notification))) {
+                        swipeholder.edit_btn.setText(getString(R.string.set_notification));
+
+                        Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                contactList.get(parent_postion).getPhoneNumber());
+
+                        if (notification != null)
+                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+
+                    }
+
+
+                    createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+
+                }
+            });
 
             return convertView;
         }
     }
-
-
-
 
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {

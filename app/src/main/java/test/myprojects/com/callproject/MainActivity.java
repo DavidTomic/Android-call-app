@@ -179,6 +179,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                 if (resultStatus == 2) {
 
+                    Prefs.setLastCallTime(this, System.currentTimeMillis());
+
                     List<Contact> contactList = User.getInstance(this).getContactList();
 
                  //   Log.i(TAG, "C LIST " + contactList.size());
@@ -273,6 +275,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
                 if (resultStatus == 0 || resultStatus == 1) {
 
+                    Intent pushIntent = new Intent(this, ImALiveService.class);
+                    stopService(pushIntent);
                     User.empty();
                     Prefs.deleteUserSettings(this);
                     Intent i = new Intent(this, StartActivity.class);
@@ -296,10 +300,18 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     }
                     user.setStatusText(statusText);
 
+                    long currentMillies = System.currentTimeMillis();
 
+                    Log.i(TAG, "currentMillies " + currentMillies);
+                    Log.i(TAG, "getStatusStartTime " + User.getInstance(this).getStatusStartTime());
+                    Log.i(TAG, "getStatusEndTime " + User.getInstance(this).getStatusEndTime());
 
+                    if (currentMillies < User.getInstance(this).getStatusEndTime()){
 
-                //    user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
+                    }else{
+                        Log.i(TAG, "HERE");
+                        user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
+                    }
 
 //                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
 //                    if (statusStartTime.contentEquals("anyType{}")){
@@ -479,8 +491,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
             lastCallTime = sdf.format(new Date(time));
         }
-
-        Prefs.setLastCallTime(this, System.currentTimeMillis());
 
      //   Log.i(TAG, "endTime " + endTime);
 

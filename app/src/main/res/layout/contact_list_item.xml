@@ -28,14 +28,14 @@
             android:id="@+id/btn_edit"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="25dp"
             android:background="@color/blue_default"
-            android:textSize="12sp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="@string/edit"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
 
     </RelativeLayout>
 
@@ -88,6 +88,7 @@
 
                 </LinearLayout>
 
+
                 <LinearLayout
                     android:id="@+id/vStatus"
                     android:layout_width="wrap_content"
@@ -95,33 +96,49 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginRight="70dp">
+                    android:layout_marginRight="70dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                    <View
-                        android:id="@+id/vStatusRed"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:background="@drawable/status_red_selector">
+                    <ImageView
+                        android:id="@+id/ivEnvelop"
+                        android:layout_width="20dp"
+                        android:layout_height="15dp"
+                        android:scaleType="centerInside"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/envelop" />
 
-                    </View>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                    <View
-                        android:id="@+id/vStatusYellow"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@drawable/status_yellow_selector">
+                        <View
+                            android:id="@+id/vStatusRed"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:background="@drawable/status_red_selector">
 
-                    </View>
+                        </View>
 
-                    <View
-                        android:id="@+id/vStatusGreen"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginLeft="5dp"
-                        android:background="@drawable/status_green_selector"></View>
+                        <View
+                            android:id="@+id/vStatusYellow"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_marginLeft="5dp"
+                            android:background="@drawable/status_yellow_selector">
+
+                        </View>
+
+                        <View
+                            android:id="@+id/vStatusGreen"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_marginLeft="5dp"
+                            android:background="@drawable/status_green_selector"></View>
 
 
+                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView

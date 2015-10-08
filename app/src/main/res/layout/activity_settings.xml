@@ -1,13 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context="test.myprojects.com.callproject.tabFragments.SettingsFragment">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -313,13 +311,14 @@
 
             <TextView
                 android:id="@+id/tvDefaultText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:gravity="right"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:layout_toRightOf="@+id/holder34"
                 android:layout_toLeftOf="@+id/rArrow6"
+                android:layout_toRightOf="@+id/holder34"
+                android:singleLine="true"
                 android:textColor="@color/blue_default" />
 
         </RelativeLayout>

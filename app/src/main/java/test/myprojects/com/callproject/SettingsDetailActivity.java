@@ -37,7 +37,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
 
     private static final String TAG = "SettingsDetailActivity";
 
-    public static final int EDIT_LANGUAGE = 1;
     public static final int EDIT_PHONE = 2;
     public static final int EDIT_PASSWORD = 3;
     public static final int EDIT_NAME = 4;
@@ -50,14 +49,11 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
     private String newPassword = User.getInstance(this).getPassword();
     private String newName = User.getInstance(this).getName();
     private String newEmail = User.getInstance(this).getEmail();
-    private Language newLanguage = User.getInstance(this).getLanguage();
 
     @Bind(R.id.tvLabel)
     TextView tvLabel;
     @Bind(R.id.etValue)
     EditText etValue;
-    @Bind(R.id.llLanguage)
-    LinearLayout llLanguage;
 
     @Bind(R.id.bSave)
     Button bSave;
@@ -116,26 +112,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
 
     }
 
-    @OnClick(R.id.bLanguage1)
-    public void l1Clicked()
-    {
-        rlProgress.setVisibility(View.VISIBLE);
-        newLanguage = Language.ENGLISH;
-        SendMessageTask task3 = new SendMessageTask(this, getUpdateAccountParams());
-        task3.execute();
-
-        setLocale("en");
-    }
-
-    @OnClick(R.id.bLanguage2)
-    public void l2Clicked() {
-        rlProgress.setVisibility(View.VISIBLE);
-        newLanguage = Language.DANISH;
-        SendMessageTask task3 = new SendMessageTask(this, getUpdateAccountParams());
-        task3.execute();
-        setLocale("da");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,12 +126,6 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
             Log.i(TAG, "CURRENT_EDITING " + CURRENT_EDITING);
 
             switch (CURRENT_EDITING) {
-                case EDIT_LANGUAGE:
-                    tvLabel.setText(getString(R.string.select_language));
-                    etValue.setVisibility(View.GONE);
-                    llLanguage.setVisibility(View.VISIBLE);
-                    bSave.setVisibility(View.GONE);
-                    break;
                 case EDIT_PHONE:
                     tvLabel.setText(getString(R.string.phone_number));
 
@@ -194,24 +164,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
         }
     }
 
-    public void setLocale(String lang) {
 
-        Prefs.setLanguageCountryCode(this, lang);
-
-        User.getInstance(this).setLanguage(newLanguage);
-        Prefs.setUserData(this, User.getInstance(this));
-
-        Locale myLocale = new Locale(lang);
-        Locale.setDefault(myLocale);
-        Resources res = getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        conf.locale = myLocale;
-        res.updateConfiguration(conf, dm);
-        Intent i = new Intent(this, StartActivity.class);
-        i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
-    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
@@ -238,8 +191,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
                 rlProgress.setVisibility(View.GONE);
                 Prefs.setUserData(this, User.getInstance(this));
 
-                if (CURRENT_EDITING != EDIT_LANGUAGE)
-                    finish();
+                finish();
 
             } else {
                 showErrorTryAgain();
@@ -294,7 +246,7 @@ public class SettingsDetailActivity extends Activity implements MessageInterface
 
         pi = new PropertyInfo();
         pi.setName("Language");
-        pi.setValue(newLanguage.getValue());
+        pi.setValue(user.getLanguage().getValue());
         pi.setType(Integer.class);
         request.addProperty(pi);
 

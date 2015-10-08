@@ -15,4 +15,4 @@
         android:topLeftRadius="@dimen/indicator_corner_radius"
         android:topRightRadius="@dimen/indicator_corner_radius" />
 
-</shape><!-- From: file:/Users/dtomic/Documents/my_projects/CallApplication_android/libraryPTR/src/main/res/drawable/indicator_bg_bottom.xml -->
+</shape><!-- From: file:/Users/davidtomic/Documents/developer/android/call-application-android/libraryPTR/src/main/res/drawable/indicator_bg_bottom.xml -->
