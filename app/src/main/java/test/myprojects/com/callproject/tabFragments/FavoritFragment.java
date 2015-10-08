@@ -78,8 +78,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     private static final String TAG = "FavoritFragment";
     private View rootView;
     private List<Contact> favoritList = new ArrayList<>();
-  //  private FavoritAdapter favoritAdapter;
-  //  private SwipeMenuListView swipeMenuListView;
+    //  private FavoritAdapter favoritAdapter;
+    //  private SwipeMenuListView swipeMenuListView;
     private boolean editEnabled;
 
     private PullToRefreshStickyList stlist;
@@ -97,18 +97,19 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     }
 
 
-    @Bind(R.id.bEdit) Button bEdit;
+    @Bind(R.id.bEdit)
+    Button bEdit;
 
     @OnClick(R.id.bEdit)
-    public void editFavorites(){
-        if (editEnabled){
+    public void editFavorites() {
+        if (editEnabled) {
             bEdit.setText(getString(R.string.edit));
-            editEnabled=false;
-          //  swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
-        }else {
-          //  swipeMenuListView.setSwipeDirection(0);
+            editEnabled = false;
+            //  swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+        } else {
+            //  swipeMenuListView.setSwipeDirection(0);
             bEdit.setText(getString(R.string.done));
-            editEnabled=true;
+            editEnabled = true;
         }
 
         adapter.notifyDataSetChanged();
@@ -116,8 +117,10 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
     @Bind(R.id.bStatusRed)
     ImageView bStatusRed;
-    @Bind(R.id.bStatusYellow) ImageView bStatusYellow;
-    @Bind(R.id.bStatusGreen) ImageView bStatusGreen;
+    @Bind(R.id.bStatusYellow)
+    ImageView bStatusYellow;
+    @Bind(R.id.bStatusGreen)
+    ImageView bStatusGreen;
 
     @Bind(R.id.llStatusHolder)
     LinearLayout llStatusHolder;
@@ -136,7 +139,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 //    }
 
     @OnClick(R.id.llSettings)
-    public void settingsClicked(){
+    public void settingsClicked() {
         startActivity(new Intent(getActivity(), SettingsActivity.class));
     }
 
@@ -194,8 +197,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
             createListAdapter(0);
 
-          //  stlist.getRefreshableView().sets
-
+            //  stlist.getRefreshableView().sets
 
 
 //            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -232,7 +234,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                         case MotionEvent.ACTION_MOVE:
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
-                        //    Log.i(TAG, "rMargin " + rightMargin);
+                            //    Log.i(TAG, "rMargin " + rightMargin);
 
                             if (rightMargin >= 0 && rightMargin < WindowSize.convertDpToPixel(120)) {
                                 params.rightMargin = rightMargin;
@@ -318,7 +320,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         return rootView;
     }
 
-    private void closeSwipeView(){
+    private void closeSwipeView() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) llStatusHolder.getLayoutParams();
         rightMargin = 0;
         params.rightMargin = rightMargin;
@@ -346,10 +348,10 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
 
         private LayoutInflater inflater;
-      //  private Context mContext;
+        //  private Context mContext;
 
         public StickyAdapter(Context context) {
-          //  mContext = context;
+            //  mContext = context;
             inflater = LayoutInflater.from(context);
         }
 
@@ -466,14 +468,14 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
             final Contact contact = favoritList.get(parent_postion);
 
-         //   Log.i(TAG, "status " + contact.getStatus());
+            //   Log.i(TAG, "status " + contact.getStatus());
 
             holder.name.setText(contact.getName());
 
             if (contact.getImage() != null && getUserImage(contact.getRecordId()) != null) {
-             //
-             //
-             //  Log.i(TAG, "name " + contact.getName());
+                //
+                //
+                //  Log.i(TAG, "name " + contact.getName());
                 holder.ivProfile.setImageBitmap(getUserImage(contact.getRecordId()));
                 holder.ivProfile.setVisibility(View.VISIBLE);
                 holder.tvProfile.setVisibility(View.INVISIBLE);
@@ -485,18 +487,18 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             }
 
 
-            if (editEnabled){
+            if (editEnabled) {
                 holder.bDelete.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.bDelete.setVisibility(View.GONE);
             }
 
 
             String statusText = contact.getStatusText();
-            if (statusText!=null){
+            if (statusText != null) {
                 holder.statusText.setText(contact.getStatusText());
                 holder.statusText.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.statusText.setVisibility(View.GONE);
             }
 
@@ -538,16 +540,16 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
             if (checkPhoneList.contains(contact.getPhoneNumber())) {
 
-                    Notification notification = DataBase.getNotificationWithPhoneNumber
-                            (db, contact.getPhoneNumber());
+                Notification notification = DataBase.getNotificationWithPhoneNumber
+                        (db, contact.getPhoneNumber());
 
-                    if (notification != null){
-                        holder.edit_btn.setText(getString(R.string.remove_notification));
-                        holder.ivEnvelop.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.edit_btn.setText(getString(R.string.set_notification));
-                        holder.ivEnvelop.setVisibility(View.GONE);
-                    }
+                if (notification != null) {
+                    holder.edit_btn.setText(getString(R.string.remove_notification));
+                    holder.ivEnvelop.setVisibility(View.VISIBLE);
+                } else {
+                    holder.edit_btn.setText(getString(R.string.set_notification));
+                    holder.ivEnvelop.setVisibility(View.GONE);
+                }
 
             } else {
                 holder.edit_btn.setText(getString(R.string.invite));
@@ -574,21 +576,25 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
                         it.putExtra("sms_body", smsText);
                         it.putExtra(Intent.EXTRA_TEXT, smsText);
-                      //  it.putExtra("exit_on_sent", true);
+                        //  it.putExtra("exit_on_sent", true);
                         startActivity(it);
 
 
                     } else if (text.contentEquals(getString(R.string.set_notification))) {
-                        holder.edit_btn.setText(getString(R.string.remove_notification));
 
-                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
-                                favoritList.get(parent_postion).getName(), favoritList.get(parent_postion).getPhoneNumber(),
-                                favoritList.get(parent_postion).getStatus().getValue());
 
+                        try {
+                            DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                    favoritList.get(parent_postion).getName(), favoritList.get(parent_postion).getPhoneNumber(),
+                                    favoritList.get(parent_postion).getStatus().getValue());
+                            holder.edit_btn.setText(getString(R.string.remove_notification));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         Intent pushIntent = new Intent(getActivity(), NotificationService.class);
                         getActivity().startService(pushIntent);
-                    }else if (text.contentEquals(getString(R.string.remove_notification))) {
+                    } else if (text.contentEquals(getString(R.string.remove_notification))) {
                         holder.edit_btn.setText(getString(R.string.set_notification));
 
                         Notification notification = DataBase.getNotificationWithPhoneNumber(DataBase.getInstance(getActivity()).getWritableDatabase(),
@@ -629,7 +635,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             holder.rlHolder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   dialNumber(favoritList.get(parent_postion).getPhoneNumber());
+                    dialNumber(favoritList.get(parent_postion).getPhoneNumber());
                 }
             });
 
@@ -657,7 +663,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     }
 
 
-
     private void removeFromFavorites(Contact contact) {
         User.getInstance(getActivity()).getContactWithId(contact.getRecordId()).setFavorit(false);
         ContentValues v = new ContentValues();
@@ -672,46 +677,46 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         @Override
         public void onReceive(Context context, Intent intent) {
 
-         //   Log.i(TAG, "statusUpdateBroadcastReceiver");
+            //   Log.i(TAG, "statusUpdateBroadcastReceiver");
             refreshFavorits();
             refreshStatusUI();
         }
     };
 
 
-    private Bitmap getUserImage(int contactId){
+    private Bitmap getUserImage(int contactId) {
 
 
         Bitmap bitmap = null;
         try {
 
             Uri photo = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
-            photo = Uri.withAppendedPath( photo, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY );
+            photo = Uri.withAppendedPath(photo, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
 
             bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photo);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return bitmap;
     }
 
-    private void refreshStatusUI(){
+    private void refreshStatusUI() {
 
         Status status = User.getInstance(getActivity()).getStatus();
 
         long currentMillies = System.currentTimeMillis();
 
         if (currentMillies > User.getInstance(getActivity()).getStatusStartTime()
-                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()){
+                && currentMillies < User.getInstance(getActivity()).getStatusEndTime()) {
             status = User.getInstance(getActivity()).getTimerStatus();
 
-     //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
+            //       Log.i(TAG, "refreshStatusUI getTimerStatus " + status);
         }
-     //   Log.i(TAG, "refreshStatusUI " + status);
+        //   Log.i(TAG, "refreshStatusUI " + status);
 
         if (status != null) {
             switch (status) {
@@ -775,7 +780,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
 
-        if (result == null){
+        if (result == null) {
             return;
         }
 

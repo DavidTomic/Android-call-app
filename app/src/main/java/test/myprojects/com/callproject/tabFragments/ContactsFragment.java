@@ -720,11 +720,18 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 //
 //                        }
                     else if (text.contentEquals(getString(R.string.set_notification))) {
-                        swipeholder.edit_btn.setText(getString(R.string.remove_notification));
 
-                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
-                                contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(),
-                                contactList.get(parent_postion).getStatus().getValue());
+
+                        try{
+                            DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                    contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(),
+                                    contactList.get(parent_postion).getStatus().getValue());
+
+                            swipeholder.edit_btn.setText(getString(R.string.remove_notification));
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
 
 
                         Intent pushIntent = new Intent(getActivity(), NotificationService.class);

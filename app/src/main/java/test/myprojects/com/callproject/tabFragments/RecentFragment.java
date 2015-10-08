@@ -584,12 +584,16 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
 
                     } else if (text.contentEquals(getString(R.string.set_notification))) {
-                        holder.edit_btn.setText(getString(R.string.remove_notification));
 
-                        DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
-                                recentList.get(parent_postion).getName(), recentList.get(parent_postion).getPhoneNumber(),
-                                recentList.get(parent_postion).getStatus().getValue());
 
+                        try {
+                            DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
+                                    recentList.get(parent_postion).getName(), recentList.get(parent_postion).getPhoneNumber(),
+                                    recentList.get(parent_postion).getStatus().getValue());
+                            holder.edit_btn.setText(getString(R.string.remove_notification));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         Intent pushIntent = new Intent(getActivity(), NotificationService.class);
                         getActivity().startService(pushIntent);

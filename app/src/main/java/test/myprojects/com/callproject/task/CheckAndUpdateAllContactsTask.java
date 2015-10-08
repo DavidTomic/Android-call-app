@@ -105,17 +105,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 //            return true;
 //        }
 
-        List<Contact> originalList = User.getInstance(mainActivity).getContactList();
 
-        for (Contact originalContact : originalList){
-            for (Contact c : contactList){
-                if (originalContact.getRecordId() == c.getRecordId()){
-                    c.setStatus(originalContact.getStatus());
-                    c.setStatusText(originalContact.getStatusText());
-                    break;
-                }
-            }
-        }
 
         return true;
     }
@@ -126,8 +116,19 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
      //   Log.i(TAG, "result " + result);
 
         if (result) {
-         //   Prefs.setLastContactCount(mainActivity, contactList.size());
+
             List<Contact> originalList = User.getInstance(mainActivity).getContactList();
+
+            for (Contact originalContact : originalList){
+                for (Contact c : contactList){
+                    if (originalContact.getRecordId() == c.getRecordId()){
+                        c.setStatus(originalContact.getStatus());
+                        c.setStatusText(originalContact.getStatusText());
+                        break;
+                    }
+                }
+            }
+         //   Prefs.setLastContactCount(mainActivity, contactList.size());
             originalList.clear();
 
             for (Contact c : contactList) {
