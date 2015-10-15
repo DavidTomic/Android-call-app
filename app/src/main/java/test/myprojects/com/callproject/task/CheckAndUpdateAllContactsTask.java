@@ -99,15 +99,15 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         }
 
         Log.i(TAG, "contactList.size() " + contactList.size());
-      //  Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
+        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
 
-//        if (Prefs.getLastContactCount(mainActivity) < contactList.size()) {
-//            return true;
-//        }
+        if (Prefs.getLastContactCount(mainActivity) != contactList.size()) {
+            return true;
+        }
 
 
 
-        return true;
+        return false;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
                     }
                 }
             }
-         //   Prefs.setLastContactCount(mainActivity, contactList.size());
+
             originalList.clear();
 
             for (Contact c : contactList) {
@@ -144,7 +144,6 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         }
 
     }
-
 
     private SoapObject getAddMultiContactsParams() {
 
@@ -166,11 +165,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
         List<Contact> cList = User.getInstance(mainActivity).getContactList();
 
-        int i = 0;
         for (Contact contact : cList) {
-            if (++i == 3){
-                break;
-            }
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
@@ -254,8 +249,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
                 Prefs.setLastCallTime(mainActivity, 0);
                 mainActivity.refreshStatuses();
-                mainActivity.refreshCheckPhoneNumbers();
-
+                Prefs.setLastContactCount(mainActivity, contactList.size());
             }
 //            else {
 //                Prefs.setLastContactCount(mainActivity, 0);

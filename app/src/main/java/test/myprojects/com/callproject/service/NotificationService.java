@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -40,12 +41,12 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class NotificationService extends Service {
 
     private static final String TAG = "NotificationService";
-    private Calendar cur_cal = Calendar.getInstance();
+  //  private Calendar cur_cal = Calendar.getInstance();
     private long lastTimeChecked;
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onStartCommand ");
+        Log.i(TAG, "onCreate ");
         // TODO Auto-generated method stub
         super.onCreate();
 
@@ -70,11 +71,11 @@ public class NotificationService extends Service {
 
 
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        cur_cal.setTimeInMillis(System.currentTimeMillis());
+      //  cur_cal.setTimeInMillis(System.currentTimeMillis());
 
 
-        int interval = 30;
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis(),
+        int interval = 20;
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
                 interval * 1000, pintent);
 
         Log.i(TAG, "interval " + interval);
@@ -209,12 +210,17 @@ public class NotificationService extends Service {
     }
 
     private void stopNotificationService() {
+
+        Log.i(TAG, "stopNotificationService");
+
         Intent intent = new Intent(this, NotificationService.class);
         PendingIntent pintent = PendingIntent.getService(getApplicationContext(),
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pintent);
+
+        this.stopSelf();
 
     }
 
@@ -245,7 +251,8 @@ public class NotificationService extends Service {
                 setSmallIcon(R.mipmap.ic_launcher).
                 setAutoCancel(true)
                 .setContentTitle(contentTitle)
-                .setContentText(contentText);
+                .setContentText(contentText)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 
 
         Intent myIntent = new Intent(this, StartActivity.class);
@@ -285,6 +292,12 @@ public class NotificationService extends Service {
         }
 
         return statusText;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy");
     }
 
     @Nullable

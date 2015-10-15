@@ -42,7 +42,7 @@ public class SelectLanguageActivity extends ListActivity  {
             if (langList.get(position).contentEquals(getString(R.string.english))){
                 setLocale("en");
             }else {
-                setLocale("dk");
+                setLocale("da");
             }
         }
 
@@ -99,7 +99,7 @@ public class SelectLanguageActivity extends ListActivity  {
         Prefs.setLanguageCountryCode(this, lang);
 
         Language language = Language.ENGLISH;
-        if (lang.contentEquals("dk")) {
+        if (lang.contentEquals("da")) {
             language = Language.DANISH;
         }
 

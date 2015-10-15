@@ -22,16 +22,16 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     //All method names
     public static final String CREATE_ACCOUNT = "CreateAccount";
     public static final String GET_ACCOUNT_SETUP = "GetAccountSetup";
-    public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
+ //   public static final String CHECK_PHONE_NUMBERS = "CheckPhoneNumbers";
     public static final String UPDATE_STATUS = "UpdateStatus";
     public static final String UPDATE_STATUS_WITH_TIMESTAMP = "UpdateStatusWidthTimestamp";
     public static final String REQUEST_STATUS_INFO = "RequestStatusInfo";
     public static final String UPDATE_ACCOUNT = "UpdateAccount";
     public static final String SET_DEFAULT_TEXT = "SetDefaultText";
     public static final String GET_DEFAULT_TEXT = "GetDefaultText";
-    public static final String ADD_CONTACT = "AddContacts";
+//    public static final String ADD_CONTACT = "AddContacts";
     public static final String ADD_MULTI_CONTACT = "AddMultiContacts";
-    public static final String DELETE_CONTACT = "DeleteContact";
+//    public static final String DELETE_CONTACT = "DeleteContact";
     public static final String GET_CONTACT = "GetContact";
     public static final String LOG_IN = "Login";
     public static final String I_AM_LIVE = "ImALive";
@@ -95,7 +95,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
             }
 
             if (result != null && aht!= null){
-             //   Log.w("dump Response: ", aht.responseDump);
+                Log.w("dump Response: ", aht.responseDump);
             }
 
         }catch (Exception e){

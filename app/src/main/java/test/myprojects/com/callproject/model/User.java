@@ -41,9 +41,9 @@ public class User {
     private int requestStatusInfoSeconds;
 
     private List<Contact> contactList = new ArrayList<>();
-    private List<String> checkPhoneNumberList = new ArrayList<>();
+  //  private List<String> checkPhoneNumberList = new ArrayList<>();
 
-    private boolean needRefreshStatus;
+  //  private boolean needRefreshStatus;
 
     private User() {
 
@@ -106,13 +106,13 @@ public class User {
         this.smsInviteText = smsInviteText;
     }
 
-    public boolean isNeedRefreshStatus() {
-        return needRefreshStatus;
-    }
-
-    public void setNeedRefreshStatus(boolean needRefreshStatus) {
-        this.needRefreshStatus = needRefreshStatus;
-    }
+//    public boolean isNeedRefreshStatus() {
+//        return needRefreshStatus;
+//    }
+//
+//    public void setNeedRefreshStatus(boolean needRefreshStatus) {
+//        this.needRefreshStatus = needRefreshStatus;
+//    }
 
     public String getStatusText() {
         return statusText;
@@ -199,9 +199,9 @@ public class User {
         return contactList;
     }
 
-    public List<String> getCheckPhoneNumberList() {
-        return checkPhoneNumberList;
-    }
+   // public List<String> getCheckPhoneNumberList() {
+   //     return checkPhoneNumberList;
+   // }
 
 
     public int getiAmLiveSeconds() {

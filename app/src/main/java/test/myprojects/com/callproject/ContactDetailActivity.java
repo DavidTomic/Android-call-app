@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import test.myprojects.com.callproject.Util.DataBase;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
@@ -40,7 +41,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 /**
  * Created by dtomic on 01/09/15.
  */
-public class ContactDetailActivity extends Activity implements MessageInterface {
+public class ContactDetailActivity extends Activity {
 
     private static final String TAG = "ContactDetailActivity";
     private Contact contact;
@@ -123,6 +124,9 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
     @OnClick(R.id.ibFavorit)
     public void favoritClicked() {
+
+        Prefs.setLastContactCount(this, 0);
+
         if (contact.isFavorit()) {
             contact.setFavorit(false);
             ibFavorit.setImageResource(R.drawable.star_empty);
@@ -208,13 +212,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                 tvProfile.setVisibility(View.VISIBLE);
             }
 
-            List<String> checkPhoneList = User.getInstance(this).getCheckPhoneNumberList();
-
-            if (checkPhoneList.contains(contact.getPhoneNumber())){
-
-//                if (contact.getStatus()==null){
-//                    bConfirm.setText(getString(R.string.add_contact));
-//                }else {
+            if (contact.getStatus() != null){
 
                     notification = DataBase.getNotificationWithPhoneNumber
                             (DataBase.getInstance(this).getWritableDatabase(), contact.getPhoneNumber());
@@ -224,8 +222,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
                     }else {
                         bConfirm.setText(getString(R.string.set_notification));
                     }
-
-              //  }
 
             }else {
                 bConfirm.setText(getString(R.string.invite));
@@ -291,123 +287,124 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
                 phones.close();
 
-                User.getInstance(this).setNeedRefreshStatus(true);
+                Prefs.setLastContactCount(this, 0);
+              //  User.getInstance(this).setNeedRefreshStatus(true);
                 refreshUI();
             }
         }
     }
 
-    private SoapObject getAddContactsParams(String number) {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("ContactsPhoneNumber");
-        pi.setValue(number);
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-
-        pi = new PropertyInfo();
-        pi.setName("Name");
-        pi.setValue(number);
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Noter");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Number");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("URL");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Adress");
-        pi.setValue("");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Birthsday");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("pDate");
-        pi.setValue("2000-01-01T00:00:00");
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("Favorites");
-        pi.setValue(false);
-        pi.setType(Boolean.class);
-        request.addProperty(pi);
-
-        return request;
-    }
-
-    @Override
-    public void responseToSendMessage(SoapObject result, String methodName) {
-        if (result == null) {
-            showErrorTryAgain();
-            return;
-        }
-
-        if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
-
-            try {
-
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 2) {
-                    Toast.makeText(this, getString(R.string.contact_added), Toast.LENGTH_SHORT).show();
-
-                    if (contact.getStatus() != null && contact.getStatus() != Status.GREEN_STATUS){
-                        bConfirm.setText(getString(R.string.set_notification));
-                    }else {
-                        bConfirm.setText(getString(R.string.remove_notification));
-                    }
-
-                    User.getInstance(this).setNeedRefreshStatus(true);
-
-                } else {
-                    showErrorTryAgain();
-                }
-
-
-            } catch (NullPointerException ne) {
-                ne.printStackTrace();
-                showErrorTryAgain();
-            }
-
-
-        }
-    }
+//    private SoapObject getAddContactsParams(String number) {
+//
+//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
+//
+//        PropertyInfo pi = new PropertyInfo();
+//        pi.setName("Phonenumber");
+//        pi.setValue(User.getInstance(this).getPhoneNumber());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("password");
+//        pi.setValue(User.getInstance(this).getPassword());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("ContactsPhoneNumber");
+//        pi.setValue(number);
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Name");
+//        pi.setValue(number);
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Noter");
+//        pi.setValue("");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Number");
+//        pi.setValue("");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("URL");
+//        pi.setValue("");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Adress");
+//        pi.setValue("");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Birthsday");
+//        pi.setValue("2000-01-01T00:00:00");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("pDate");
+//        pi.setValue("2000-01-01T00:00:00");
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("Favorites");
+//        pi.setValue(false);
+//        pi.setType(Boolean.class);
+//        request.addProperty(pi);
+//
+//        return request;
+//    }
+//
+//    @Override
+//    public void responseToSendMessage(SoapObject result, String methodName) {
+//        if (result == null) {
+//            showErrorTryAgain();
+//            return;
+//        }
+//
+//        if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
+//
+//            try {
+//
+//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+//
+//                if (resultStatus == 2) {
+//                    Toast.makeText(this, getString(R.string.contact_added), Toast.LENGTH_SHORT).show();
+//
+//                    if (contact.getStatus() != null && contact.getStatus() != Status.GREEN_STATUS){
+//                        bConfirm.setText(getString(R.string.set_notification));
+//                    }else {
+//                        bConfirm.setText(getString(R.string.remove_notification));
+//                    }
+//
+//                    User.getInstance(this).setNeedRefreshStatus(true);
+//
+//                } else {
+//                    showErrorTryAgain();
+//                }
+//
+//
+//            } catch (NullPointerException ne) {
+//                ne.printStackTrace();
+//                showErrorTryAgain();
+//            }
+//
+//
+//        }
+//    }
 
     private void showErrorTryAgain() {
         Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();

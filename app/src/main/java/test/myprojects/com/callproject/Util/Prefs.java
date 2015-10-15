@@ -130,20 +130,20 @@ public class Prefs {
     }
 
 
-//    public static void setLastContactCount(Context context, int count) {
-//        SharedPreferences.Editor editor = context.getSharedPreferences(
-//                PREFS_FILE, 0).edit();
-//
-//        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
-//        editor.commit();
-//    }
-//    public static long getLastContactCount(Context context) {
-//
-//        SharedPreferences prefs = context.getSharedPreferences(
-//                PREFS_FILE, 0);
-//
-//        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
-//    }
+    public static void setLastContactCount(Context context, int count) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                PREFS_FILE, 0).edit();
+
+        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
+        editor.commit();
+    }
+    public static long getLastContactCount(Context context) {
+
+        SharedPreferences prefs = context.getSharedPreferences(
+                PREFS_FILE, 0);
+
+        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
+    }
 
     public static void setVoiceMailNumber(Context context, String voicemailNumber) {
         SharedPreferences.Editor editor = context.getSharedPreferences(
