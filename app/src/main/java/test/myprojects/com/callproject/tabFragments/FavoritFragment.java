@@ -171,9 +171,9 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             }
         }
 
-     //   adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
 
-        createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
     }
 
     @Override
@@ -224,6 +224,11 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                             break;
 
                         case MotionEvent.ACTION_MOVE:
+
+                            Log.i(TAG, "XXX " + (event.getRawX() - startX));
+                            if(Math.abs(event.getRawX() - startX) < 3)
+                                break;
+
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
                             //    Log.i(TAG, "rMargin " + rightMargin);
@@ -372,14 +377,14 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
             ViewHolder holder;
-            if (convertView == null) {
+ //           if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.common_list_item, parent, false);
                 holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
 
             holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 

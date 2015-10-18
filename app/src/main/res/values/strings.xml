@@ -147,5 +147,7 @@
     <string name="remove_notification">Remove notification</string>
     <string name="please_correct_your_start_end_time">Please correct you start and end time</string>
     <string name="title_activity_select_language">SelectLanguageActivity</string>
+    <string name="ok">Ok</string>
+    <string name="clear_timer">Clear timer</string>
 
 </resources>

@@ -206,6 +206,9 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                             break;
 
                         case MotionEvent.ACTION_MOVE:
+                            if(Math.abs(event.getRawX() - startX) < 3)
+                                break;
+
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
                             //  Log.i(TAG, "rMargin " + rightMargin);
@@ -324,14 +327,14 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
             ViewHolder holder;
-            if (convertView == null) {
+ //           if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.common_list_item, parent, false);
                 holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
 
             holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
@@ -760,7 +763,10 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
         }
         cursor.close();
-        createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+
+        adapter.notifyDataSetChanged();
+
+     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 
     }
 

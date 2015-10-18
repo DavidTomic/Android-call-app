@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -87,6 +88,16 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         showDateTimeDialog();
     }
 
+    @Bind(R.id.bClearTimer)
+    Button bClearTimer;
+
+    @OnClick(R.id.bClearTimer)
+    public void clearTimer(){
+        selectedStartTime = 0;
+        selectedEndTime = 0;
+        tvStartTime.setText("-:-");
+        tvEndTime.setText("-:-");
+    }
 
     @OnClick(R.id.bConfirm)
     public void confirm() {
@@ -101,10 +112,12 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
             if (selectedStartTime < System.currentTimeMillis()
                     || selectedEndTime < System.currentTimeMillis() ||
+                    selectedStartTime >= selectedEndTime ||
                     (selectedStartTime != 0 && selectedEndTime == 0) ||
                     (selectedEndTime !=0 && selectedStartTime == 0)){
-                Toast.makeText(this, getString(R.string.please_correct_your_start_end_time),
-                        Toast.LENGTH_SHORT).show();
+
+                showError(getString(R.string.please_correct_your_start_end_time));
+
                 return;
             }
 
@@ -164,7 +177,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         llGreenStatus.setOnClickListener(this);
 
         currentStatus = User.getInstance(this).getStatus();
-        setStatusBackgrounds();
 
         if (User.getInstance(this).getStatusText() != null &&
                 !User.getInstance(this).getStatusText().contentEquals("(null)"))
@@ -188,7 +200,11 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
             tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                     (new java.util.Date(selectedEndTime)));
 
+            currentStatus = User.getInstance(this).getTimerStatus();
+
         }
+
+        setStatusBackgrounds();
 
     }
 
@@ -196,7 +212,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         final View dialogView = View.inflate(this, R.layout.date_time_picker_dialog, null);
         final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
         final TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
-        timePicker.setIs24HourView(DateFormat.is24HourFormat(SetStatusActivity.this));
+    //    timePicker.setIs24HourView(DateFormat.is24HourFormat(SetStatusActivity.this));
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
@@ -216,22 +232,26 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                     Log.i(TAG, "time " + selectedStartTime);
 
                     if (selectedStartTime > System.currentTimeMillis()) {
-                        if (selectedEndTime == 0) {
-
-                            tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+                        tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                     (new java.util.Date(selectedStartTime)));
 
-                        } else {
-                            if (selectedStartTime < selectedEndTime) {
 
-                                tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-                                        (new java.util.Date(selectedStartTime)));
-
-                            } else {
-                                selectedStartTime = 0;
-                                tvStartTime.setText("-:-");
-                            }
-                        }
+//                        if (selectedEndTime == 0) {
+//
+//                            tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+//                                    (new java.util.Date(selectedStartTime)));
+//
+//                        } else {
+//                            if (selectedStartTime < selectedEndTime) {
+//
+//                                tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+//                                        (new java.util.Date(selectedStartTime)));
+//
+//                            } else {
+//                                selectedStartTime = 0;
+//                                tvStartTime.setText("-:-");
+//                            }
+//                        }
                     } else {
                         selectedStartTime = 0;
                         tvStartTime.setText("-:-");
@@ -243,12 +263,28 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     Log.i(TAG, "time " + selectedEndTime);
 
-                    if (selectedEndTime > selectedStartTime && selectedEndTime > System.currentTimeMillis()) {
+//                    if (selectedEndTime > selectedStartTime && selectedEndTime > System.currentTimeMillis()) {
+//                        tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+//                                (new java.util.Date(selectedEndTime)));
+//                    } else {
+//                        selectedEndTime = 0;
+//                        tvEndTime.setText("-:-");
+//                    }
+                    if (selectedEndTime > System.currentTimeMillis()) {
                         tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedEndTime)));
                     } else {
-                        selectedEndTime = 0;
-                        tvEndTime.setText("-:-");
+
+                        if (selectedStartTime > 0){
+                            selectedEndTime = selectedStartTime;
+                            tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
+                                    (new java.util.Date(selectedEndTime)));
+                        }else {
+                            selectedEndTime = 0;
+                            tvEndTime.setText("-:-");
+                        }
+
+
                     }
                 }
 
@@ -383,6 +419,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llGreenStatus.getChildAt(0).setSelected(false);
                 rlEndTime.setVisibility(View.VISIBLE);
                 rlStartTime.setVisibility(View.VISIBLE);
+                bClearTimer.setVisibility(View.VISIBLE);
                 tvStartTimeLabel.setText(getString(R.string.set_red_status_from));
                 tvEndTimeLabel.setText(getString(R.string.set_red_status_to));
 
@@ -394,6 +431,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llGreenStatus.getChildAt(0).setSelected(false);
                 rlEndTime.setVisibility(View.VISIBLE);
                 rlStartTime.setVisibility(View.VISIBLE);
+                bClearTimer.setVisibility(View.VISIBLE);
                 tvStartTimeLabel.setText(getString(R.string.set_yellow_status_from));
                 tvEndTimeLabel.setText(getString(R.string.set_yellow_status_to));
 
@@ -405,6 +443,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 llGreenStatus.getChildAt(0).setSelected(true);
                 rlEndTime.setVisibility(View.GONE);
                 rlStartTime.setVisibility(View.GONE);
+                bClearTimer.setVisibility(View.GONE);
                 break;
         }
     }
@@ -507,4 +546,16 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
     }
 
+    private void showError(String message){
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+
+        adb.setMessage(message)
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        adb.show();
+    }
 }
