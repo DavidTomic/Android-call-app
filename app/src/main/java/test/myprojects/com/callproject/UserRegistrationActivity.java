@@ -25,6 +25,7 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Language;
 import test.myprojects.com.callproject.Util.Prefs;
@@ -71,9 +72,12 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         if (isLogIn) {
 
-            if (!(etPhoneNumber.getText().toString().length() > 5 && etPassword.getText()
-                    .toString().length() > 3)) {
-                showErrorCheckData();
+            if (etPhoneNumber.getText().toString().length() < 5) {
+                showErrorToast(getString(R.string.enter_phone_number));
+                return;
+            }else if (etPassword.getText()
+                    .toString().length() < 3){
+                showErrorToast(getString(R.string.enter_password));
                 return;
             }
 
@@ -85,10 +89,20 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         } else {
 
-            if (!(etPhoneNumber.getText().toString().length() > 5 && etPassword.getText()
-                    .toString().length() > 3 && etName.getText().toString().length() > 1
-                    && etEmail.getText().toString().length() > 5)) {
-                showErrorCheckData();
+            if (etPhoneNumber.getText().toString().length() < 5) {
+                showErrorToast(getString(R.string.enter_phone_number));
+                return;
+            }else if (etPassword.getText()
+                    .toString().length() < 3){
+                showErrorToast(getString(R.string.enter_password));
+                return;
+            }else if (etName.getText()
+                    .toString().length() < 2){
+                showErrorToast(getString(R.string.enter_name));
+                return;
+            }else if (etEmail.getText()
+                    .toString().length() < 5){
+                showErrorToast(getString(R.string.enter_email));
                 return;
             }
 
@@ -164,19 +178,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
         }
     }
 
-    private void showErrorCheckData() {
+    private void showErrorToast(String message) {
 
-        Toast.makeText(this, getString(R.string.fill_all_data), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         pbProgress.setVisibility(View.GONE);
         bConfirm.setVisibility(View.VISIBLE);
     }
 
-    private void showErrorTryAgain() {
-
-        Toast.makeText(this, getString(R.string.please_try_again), Toast.LENGTH_SHORT).show();
-        pbProgress.setVisibility(View.GONE);
-        bConfirm.setVisibility(View.VISIBLE);
-    }
 
     private SoapObject getCreateAccountParams() {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CREATE_ACCOUNT);
@@ -351,7 +359,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         if (result == null) {
             User.empty();
-            showErrorTryAgain();
+            showErrorToast(getString(R.string.please_try_again));
             return;
         }
 
@@ -428,13 +436,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
 
                 } else {
-                    showErrorCheckData();
+                    showErrorToast(getString(R.string.please_try_again));
                 }
 
 
             } catch (NullPointerException ne) {
                 ne.printStackTrace();
-                showErrorTryAgain();
+                showErrorToast(getString(R.string.please_try_again));
             }
 
 
@@ -449,18 +457,15 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     new SendMessageTask(this, getAddMultiContactsParams()).execute();
 
                 } else if (resultStatus == 0) {
-                    Toast.makeText(this, getString(R.string.user_already_exists),
-                            Toast.LENGTH_SHORT).show();
-                    pbProgress.setVisibility(View.GONE);
-                    bConfirm.setVisibility(View.VISIBLE);
+                    showErrorToast(getString(R.string.user_already_exists));
                 } else {
-                    showErrorCheckData();
+                    showErrorToast(getString(R.string.please_try_again));
                 }
 
 
             } catch (NullPointerException ne) {
                 ne.printStackTrace();
-                showErrorTryAgain();
+                showErrorToast(getString(R.string.please_try_again));
             }
 
         }else if (methodName.contentEquals(SendMessageTask.ADD_MULTI_CONTACT)) {
@@ -486,7 +491,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
-                    Prefs.setLastContactCount(this, user.getContactList().size());
+              //      Prefs.setLastContactCount(this, user.getContactList().size());
+                    DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(this).getWritableDatabase(),
+                            user.getContactList());
 
                     String lang = "en";
                     if (user.getLanguage() == Language.DANISH){
@@ -500,13 +507,13 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     finish();
 
                 } else {
-                    showErrorTryAgain();
+                    showErrorToast(getString(R.string.please_try_again));
                 }
 
 
             } catch (NullPointerException ne) {
                 ne.printStackTrace();
-                showErrorTryAgain();
+                showErrorToast(getString(R.string.please_try_again));
             }
         }
     }

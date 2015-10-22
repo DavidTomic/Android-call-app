@@ -149,5 +149,9 @@
     <string name="title_activity_select_language">SelectLanguageActivity</string>
     <string name="ok">Ok</string>
     <string name="clear_timer">Clear timer</string>
+    <string name="enter_phone_number">Please check your phone number</string>
+    <string name="enter_password">Please check your password</string>
+    <string name="enter_name">Please check your name</string>
+    <string name="enter_email">Please check your email</string>
 
 </resources>

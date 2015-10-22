@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import test.myprojects.com.callproject.MainActivity;
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.User;
@@ -29,6 +30,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     private static final String TAG = "CheckAllContactsTask";
     private MainActivity mainActivity;
     private List<Contact> contactList = new ArrayList<>();
+    private List<Contact> newContactsList = new ArrayList<>();
 
     public CheckAndUpdateAllContactsTask(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -98,13 +100,35 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             return  false;
         }
 
-        Log.i(TAG, "contactList.size() " + contactList.size());
-        Log.i(TAG, "prefs.size() " + Prefs.getLastContactCount(mainActivity));
+        List<String> currentList = DataBase.getContactsPhoneNumberListFromDb
+                (DataBase.getInstance(mainActivity).getWritableDatabase());
 
-        if (Prefs.getLastContactCount(mainActivity) != contactList.size()) {
-            return true;
+        //1) find contacts that are not in currentList
+        for (Contact contact : contactList){
+            if (!currentList.contains(contact.getPhoneNumber())){
+                newContactsList.add(contact);
+            }
+        }
+        Log.i(TAG, "newContactsList.size() " + newContactsList.size());
+
+        boolean oldContactExist = false;
+        for (String phoneNumber : currentList){
+
+            boolean phoneNumberExistsInContactList = false;
+            for (Contact contact : contactList){
+                if (phoneNumber.contentEquals(contact.getPhoneNumber())){
+                    phoneNumberExistsInContactList = true;
+                }
+            }
+
+            if (!phoneNumberExistsInContactList){
+                oldContactExist = true;
+                break;
+            }
         }
 
+        if (newContactsList.size() > 0 || oldContactExist)
+            return true;
 
 
         return false;
@@ -139,7 +163,8 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             Intent returnIntent = new Intent(MainActivity.BROADCAST_STATUS_UPDATE_ACTION);
             mainActivity.sendBroadcast(returnIntent);
 
-            new SendMessageTask(this, getAddMultiContactsParams()).execute();
+            if (newContactsList.size() > 0)
+                new SendMessageTask(this, getAddMultiContactsParams()).execute();
 
         }
 
@@ -163,9 +188,8 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
         SoapObject contactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "Contacts");
 
-        List<Contact> cList = User.getInstance(mainActivity).getContactList();
 
-        for (Contact contact : cList) {
+        for (Contact contact : newContactsList) {
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
@@ -247,9 +271,13 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
 
             if (resultStatus == 2) {
 
-                Prefs.setLastCallTime(mainActivity, 0);
-                mainActivity.refreshStatuses();
-                Prefs.setLastContactCount(mainActivity, contactList.size());
+                if (mainActivity != null && !mainActivity.isFinishing()){
+                    DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(mainActivity).getWritableDatabase(), contactList);
+                    Prefs.setLastCallTime(mainActivity, "2000-01-01T00:00:00");
+                    mainActivity.refreshStatuses();
+                }
+
+          //      Prefs.setLastContactCount(mainActivity, contactList.size());
             }
 //            else {
 //                Prefs.setLastContactCount(mainActivity, 0);

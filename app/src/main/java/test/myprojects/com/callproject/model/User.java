@@ -36,6 +36,7 @@ public class User {
     private long statusEndTime;
 
     private Status timerStatus;
+    private String timerStatusText;
 
     private int iAmLiveSeconds;
     private int requestStatusInfoSeconds;
@@ -306,4 +307,11 @@ public class User {
     }
 
 
+    public String getTimerStatusText() {
+        return timerStatusText;
+    }
+
+    public void setTimerStatusText(String timerStatusText) {
+        this.timerStatusText = timerStatusText;
+    }
 }
