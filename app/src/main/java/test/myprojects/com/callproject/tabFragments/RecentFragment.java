@@ -206,6 +206,9 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                             break;
 
                         case MotionEvent.ACTION_MOVE:
+                            if(Math.abs(event.getRawX() - startX) < 3)
+                                break;
+
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
                             //  Log.i(TAG, "rMargin " + rightMargin);
@@ -324,20 +327,20 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
             ViewHolder holder;
-            if (convertView == null) {
+ //           if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.common_list_item, parent, false);
                 holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
 
             holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
             RecentAdapter sadapter = new RecentAdapter(getActivity().getApplicationContext(), position);
-
             holder.swipelist.setAdapter(sadapter);
+
             return convertView;
         }
 
@@ -487,6 +490,9 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 //                holder.vStatus.setVisibility(View.GONE);
                 holder.tvOnPhone.setVisibility(View.GONE);
 
+                holder.edit_btn.setText(getString(R.string.invite));
+                holder.ivEnvelop.setVisibility(View.GONE);
+
 //                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
 //                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
 //                params.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -508,6 +514,18 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 holder.tvOnPhone.setVisibility(View.GONE);
 
                 if (status != null) {
+
+                    Notification notification = DataBase.getNotificationWithPhoneNumber
+                            (db, contact.getPhoneNumber());
+
+                    if (notification != null) {
+                        holder.edit_btn.setText(getString(R.string.remove_notification));
+                        holder.ivEnvelop.setVisibility(View.VISIBLE);
+                    } else {
+                        holder.edit_btn.setText(getString(R.string.set_notification));
+                        holder.ivEnvelop.setVisibility(View.GONE);
+                    }
+
                     switch (status) {
                         case RED_STATUS:
                             holder.vStatusRed.setSelected(true);
@@ -533,30 +551,11 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                     holder.vStatusRed.setSelected(false);
                     holder.vStatusYellow.setSelected(false);
                     holder.vStatusGreen.setSelected(false);
-                }
-            }
 
-
-            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
-
-            if (checkPhoneList.contains(contact.getPhoneNumber())) {
-
-                Notification notification = DataBase.getNotificationWithPhoneNumber
-                        (db, contact.getPhoneNumber());
-
-                if (notification != null) {
-                    holder.edit_btn.setText(getString(R.string.remove_notification));
-                    holder.ivEnvelop.setVisibility(View.VISIBLE);
-                } else {
-                    holder.edit_btn.setText(getString(R.string.set_notification));
+                    holder.edit_btn.setText(getString(R.string.invite));
                     holder.ivEnvelop.setVisibility(View.GONE);
                 }
-
-            } else {
-                holder.edit_btn.setText(getString(R.string.invite));
-                holder.ivEnvelop.setVisibility(View.GONE);
             }
-
 
             holder.edit_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -764,7 +763,10 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
         }
         cursor.close();
+
         adapter.notifyDataSetChanged();
+
+     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 
     }
 

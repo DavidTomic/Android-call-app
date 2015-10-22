@@ -278,11 +278,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
         List<Contact> cList = User.getInstance(this).getContactList();
 
-        int i = 0;
         for (Contact contact : cList) {
-            if (++i == 3){
-                break;
-            }
 
             SoapObject csContactsSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "csContacts");
 
@@ -419,7 +415,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
                     if (countryCode.contentEquals("da") || countryCode.contentEquals("dk")){
                         user.setLanguage(Language.DANISH);
-                        Prefs.setLanguageCountryCode(this, countryCode);
+                        Prefs.setLanguageCountryCode(this, "da");
                     }else {
                         user.setLanguage(Language.ENGLISH);
                         Prefs.setLanguageCountryCode(this, "en");
@@ -490,7 +486,7 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
-                //    Prefs.setLastContactCount(this, user.getContactList().size());
+                    Prefs.setLastContactCount(this, user.getContactList().size());
 
                     String lang = "en";
                     if (user.getLanguage() == Language.DANISH){

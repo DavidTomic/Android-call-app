@@ -79,4 +79,18 @@
     <string name="voice_mail_number">Voicemail number:</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+    //strings for translation from 30.09.2015
+     <string name="set_red_status_to">Sæt rød status til:</string> 
+    <string name="set_red_status_from">Sæt rød status fra:</string>
+     <string name="set_yellow_status_from">Sæt gul status fra:</string> 
+    <string name="set_yellow_status_to">Sæt gul status til:</string> 
+    <string name="please_enter_your_voicemail">Telefon nummeret til telefonsvaren skal sættes op I indstillinger </string>
+     <string name="cancel">Cancel</string> 
+    <string name="choose_status_text">Bælg tekst</string>
+     <string name="edit_status_text">Ret tekst</string>
+     <string name="remove_notifications">Fjern alle notifikation</string> 
+    <string name="remove_notification">Fjern notifikation</string>
+     <string name="please_correct_your_start_end_time">Ret start og slut tidspunkt</string>
+     <string name="title_activity_select_language">Vælg sprog</string>
+
 </resources>

@@ -9,24 +9,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,10 +28,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
@@ -182,6 +172,8 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         }
 
         adapter.notifyDataSetChanged();
+
+     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
     }
 
     @Override
@@ -232,6 +224,11 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                             break;
 
                         case MotionEvent.ACTION_MOVE:
+
+                            Log.i(TAG, "XXX " + (event.getRawX() - startX));
+                            if(Math.abs(event.getRawX() - startX) < 3)
+                                break;
+
                             rightMargin = -((int) event.getRawX() - startX);
                             //    Log.i(TAG, "event.getRawX() " + event.getRawX());
                             //    Log.i(TAG, "rMargin " + rightMargin);
@@ -380,14 +377,14 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
             ViewHolder holder;
-            if (convertView == null) {
+ //           if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = inflater.inflate(R.layout.common_list_item, parent, false);
                 holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
                 convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
 
             holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
@@ -470,6 +467,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
             //   Log.i(TAG, "status " + contact.getStatus());
 
+
             holder.name.setText(contact.getName());
 
             if (contact.getImage() != null && getUserImage(contact.getRecordId()) != null) {
@@ -508,6 +506,18 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             holder.tvOnPhone.setVisibility(View.GONE);
 
             if (status != null) {
+
+                Notification notification = DataBase.getNotificationWithPhoneNumber
+                        (db, contact.getPhoneNumber());
+
+                if (notification != null) {
+                    holder.edit_btn.setText(getString(R.string.remove_notification));
+                    holder.ivEnvelop.setVisibility(View.VISIBLE);
+                } else {
+                    holder.edit_btn.setText(getString(R.string.set_notification));
+                    holder.ivEnvelop.setVisibility(View.GONE);
+                }
+
                 switch (status) {
                     case RED_STATUS:
                         holder.vStatusRed.setSelected(true);
@@ -533,28 +543,31 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.vStatusRed.setSelected(false);
                 holder.vStatusYellow.setSelected(false);
                 holder.vStatusGreen.setSelected(false);
-            }
 
-
-            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
-
-            if (checkPhoneList.contains(contact.getPhoneNumber())) {
-
-                Notification notification = DataBase.getNotificationWithPhoneNumber
-                        (db, contact.getPhoneNumber());
-
-                if (notification != null) {
-                    holder.edit_btn.setText(getString(R.string.remove_notification));
-                    holder.ivEnvelop.setVisibility(View.VISIBLE);
-                } else {
-                    holder.edit_btn.setText(getString(R.string.set_notification));
-                    holder.ivEnvelop.setVisibility(View.GONE);
-                }
-
-            } else {
                 holder.edit_btn.setText(getString(R.string.invite));
                 holder.ivEnvelop.setVisibility(View.GONE);
             }
+
+
+//            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
+//
+//            if (checkPhoneList.contains(contact.getPhoneNumber())) {
+//
+//                Notification notification = DataBase.getNotificationWithPhoneNumber
+//                        (db, contact.getPhoneNumber());
+//
+//                if (notification != null) {
+//                    holder.edit_btn.setText(getString(R.string.remove_notification));
+//                    holder.ivEnvelop.setVisibility(View.VISIBLE);
+//                } else {
+//                    holder.edit_btn.setText(getString(R.string.set_notification));
+//                    holder.ivEnvelop.setVisibility(View.GONE);
+//                }
+//
+//            } else {
+//                holder.edit_btn.setText(getString(R.string.invite));
+//                holder.ivEnvelop.setVisibility(View.GONE);
+//            }
 
 
             holder.edit_btn.setOnClickListener(new View.OnClickListener() {
