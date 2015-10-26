@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "test.myprojects.com.callproject"
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 2
-        versionName "1.5"
+        versionName "1.6"
     }
     buildTypes {
         release {

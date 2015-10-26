@@ -216,12 +216,14 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         final View dialogView = View.inflate(this, R.layout.date_time_picker_dialog, null);
         final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
         final TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
-     //   Log.i(TAG, "timePicker " + timePicker.is24HourView());
-      //  timePicker.setIs24HourView(DateFormat.is24HourFormat(SetStatusActivity.this));
         timePicker.setIs24HourView(true);
-    //    Log.i(TAG, "timePicker22 " + timePicker.is24HourView());
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        Calendar cal=Calendar.getInstance();
+        int hour=cal.get(Calendar.HOUR_OF_DAY);
+        int min=cal.get(Calendar.MINUTE);
+        timePicker.setCurrentHour(hour);
+        timePicker.setCurrentMinute(min);
 
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
             @Override

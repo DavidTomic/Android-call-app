@@ -103,7 +103,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         List<String> currentList = DataBase.getContactsPhoneNumberListFromDb
                 (DataBase.getInstance(mainActivity).getWritableDatabase());
 
-        //1) find contacts that are not in currentList
+        // add new contacts to server
         for (Contact contact : contactList){
             if (!currentList.contains(contact.getPhoneNumber())){
                 newContactsList.add(contact);
@@ -111,23 +111,28 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         }
         Log.i(TAG, "newContactsList.size() " + newContactsList.size());
 
-        boolean oldContactExist = false;
+
+
+        // delete old contacts from server
+        List<String> oldPhoneNumbers = new ArrayList<>();
+
+        List<String> phoneNumberList = new ArrayList<>();
+        for (Contact contact : contactList){
+            phoneNumberList.add(contact.getPhoneNumber());
+        }
+
         for (String phoneNumber : currentList){
-
-            boolean phoneNumberExistsInContactList = false;
-            for (Contact contact : contactList){
-                if (phoneNumber.contentEquals(contact.getPhoneNumber())){
-                    phoneNumberExistsInContactList = true;
-                }
-            }
-
-            if (!phoneNumberExistsInContactList){
-                oldContactExist = true;
-                break;
+            if (!phoneNumberList.contains(phoneNumber)){
+                oldPhoneNumbers.add(phoneNumber);
             }
         }
 
-        if (newContactsList.size() > 0 || oldContactExist)
+        if (oldPhoneNumbers.size() > 0){
+            deleteContactsOnServer(oldPhoneNumbers);
+        }
+
+
+        if (newContactsList.size() > 0 || oldPhoneNumbers.size() > 0)
             return true;
 
 
@@ -285,6 +290,43 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void deleteContactsOnServer(List<String> phoneNumbers){
+
+        try {
+            for (String phoneNumber : phoneNumbers) {
+                new SendMessageTask(null, getDeleteContactParams(phoneNumber));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private SoapObject getDeleteContactParams(String number){
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.DELETE_CONTACT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(mainActivity).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(mainActivity).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("PhoneNumberToDelete");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        return request;
     }
 }
 

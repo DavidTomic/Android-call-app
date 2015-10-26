@@ -31,7 +31,7 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
     public static final String GET_DEFAULT_TEXT = "GetDefaultText";
     public static final String ADD_CONTACT = "AddContacts";
     public static final String ADD_MULTI_CONTACT = "AddMultiContacts";
-//    public static final String DELETE_CONTACT = "DeleteContact";
+    public static final String DELETE_CONTACT = "DeleteContact";
     public static final String GET_CONTACT = "GetContact";
     public static final String LOG_IN = "Login";
     public static final String I_AM_LIVE = "ImALive";

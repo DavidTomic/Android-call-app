@@ -800,6 +800,8 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         try {
             if (cur.moveToFirst()) {
+                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber()));
+
                 String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
                 getActivity().getContentResolver().delete(uri, null, null);
@@ -807,6 +809,9 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                 contactList.remove(contact);
                 User.getInstance(getActivity()).getContactList().remove(contact);
                 adapter.notifyDataSetChanged();
+
+
+
             }
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
@@ -837,7 +842,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
 
-
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
         pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
@@ -859,6 +863,29 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         pi = new PropertyInfo();
         pi.setName("Text");
         pi.setValue(User.getInstance(getActivity()).getStatusText());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        return request;
+    }
+    private SoapObject getDeleteContactParams(String number){
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.DELETE_CONTACT);
+
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(getActivity()).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("PhoneNumberToDelete");
+        pi.setValue(number);
         pi.setType(String.class);
         request.addProperty(pi);
 
