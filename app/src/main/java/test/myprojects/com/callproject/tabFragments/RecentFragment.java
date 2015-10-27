@@ -578,7 +578,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
                         it.putExtra("sms_body", smsText);
                         it.putExtra(Intent.EXTRA_TEXT, smsText);
-                        //  it.putExtra("exit_on_sent", true);
+                        it.putExtra("exit_on_sent", true);
                         startActivity(it);
 
 

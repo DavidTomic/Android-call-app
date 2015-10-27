@@ -2,6 +2,7 @@ package test.myprojects.com.callproject;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -159,18 +160,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
     public void Call() {
         String number = contact.getPhoneNumber();
         if (number.length() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for Activity#requestPermissions for more details.
-                    return;
-                }
-            }
             startActivity(new Intent(Intent.ACTION_CALL,
                     Uri.parse("tel:" + number)));
         }
@@ -178,12 +167,18 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
     @OnClick(R.id.bSendSMS)
     public void sendSMS() {
-        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
-        smsIntent.setType("vnd.android-dir/mms-sms");
-        smsIntent.putExtra("address", contact.getPhoneNumber());
-        smsIntent.addCategory(Intent.CATEGORY_DEFAULT);
-        smsIntent.putExtra("exit_on_sent", true);
-        startActivity(smsIntent);
+
+        String smsText = User.getInstance(this).getSmsInviteText();
+        if (smsText == null || smsText.length() == 0) {
+            smsText = getString(R.string.invite_user_text);
+        }
+
+        Uri uri = Uri.parse("smsto:" + contact.getPhoneNumber());
+        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+        it.putExtra("sms_body", smsText);
+        it.putExtra(Intent.EXTRA_TEXT, smsText);
+        it.putExtra("exit_on_sent", true);
+        startActivity(it);
     }
 
 
