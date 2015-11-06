@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.InternetStatus;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
@@ -89,7 +90,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
             }
         });
 
-        Prefs.setLastCallTime(this, 0);
+        Prefs.setLastCallTime(this, "2000-01-01T00:00:00");
 
         new SendMessageTask(this, getDefaultTextParams()).execute();
 
@@ -187,200 +188,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         }
     };
 
-    @Override
-    public void responseToSendMessage(SoapObject result, String methodName) {
-
-     //   Log.i(TAG, "responseToSendMessage methodName " + methodName);
-
-        if (result == null) {
-            return;
-        }
-
-        if (methodName.contentEquals(SendMessageTask.REQUEST_STATUS_INFO)) {
-            try {
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 2) {
-
-                    Prefs.setLastCallTime(this, System.currentTimeMillis());
-
-                    List<Contact> contactList = User.getInstance(this).getContactList();
-
-                 //   Log.i(TAG, "C LIST " + contactList.size());
-
-                    SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
-
-                    for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
-                        SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
-
-                        String pohoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
-                  //      Log.i(TAG, "pohoneNumber " + pohoneNumber);
-
-
-                        for (Contact c : contactList){
-                            if (c.getPhoneNumber().contentEquals(pohoneNumber)){
-
-                          //      Log.i(TAG, "nasao " + c.getPhoneNumber());
-
-                                c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
-
-                                String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
-                                if (statusText.contentEquals("anyType{}") || statusText.contentEquals("(null)")){
-                                    statusText = "";
-                                }
-
-                                c.setStatusText(statusText);
-                              //  c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
-                                break;
-                            }
-                        }
-
-                    }
-
-                    Intent returnIntent = new Intent(BROADCAST_STATUS_UPDATE_ACTION);
-                    sendBroadcast(returnIntent);
-
-                } else {
-                   // Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-              //  Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
-            }
-        } else if (methodName.contentEquals(SendMessageTask.GET_DEFAULT_TEXT)) {
-            try {
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 2) {
-                    SoapObject textSoapObject = (SoapObject) result.getProperty("DefaultText");
-
-                    List<String> list = new ArrayList<String>();
-                    for (int i = 0; i < textSoapObject.getPropertyCount(); i++) {
-                        list.add("" + textSoapObject.getProperty(i));
-                      //  Log.i(TAG, "text " + textSoapObject.getProperty(i));
-                    }
-
-                    Prefs.saveDefaultTexts(this, list);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-//        else if (methodName.contentEquals(SendMessageTask.CHECK_PHONE_NUMBERS)) {
-//            try {
-//
-//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-//
-//                List<String> list = User.getInstance(this).getCheckPhoneNumberList();
-//                list.clear();
-//
-//                if (resultStatus == 2) {
-//
-//                    SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
-//
-//                    for (int i = 0; i < phoneNumbersSoapObject.getPropertyCount(); i++) {
-//                     //   Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));
-//                        list.add(""+phoneNumbersSoapObject.getProperty(i));
-//                    }
-//
-//
-//                }
-//
-//
-//            } catch (NullPointerException ne) {
-//                ne.printStackTrace();
-//            }
-//
-//        }
-        else if (methodName.contentEquals(SendMessageTask.LOG_IN)) {
-            try {
-                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-
-                if (resultStatus == 0 || resultStatus == 1) {
-
-                    Intent pushIntent = new Intent(this, ImALiveService.class);
-                    stopService(pushIntent);
-                    User.empty();
-                    Prefs.deleteUserSettings(this);
-                    Intent i = new Intent(this, StartActivity.class);
-                    i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                }else if (resultStatus == 2){
-
-                    User user = User.getInstance(this);
-                    user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
-
-                    int updateStatusOnList = Integer.valueOf(result.getProperty("UpdateStatusOnList").toString());
-
-                    if (updateStatusOnList < 10)
-                        updateStatusOnList = 10;
-
-                    user.setRequestStatusInfoSeconds(updateStatusOnList);
-
-                    String statusText = "" + result.getProperty("StatusText");
-                    if (statusText.contentEquals("anyType{}")){
-                        statusText = "";
-                    }
-                    user.setStatusText(statusText);
-
-                    long currentMillies = System.currentTimeMillis();
-
-                    Log.i(TAG, "currentMillies " + currentMillies);
-                    Log.i(TAG, "getStatusStartTime " + User.getInstance(this).getStatusStartTime());
-                    Log.i(TAG, "getStatusEndTime " + User.getInstance(this).getStatusEndTime());
-
-                    if (currentMillies < User.getInstance(this).getStatusEndTime()){
-
-                    }else{
-                        Log.i(TAG, "HERE");
-                        user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
-                    }
-
-//                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
-//                    if (statusStartTime.contentEquals("anyType{}")){
-//                        statusStartTime = "2000-01-01T00:00:00";
-//                    }
-//              //      user.setStatusStartTime(statusStartTime);
-//
-//                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
-//                    if (statusEndTime.contentEquals("anyType{}")){
-//                        statusEndTime = "2000-01-01T00:00:00";
-//                    }
-              //      user.setStatusEndTime(statusEndTime);
-
-
-
-
-
-                //    Log.i(TAG, "lang user " + user.getLanguage().getValue());
-
-                    SoapObject inviteSMSSoapObject = (SoapObject) result.getProperty("InviteSMS");
-                    for (int i = 0; i < inviteSMSSoapObject.getPropertyCount(); i++) {
-                        SoapObject csInviteSMSSoapObject = (SoapObject) inviteSMSSoapObject.getProperty(i);
-
-                        int lang = Integer.parseInt(csInviteSMSSoapObject.getProperty("Language").toString());
-
-                      //  Log.i(TAG, "lang login " + lang);
-
-                        if (lang == user.getLanguage().getValue()){
-                            user.setSmsInviteText(csInviteSMSSoapObject.getProperty("SMSText").toString());
-                    //        Log.i(TAG, "getSmsInviteText " + user.getSmsInviteText());
-                            break;
-                        }
-
-                    }
-
-
-                    Prefs.setUserData(this, user);
-
-                }
-            } catch (NullPointerException ne) {
-                ne.printStackTrace();
-            }
-        }
-    }
 
 
     public void refreshStatuses() {
@@ -497,9 +304,8 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         pi.setType(String.class);
         request.addProperty(pi);
 
-        long time = Prefs.getLastCallTime(this);
-        String lastCallTime;
-        if (time == 0) {
+        String lastCallTime = Prefs.getLastCallTime(this);
+        if (lastCallTime.contentEquals("2000-01-01T00:00:00")) {
 
             List<Contact> contactList = User.getInstance(this).getContactList();
 
@@ -508,14 +314,14 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 c.setStatusText(null);
             }
 
-            lastCallTime = "2000-01-01T00:00:00";
-        } else {
-
-            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-            lastCallTime = sdf.format(new Date(time));
         }
+//        else {
+//
+//            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
+//            lastCallTime = sdf.format(new Date(time));
+//        }
 
      //   Log.i(TAG, "endTime " + endTime);
 
@@ -528,5 +334,202 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         return request;
     }
+
+    @Override
+    public void responseToSendMessage(SoapObject result, String methodName) {
+
+        //   Log.i(TAG, "responseToSendMessage methodName " + methodName);
+
+        if (result == null) {
+            return;
+        }
+
+        if (methodName.contentEquals(SendMessageTask.REQUEST_STATUS_INFO)) {
+            try {
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+
+                    String executionTime = result.getProperty("ExecutionTime").toString();
+                    Prefs.setLastCallTime(this, executionTime);
+
+                    List<Contact> contactList = User.getInstance(this).getContactList();
+
+                    //   Log.i(TAG, "C LIST " + contactList.size());
+
+                    SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
+
+                    for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
+                        SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
+
+                        String pohoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
+                        //      Log.i(TAG, "pohoneNumber " + pohoneNumber);
+
+
+                        for (Contact c : contactList){
+                            if (c.getPhoneNumber().contentEquals(pohoneNumber)){
+
+                                //      Log.i(TAG, "nasao " + c.getPhoneNumber());
+
+                                c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
+
+                                String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
+                                if (statusText.contentEquals("anyType{}") || statusText.contentEquals("(null)")){
+                                    statusText = "";
+                                }
+
+                                c.setStatusText(statusText);
+                                //  c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
+                                break;
+                            }
+                        }
+
+                    }
+
+                    Intent returnIntent = new Intent(BROADCAST_STATUS_UPDATE_ACTION);
+                    sendBroadcast(returnIntent);
+
+                } else {
+                    // Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                //  Toast.makeText(this, getString(R.string.status_update_error), Toast.LENGTH_SHORT).show();
+            }
+        } else if (methodName.contentEquals(SendMessageTask.GET_DEFAULT_TEXT)) {
+            try {
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+                    SoapObject textSoapObject = (SoapObject) result.getProperty("DefaultText");
+
+                    List<String> list = new ArrayList<String>();
+                    for (int i = 0; i < textSoapObject.getPropertyCount(); i++) {
+                        list.add("" + textSoapObject.getProperty(i));
+                        //  Log.i(TAG, "text " + textSoapObject.getProperty(i));
+                    }
+
+                    Prefs.saveDefaultTexts(this, list);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        else if (methodName.contentEquals(SendMessageTask.CHECK_PHONE_NUMBERS)) {
+//            try {
+//
+//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+//
+//                List<String> list = User.getInstance(this).getCheckPhoneNumberList();
+//                list.clear();
+//
+//                if (resultStatus == 2) {
+//
+//                    SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
+//
+//                    for (int i = 0; i < phoneNumbersSoapObject.getPropertyCount(); i++) {
+//                     //   Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));
+//                        list.add(""+phoneNumbersSoapObject.getProperty(i));
+//                    }
+//
+//
+//                }
+//
+//
+//            } catch (NullPointerException ne) {
+//                ne.printStackTrace();
+//            }
+//
+//        }
+        else if (methodName.contentEquals(SendMessageTask.LOG_IN)) {
+            try {
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 0 || resultStatus == 1) {
+
+                    Intent pushIntent = new Intent(this, ImALiveService.class);
+                    stopService(pushIntent);
+                    User.empty();
+                    Prefs.deleteUserSettings(this);
+                    Intent i = new Intent(this, StartActivity.class);
+                    i.setFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                }else if (resultStatus == 2){
+
+                    User user = User.getInstance(this);
+                    user.setiAmLiveSeconds(Integer.valueOf(result.getProperty("ImALive").toString()));
+
+                    int updateStatusOnList = Integer.valueOf(result.getProperty("UpdateStatusOnList").toString());
+
+                    if (updateStatusOnList < 10)
+                        updateStatusOnList = 10;
+
+                    user.setRequestStatusInfoSeconds(updateStatusOnList);
+
+                    String statusText = "" + result.getProperty("StatusText");
+                    if (statusText.contentEquals("anyType{}")){
+                        statusText = "";
+                    }
+                    user.setStatusText(statusText);
+
+                    long currentMillies = System.currentTimeMillis();
+
+                    Log.i(TAG, "currentMillies " + currentMillies);
+                    Log.i(TAG, "getStatusStartTime " + User.getInstance(this).getStatusStartTime());
+                    Log.i(TAG, "getStatusEndTime " + User.getInstance(this).getStatusEndTime());
+
+                    if (currentMillies < User.getInstance(this).getStatusEndTime()){
+
+                    }else{
+                        Log.i(TAG, "HERE");
+                        user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
+                    }
+
+//                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
+//                    if (statusStartTime.contentEquals("anyType{}")){
+//                        statusStartTime = "2000-01-01T00:00:00";
+//                    }
+//              //      user.setStatusStartTime(statusStartTime);
+//
+//                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
+//                    if (statusEndTime.contentEquals("anyType{}")){
+//                        statusEndTime = "2000-01-01T00:00:00";
+//                    }
+                    //      user.setStatusEndTime(statusEndTime);
+
+
+
+
+
+                    //    Log.i(TAG, "lang user " + user.getLanguage().getValue());
+
+                    SoapObject inviteSMSSoapObject = (SoapObject) result.getProperty("InviteSMS");
+                    for (int i = 0; i < inviteSMSSoapObject.getPropertyCount(); i++) {
+                        SoapObject csInviteSMSSoapObject = (SoapObject) inviteSMSSoapObject.getProperty(i);
+
+                        int lang = Integer.parseInt(csInviteSMSSoapObject.getProperty("Language").toString());
+
+                        //  Log.i(TAG, "lang login " + lang);
+
+                        if (lang == user.getLanguage().getValue()){
+                            user.setSmsInviteText(csInviteSMSSoapObject.getProperty("SMSText").toString());
+                            //        Log.i(TAG, "getSmsInviteText " + user.getSmsInviteText());
+                            break;
+                        }
+
+                    }
+
+
+                    Prefs.setUserData(this, user);
+
+                }
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+            }
+        }
+    }
+
 
 }

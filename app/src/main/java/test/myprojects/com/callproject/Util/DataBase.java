@@ -5,11 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import test.myprojects.com.callproject.model.Contact;
 import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 
@@ -35,7 +37,7 @@ public class DataBase extends SQLiteOpenHelper {
     }
 
     private DataBase(Context context) {
-        super(context, DB_NAME, null, 2);
+        super(context, DB_NAME, null, 3);
 
     }
 
@@ -46,6 +48,8 @@ public class DataBase extends SQLiteOpenHelper {
     private static final String PHONE_NUMBER = "phone_number";
     private static final String STATUS = "status";
 
+    private static final String CONTACT_TABLE = "contact_table";
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -53,15 +57,20 @@ public class DataBase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + NOTIFICATION_TABLE + " (" + NOTIFICATION_ID
                 + " INTEGER PRIMARY KEY AUTOINCREMENT," + NAME + " TEXT, " + PHONE_NUMBER + " TEXT, " + STATUS
                 + " INTEGER);");
+
+        db.execSQL("CREATE TABLE " + CONTACT_TABLE + " (" + PHONE_NUMBER + " TEXT);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + NOTIFICATION_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + CONTACT_TABLE);
         Log.i(TAG, "onUpgrade");
         onCreate(db);
     }
 
+
+    //notifications
     public static void addNotificationNumberToDb(SQLiteDatabase db, String name, String phoneNumber, int status) {
 
         ContentValues value = new ContentValues(3);
@@ -128,4 +137,45 @@ public class DataBase extends SQLiteOpenHelper {
     }
 
 
+    //contacts
+    public static void addContactsPhoneNumbersToDb(SQLiteDatabase db, List<Contact> list) {
+
+        db.delete(CONTACT_TABLE, null, null);
+
+        final String INSERT = "insert into "
+                + CONTACT_TABLE+ " (" + PHONE_NUMBER + ") values (?)";
+
+        final SQLiteStatement statement = db.compileStatement(INSERT);
+        db.beginTransaction();
+        try {
+            for(Contact c : list){
+                statement.clearBindings();
+                statement.bindString(1, c.getPhoneNumber());
+                // rest of bindings
+                statement.execute(); //or executeInsert() if id is needed
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
+
+    public static List<String> getContactsPhoneNumberListFromDb(SQLiteDatabase db) {
+
+        Cursor cursor = db.rawQuery("SELECT *" + " FROM "
+                + CONTACT_TABLE, null);
+
+        List<String> list = new ArrayList<>();
+
+        if (cursor.getCount() > 0) {
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToPosition(i);
+                list.add(cursor.getString(cursor.getColumnIndex(PHONE_NUMBER)));
+            }
+        }
+
+        cursor.close();
+        return list;
+    }
 }

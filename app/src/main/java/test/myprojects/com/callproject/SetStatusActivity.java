@@ -97,6 +97,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         selectedEndTime = 0;
         tvStartTime.setText("-:-");
         tvEndTime.setText("-:-");
+        etStatus.setText("");
     }
 
     @OnClick(R.id.bConfirm)
@@ -126,21 +127,21 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         }
 
 
-        List<String> defaultTextList = Prefs.getDefaultTexts(this);
-
-        if (etStatus.getText() != null && etStatus.getText().toString().length() > 0) {
-            String currentText = etStatus.getText().toString();
-
-            if (!defaultTextList.contains(currentText)) {
-
-                defaultTextList.add(currentText);
-
-                Prefs.saveDefaultTexts(this, defaultTextList);
-
-                SendMessageTask task = new SendMessageTask(this, getDefaultTextParams());
-                task.execute();
-            }
-        }
+//        List<String> defaultTextList = Prefs.getDefaultTexts(this);
+//
+//        if (etStatus.getText() != null && etStatus.getText().toString().length() > 0) {
+//            String currentText = etStatus.getText().toString();
+//
+//            if (!defaultTextList.contains(currentText)) {
+//
+//                defaultTextList.add(currentText);
+//
+//                Prefs.saveDefaultTexts(this, defaultTextList);
+//
+//                SendMessageTask task = new SendMessageTask(this, getDefaultTextParams());
+//                task.execute();
+//            }
+//        }
 
     }
 
@@ -202,6 +203,9 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
             currentStatus = User.getInstance(this).getTimerStatus();
 
+            if (User.getInstance(this).getTimerStatusText() != null &&
+                    !User.getInstance(this).getTimerStatusText().contentEquals("(null)"))
+                etStatus.setText(User.getInstance(this).getTimerStatusText());
         }
 
         setStatusBackgrounds();
@@ -212,7 +216,25 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         final View dialogView = View.inflate(this, R.layout.date_time_picker_dialog, null);
         final DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
         final TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
-    //    timePicker.setIs24HourView(DateFormat.is24HourFormat(SetStatusActivity.this));
+        timePicker.setIs24HourView(true);
+
+        Calendar cal=Calendar.getInstance();
+
+        if (!startTimeclicked && selectedStartTime != 0) {
+            cal.setTimeInMillis(selectedStartTime);
+        }
+
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour=cal.get(Calendar.HOUR_OF_DAY);
+        int min=cal.get(Calendar.MINUTE);
+
+        datePicker.updateDate(year, month, day);
+        timePicker.setCurrentHour(hour);
+        timePicker.setCurrentMinute(min);
+
+
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
@@ -227,7 +249,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
 
                 if (startTimeclicked) {
-                    selectedStartTime = calendar.getTimeInMillis()+(1000 * 60);
+                    selectedStartTime = calendar.getTimeInMillis();
 
                     Log.i(TAG, "time " + selectedStartTime);
 
@@ -270,7 +292,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 //                        selectedEndTime = 0;
 //                        tvEndTime.setText("-:-");
 //                    }
-                    if (selectedEndTime > System.currentTimeMillis()) {
+                    if (selectedEndTime > System.currentTimeMillis() && selectedEndTime > selectedStartTime) {
                         tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedEndTime)));
                     } else {
@@ -444,42 +466,45 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                 rlEndTime.setVisibility(View.GONE);
                 rlStartTime.setVisibility(View.GONE);
                 bClearTimer.setVisibility(View.GONE);
+
+                selectedStartTime = 0;
+                selectedEndTime = 0;
                 break;
         }
     }
 
-    private SoapObject getDefaultTextParams() {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.SET_DEFAULT_TEXT);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        SoapObject piDefaultTextSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "DefaultText");
-
-        List<String> list = Prefs.getDefaultTexts(this);
-
-        for (String text : list) {
-            PropertyInfo piDefaultText = new PropertyInfo();
-            piDefaultText.setName("string");
-            piDefaultText.setValue(text);
-            piDefaultText.setType(String.class);
-            piDefaultTextSoapObject.addProperty(piDefaultText);
-        }
-
-        request.addProperty("DefaultText", piDefaultTextSoapObject);
-
-        return request;
-    }
+//    private SoapObject getDefaultTextParams() {
+//
+//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.SET_DEFAULT_TEXT);
+//
+//        PropertyInfo pi = new PropertyInfo();
+//        pi.setName("Phonenumber");
+//        pi.setValue(User.getInstance(this).getPhoneNumber());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("password");
+//        pi.setValue(User.getInstance(this).getPassword());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        SoapObject piDefaultTextSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "DefaultText");
+//
+//        List<String> list = Prefs.getDefaultTexts(this);
+//
+//        for (String text : list) {
+//            PropertyInfo piDefaultText = new PropertyInfo();
+//            piDefaultText.setName("string");
+//            piDefaultText.setValue(text);
+//            piDefaultText.setType(String.class);
+//            piDefaultTextSoapObject.addProperty(piDefaultText);
+//        }
+//
+//        request.addProperty("DefaultText", piDefaultTextSoapObject);
+//
+//        return request;
+//    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
@@ -499,6 +524,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
 
                     User.getInstance(this).setTimerStatus(currentStatus);
+                    User.getInstance(this).setTimerStatusText(etStatus.getText().toString());
                     User.getInstance(this).setStatusStartTime(selectedStartTime);
                     User.getInstance(this).setStatusEndTime(selectedEndTime);
 
@@ -529,6 +555,12 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     User.getInstance(this).setStatus(currentStatus);
                     User.getInstance(this).setStatusText(etStatus.getText().toString());
+
+                    User.getInstance(this).setTimerStatusText("");
+                    User.getInstance(this).setStatusStartTime(0);
+                    User.getInstance(this).setStatusEndTime(0);
+
+
                     Prefs.setUserData(this, User.getInstance(this));
 
                     TimerBroadcastReceiver.CancelAlarmIfNeed(this);

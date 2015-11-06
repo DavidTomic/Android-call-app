@@ -31,9 +31,10 @@ public class Prefs {
     private static final String PREFS_USER_STATUS_START_TIME = "status_start_time_2";
     private static final String PREFS_USER_STATUS_END_TIME = "status_end_time_2";
     private static final String PREFS_USER_TIMER_STATUS = "status_timer";
+    private static final String PREFS_USER_TIMER_STATUS_TEXT = "status_timer_text";
 
-    public static final String PREFS_LAST_CALL_TIME = "last_call_time";
-    public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
+    public static final String PREFS_LAST_CALL_TIME = "last_call_time_v2";
+  //  public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
 
     public static final String PREFS_VOICEMAIL_NUMBER = "voice_mail_number";
     public static final String PREFS_COUNTRY_CODE = "country_code";
@@ -57,6 +58,7 @@ public class Prefs {
         editor.putLong(PREFS_USER_STATUS_START_TIME, user.getStatusStartTime());
         editor.putLong(PREFS_USER_STATUS_END_TIME, user.getStatusEndTime());
         editor.putInt(PREFS_USER_TIMER_STATUS, user.getTimerStatus().getValue());
+        editor.putString(PREFS_USER_TIMER_STATUS_TEXT, user.getTimerStatusText());
         editor.commit();
     }
     public static void loadUserData(Context context) {
@@ -78,22 +80,23 @@ public class Prefs {
         user.setStatusStartTime(prefs.getLong(PREFS_USER_STATUS_START_TIME, 0));
         user.setStatusEndTime(prefs.getLong(PREFS_USER_STATUS_END_TIME, 0));
         user.setTimerStatus(Status.values()[prefs.getInt(PREFS_USER_TIMER_STATUS, 1)]);
+        user.setTimerStatusText(prefs.getString(PREFS_USER_TIMER_STATUS_TEXT, ""));
     }
 
 
-    public static void setLastCallTime(Context context, long time) {
+    public static void setLastCallTime(Context context, String time) {
         SharedPreferences.Editor editor = context.getSharedPreferences(
                 PREFS_FILE, 0).edit();
 
-        editor.putLong(PREFS_LAST_CALL_TIME, time);
+        editor.putString(PREFS_LAST_CALL_TIME, time);
         editor.commit();
     }
-    public static long getLastCallTime(Context context) {
+    public static String getLastCallTime(Context context) {
 
         SharedPreferences prefs = context.getSharedPreferences(
                 PREFS_FILE, 0);
 
-        return prefs.getLong(PREFS_LAST_CALL_TIME, 0);
+        return prefs.getString(PREFS_LAST_CALL_TIME, "2000-01-01T00:00:00");
     }
 
 
@@ -130,20 +133,20 @@ public class Prefs {
     }
 
 
-    public static void setLastContactCount(Context context, int count) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(
-                PREFS_FILE, 0).edit();
-
-        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
-        editor.commit();
-    }
-    public static long getLastContactCount(Context context) {
-
-        SharedPreferences prefs = context.getSharedPreferences(
-                PREFS_FILE, 0);
-
-        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
-    }
+//    public static void setLastContactCount(Context context, int count) {
+//        SharedPreferences.Editor editor = context.getSharedPreferences(
+//                PREFS_FILE, 0).edit();
+//
+//        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
+//        editor.commit();
+//    }
+//    public static long getLastContactCount(Context context) {
+//
+//        SharedPreferences prefs = context.getSharedPreferences(
+//                PREFS_FILE, 0);
+//
+//        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
+//    }
 
     public static void setVoiceMailNumber(Context context, String voicemailNumber) {
         SharedPreferences.Editor editor = context.getSharedPreferences(
@@ -193,11 +196,12 @@ public class Prefs {
         editor.putLong(PREFS_USER_STATUS_START_TIME, 0);
         editor.putLong(PREFS_USER_STATUS_END_TIME, 0);
         editor.putInt(PREFS_USER_TIMER_STATUS, 1);
+        editor.putString(PREFS_USER_TIMER_STATUS_TEXT, "");
 
         editor.putLong(PREFS_LAST_CALL_TIME, 0);
         editor.putString(PREFS_VOICEMAIL_NUMBER, "");
 
-        editor.putLong(PREFS_LAST_CONTACTS_COUNT, 0);
+       // editor.putLong(PREFS_LAST_CONTACTS_COUNT, 0);
 
         editor.putInt("DefaultText_size", 0);
 

@@ -11,18 +11,20 @@
         android:layout_height="wrap_content"
         android:tag="back">
 
-        <!--
+
         <Button
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginRight="25dp"
-            android:background="@android:color/black"
-            android:text="@string/ph_delete"
+            android:layout_marginRight="1px"
+            android:layout_toLeftOf="@+id/btn_edit"
+            android:background="@color/blue_default"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="12sp"
+            android:text="@string/delete"
             android:textColor="@android:color/white" />
-            -->
+
 
         <Button
             android:id="@+id/btn_edit"
@@ -31,8 +33,8 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="25dp"
             android:background="@color/blue_default"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:text="@string/edit"
             android:textColor="@android:color/white"
             android:textSize="12sp" />

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -26,9 +27,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
+import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
@@ -61,6 +62,8 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 import test.myprojects.com.callproject.view.SearchEditText;
+
+import static android.widget.AbsListView.CHOICE_MODE_MULTIPLE_MODAL;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -204,7 +207,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                             break;
 
                         case MotionEvent.ACTION_MOVE:
-                            if(Math.abs(event.getRawX() - startX) < 3)
+                            if (Math.abs(event.getRawX() - startX) < 3)
                                 break;
 
                             rightMargin = -((int) event.getRawX() - startX);
@@ -314,7 +317,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 //
 //        }
 
-     //   adapter.notifyDataSetChanged();
+        //   adapter.notifyDataSetChanged();
         createListAdapter(0);
     }
 
@@ -378,13 +381,13 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         adapter = new StickyAdapter(getActivity());
         stlist.getRefreshableView().setAdapter(adapter);
-      //  stlist.setScrollingCacheEnabled( false );
+        //  stlist.setScrollingCacheEnabled( false );
 
         stlist.getRefreshableView().setSelection(position);
 
     }
 
-    private void closeOpenedItems(){
+    private void closeOpenedItems() {
 
         StickyListHeadersListView list = stlist.getRefreshableView();
 //        for (int i = 0; i< list.getLastVisiblePosition();i++){
@@ -393,7 +396,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 //            swipeListView.closeOpenedItems();
 //        }
 
-        View child = list.getAdapter().getView(2, null ,list);
+        View child = list.getAdapter().getView(2, null, list);
         SwipeListView swipeListView = (SwipeListView) child.findViewById(R.id.swipe_lv_list);
         swipeListView.openAnimate(0);
     }
@@ -419,21 +422,21 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             mOriginalValues = null;
 
-         //   Log.i(TAG, "User.getInstance(mContext).getContactList() " +
-          //          User.getInstance(mContext).getContactList().size());
+            //   Log.i(TAG, "User.getInstance(mContext).getContactList() " +
+            //          User.getInstance(mContext).getContactList().size());
 
             contactList = new ArrayList<>(User.getInstance(mContext).getContactList());
-        //
+            //
             notifyDataSetChanged();
-          //  closeOpenedItems();
+            //  closeOpenedItems();
 
-          //  createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
+            //  createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
         }
 
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
-             //      Log.i(TAG, "contactList getCount " + contactList.size());
+            //      Log.i(TAG, "contactList getCount " + contactList.size());
             //        Log.i(TAG, "contactListid " + java.lang.System.identityHashCode(contactList));
             return contactList.size();
         }
@@ -453,21 +456,21 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // TODO Auto-generated method stub
-            ViewHolder holder;
- //           if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.common_list_item, parent, false);
-                holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
-                convertView.setTag(holder);
+            final ViewHolder holder;
+            //           if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.common_list_item, parent, false);
+            holder.swipelist = (SwipeListView) convertView.findViewById(R.id.swipe_lv_list);
+            convertView.setTag(holder);
 //            } else {
 //                holder = (ViewHolder) convertView.getTag();
 //            }
 
-            holder.swipelist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            holder.swipelist.setOffsetLeft(WindowSize.convertDpToPixel(100));
+            ((ListView)holder.swipelist).setChoiceMode(CHOICE_MODE_MULTIPLE_MODAL);
 
             SwipeAdapter sadapter = new SwipeAdapter(getActivity().getApplicationContext(), position);
             holder.swipelist.setAdapter(sadapter);
-
 
             return convertView;
         }
@@ -569,6 +572,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         View vStatusGreen;
         TextView tvOnPhone;
         Button edit_btn;
+        Button delete_btn;
         RelativeLayout rlHolder;
         ImageView ivEnvelop;
     }
@@ -621,6 +625,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
                 swipeholder.rlHolder = (RelativeLayout) convertView.findViewById(R.id.rlHolder);
                 swipeholder.edit_btn = (Button) convertView.findViewById(R.id.btn_edit);
+                swipeholder.delete_btn = (Button) convertView.findViewById(R.id.btn_delete);
                 swipeholder.ivEnvelop = (ImageView) convertView.findViewById(R.id.ivEnvelop);
 
 
@@ -733,7 +738,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
                         it.putExtra("sms_body", smsText);
                         it.putExtra(Intent.EXTRA_TEXT, smsText);
-                        // it.putExtra("exit_on_sent", true);
+                        it.putExtra("exit_on_sent", true);
                         startActivity(it);
 
 
@@ -745,16 +750,15 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                     else if (text.contentEquals(getString(R.string.set_notification))) {
 
 
-                        try{
+                        try {
                             DataBase.addNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(),
                                     contactList.get(parent_postion).getName(), contactList.get(parent_postion).getPhoneNumber(),
                                     contactList.get(parent_postion).getStatus().getValue());
 
                             swipeholder.edit_btn.setText(getString(R.string.remove_notification));
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-
 
 
                         Intent pushIntent = new Intent(getActivity(), NotificationService.class);
@@ -776,10 +780,47 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                 }
             });
 
+            swipeholder.delete_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteContact(contactList.get(parent_postion));
+                }
+            });
+
             return convertView;
         }
     }
 
+    public void deleteContact(Contact contact) {
+        Cursor cur = getActivity().getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                new String[]{"" + contact.getRecordId()}, null);
+
+        try {
+            if (cur.moveToFirst()) {
+                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber()));
+
+                String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+                getActivity().getContentResolver().delete(uri, null, null);
+
+                contactList.remove(contact);
+                User.getInstance(getActivity()).getContactList().remove(contact);
+                adapter.notifyDataSetChanged();
+
+
+
+            }
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }finally {
+            cur.close();
+        }
+
+
+    }
 
     private BroadcastReceiver statusUpdateBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -797,11 +838,9 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         return false;
     }
 
-
     private SoapObject getUpdateStatusParams(int status) {
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.UPDATE_STATUS);
-
 
         PropertyInfo pi = new PropertyInfo();
         pi.setName("Phonenumber");
@@ -829,80 +868,29 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         return request;
     }
+    private SoapObject getDeleteContactParams(String number){
+        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.DELETE_CONTACT);
 
-//    private SoapObject getAddContactsParams(String number) {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.ADD_CONTACT);
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(getActivity()).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("ContactsPhoneNumber");
-//        pi.setValue(number);
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Name");
-//        pi.setValue(number);
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Noter");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Number");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("URL");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Adress");
-//        pi.setValue("");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Birthsday");
-//        pi.setValue("2000-01-01T00:00:00");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("pDate");
-//        pi.setValue("2000-01-01T00:00:00");
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("Favorites");
-//        pi.setValue(false);
-//        pi.setType(Boolean.class);
-//        request.addProperty(pi);
-//
-//        return request;
-//    }
+        PropertyInfo pi = new PropertyInfo();
+        pi.setName("Phonenumber");
+        pi.setValue(User.getInstance(getActivity()).getPhoneNumber());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("password");
+        pi.setValue(User.getInstance(getActivity()).getPassword());
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        pi = new PropertyInfo();
+        pi.setName("PhoneNumberToDelete");
+        pi.setValue(number);
+        pi.setType(String.class);
+        request.addProperty(pi);
+
+        return request;
+    }
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {
@@ -911,27 +899,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
             return;
         }
 
-
-//        if (methodName.contentEquals(SendMessageTask.ADD_CONTACT)) {
-//
-//            try {
-//
-//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-//
-//                if (resultStatus == 2) {
-//
-//                    ((MainActivity) getActivity()).refreshStatuses();
-//
-//                }
-//
-//            } catch (NullPointerException ne) {
-//                ne.printStackTrace();
-//            }
-//
-//
-//        }
-
-         if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
+        if (methodName.contentEquals(SendMessageTask.UPDATE_STATUS)) {
 
             try {
 
@@ -939,7 +907,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
                 if (resultStatus == 2) {
 
-                //    Toast.makeText(getActivity(), "New status " + currentStatus, Toast.LENGTH_SHORT).show();
+                    //    Toast.makeText(getActivity(), "New status " + currentStatus, Toast.LENGTH_SHORT).show();
 
                     User.getInstance(getActivity()).setStatus(Status.values()[currentStatus]);
                     Prefs.setUserData(getActivity(), User.getInstance(getActivity()));
@@ -950,8 +918,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             } catch (NullPointerException ne) {
                 ne.printStackTrace();
-//            Toast.makeText(getActivity(), getString(R.string.status_not_updated),
-//                    Toast.LENGTH_SHORT).show();
             }
 
         }
