@@ -605,8 +605,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                             e.printStackTrace();
                         }
 
-                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
-                        getActivity().startService(pushIntent);
                     } else if (text.contentEquals(getString(R.string.remove_notification))) {
                         holder.edit_btn.setText(getString(R.string.set_notification));
 

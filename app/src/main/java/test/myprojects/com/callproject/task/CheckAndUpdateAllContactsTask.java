@@ -95,42 +95,42 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
                 contactList.add(contact);
             }
             phones.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return  false;
+            return false;
         }
 
         List<String> currentList = DataBase.getContactsPhoneNumberListFromDb
                 (DataBase.getInstance(mainActivity).getWritableDatabase());
 
         // add new contacts to server
-        for (Contact contact : contactList){
-            if (!currentList.contains(contact.getPhoneNumber())){
+        for (Contact contact : contactList) {
+            if (!currentList.contains(contact.getPhoneNumber())) {
                 newContactsList.add(contact);
             }
         }
         Log.i(TAG, "newContactsList.size() " + newContactsList.size());
 
 
-
         // delete old contacts from server
         List<String> oldPhoneNumbers = new ArrayList<>();
-
         List<String> phoneNumberList = new ArrayList<>();
-        for (Contact contact : contactList){
+
+        for (Contact contact : contactList) {
             phoneNumberList.add(contact.getPhoneNumber());
         }
 
-        for (String phoneNumber : currentList){
-            if (!phoneNumberList.contains(phoneNumber)){
+        for (String phoneNumber : currentList) {
+            if (!phoneNumberList.contains(phoneNumber)) {
                 oldPhoneNumbers.add(phoneNumber);
             }
         }
 
-        if (oldPhoneNumbers.size() > 0){
+        if (oldPhoneNumbers.size() > 0) {
             deleteContactsOnServer(oldPhoneNumbers);
         }
 
+        Log.i(TAG, "oldPhoneNumbers.size() " + oldPhoneNumbers.size());
 
         if (newContactsList.size() > 0 || oldPhoneNumbers.size() > 0)
             return true;
@@ -142,15 +142,15 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
-     //   Log.i(TAG, "result " + result);
+        //   Log.i(TAG, "result " + result);
 
         if (result) {
 
             List<Contact> originalList = User.getInstance(mainActivity).getContactList();
 
-            for (Contact originalContact : originalList){
-                for (Contact c : contactList){
-                    if (originalContact.getRecordId() == c.getRecordId()){
+            for (Contact originalContact : originalList) {
+                for (Contact c : contactList) {
+                    if (originalContact.getRecordId() == c.getRecordId()) {
                         c.setStatus(originalContact.getStatus());
                         c.setStatusText(originalContact.getStatusText());
                         break;
@@ -266,46 +266,61 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
     public void responseToSendMessage(SoapObject result, String methodName) {
 
         if (result == null) {
-         //   Prefs.setLastContactCount(mainActivity, 0);
+            //   Prefs.setLastContactCount(mainActivity, 0);
             return;
         }
 
-        try {
+        if (methodName.contentEquals(SendMessageTask.ADD_MULTI_CONTACT)) {
+            try {
 
-            int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
-            if (resultStatus == 2) {
+                if (resultStatus == 2) {
 
-                if (mainActivity != null && !mainActivity.isFinishing()){
-                    DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(mainActivity).getWritableDatabase(), contactList);
-                    Prefs.setLastCallTime(mainActivity, "2000-01-01T00:00:00");
-                    mainActivity.refreshStatuses();
+                    if (mainActivity != null && !mainActivity.isFinishing()) {
+                        DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(mainActivity).getWritableDatabase(), contactList);
+                        Prefs.setLastCallTime(mainActivity, "2000-01-01T00:00:00");
+                        mainActivity.refreshStatuses();
+                    }
+
+                    //      Prefs.setLastContactCount(mainActivity, contactList.size());
                 }
-
-          //      Prefs.setLastContactCount(mainActivity, contactList.size());
-            }
 //            else {
 //                Prefs.setLastContactCount(mainActivity, 0);
 //            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (methodName.contentEquals(SendMessageTask.DELETE_CONTACT)) {
+            try {
+
+                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
+
+                if (resultStatus == 2) {
+                    if (mainActivity != null && !mainActivity.isFinishing()) {
+                        DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(mainActivity).getWritableDatabase(), contactList);
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-
-    private void deleteContactsOnServer(List<String> phoneNumbers){
+    private void deleteContactsOnServer(List<String> phoneNumbers) {
 
         try {
             for (String phoneNumber : phoneNumbers) {
-                new SendMessageTask(null, getDeleteContactParams(phoneNumber));
+                new SendMessageTask(this, getDeleteContactParams(phoneNumber)).execute();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private SoapObject getDeleteContactParams(String number){
+    private SoapObject getDeleteContactParams(String number) {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.DELETE_CONTACT);
 
         PropertyInfo pi = new PropertyInfo();

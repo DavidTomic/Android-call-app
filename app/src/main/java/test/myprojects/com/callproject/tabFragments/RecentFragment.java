@@ -594,8 +594,6 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                             e.printStackTrace();
                         }
 
-                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
-                        getActivity().startService(pushIntent);
                     } else if (text.contentEquals(getString(R.string.remove_notification))) {
                         holder.edit_btn.setText(getString(R.string.set_notification));
 
@@ -606,7 +604,6 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                             DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
 
                     }
-
 
                     createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 

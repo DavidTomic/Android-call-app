@@ -91,11 +91,11 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
 
         try {
             if (aht != null){
-            //    Log.d("dump Request: ", aht.requestDump);
+                Log.d("dump Request: ", aht.requestDump);
             }
 
             if (result != null && aht!= null){
-            //    Log.w("dump Response: ", aht.responseDump);
+                Log.w("dump Response: ", aht.responseDump);
             }
 
         }catch (Exception e){

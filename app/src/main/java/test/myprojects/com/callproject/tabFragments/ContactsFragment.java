@@ -760,9 +760,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                             e.printStackTrace();
                         }
 
-
-                        Intent pushIntent = new Intent(getActivity(), NotificationService.class);
-                        getActivity().startService(pushIntent);
                     } else if (text.contentEquals(getString(R.string.remove_notification))) {
                         swipeholder.edit_btn.setText(getString(R.string.set_notification));
 
@@ -791,7 +788,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         }
     }
 
-    public void deleteContact(Contact contact) {
+    private void deleteContact(Contact contact) {
         Cursor cur = getActivity().getContentResolver().query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 new String[]{ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
@@ -800,7 +797,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         try {
             if (cur.moveToFirst()) {
-                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber()));
+                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();
 
                 String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                 Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
@@ -809,9 +806,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                 contactList.remove(contact);
                 User.getInstance(getActivity()).getContactList().remove(contact);
                 adapter.notifyDataSetChanged();
-
-
-
             }
         } catch (Exception e) {
             System.out.println(e.getStackTrace());

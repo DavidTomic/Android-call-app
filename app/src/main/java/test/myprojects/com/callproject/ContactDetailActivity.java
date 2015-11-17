@@ -98,9 +98,6 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
             DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
                     contact.getName(), contact.getPhoneNumber(), contact.getStatus().getValue());
-
-            Intent pushIntent = new Intent(this, NotificationService.class);
-            startService(pushIntent);
         } else if (text.contentEquals(getString(R.string.remove_notification))) {
             bConfirm.setText(getString(R.string.set_notification));
             DataBase.removeNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(), notification);

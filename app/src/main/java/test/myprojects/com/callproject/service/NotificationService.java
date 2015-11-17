@@ -30,6 +30,8 @@ import java.util.TimeZone;
 import test.myprojects.com.callproject.R;
 import test.myprojects.com.callproject.StartActivity;
 import test.myprojects.com.callproject.Util.DataBase;
+import test.myprojects.com.callproject.Util.NotificationUtil;
+import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
@@ -41,8 +43,7 @@ import test.myprojects.com.callproject.task.SendMessageTask;
 public class NotificationService extends Service {
 
     private static final String TAG = "NotificationService";
-  //  private Calendar cur_cal = Calendar.getInstance();
-    private long lastTimeChecked;
+    private String lastCallTime;
 
     @Override
     public void onCreate() {
@@ -50,9 +51,8 @@ public class NotificationService extends Service {
         // TODO Auto-generated method stub
         super.onCreate();
 
-        lastTimeChecked = System.currentTimeMillis();
-
-        setAlarm();
+        lastCallTime = Prefs.getLastCallTime(this);
+        startNotificationService();
     }
 
     @Override
@@ -62,23 +62,6 @@ public class NotificationService extends Service {
 
         new getRequestInfo().execute();
         return Service.START_NOT_STICKY;
-    }
-
-    private void setAlarm() {
-        Intent intent = new Intent(this, NotificationService.class);
-        PendingIntent pintent = PendingIntent.getService(getApplicationContext(),
-                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-      //  cur_cal.setTimeInMillis(System.currentTimeMillis());
-
-
-        int interval = 20;
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-                interval * 1000, pintent);
-
-        Log.i(TAG, "interval " + interval);
     }
 
     private class getRequestInfo extends AsyncTask<Void, Void, Void> {
@@ -118,9 +101,9 @@ public class NotificationService extends Service {
                     int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
 
                     if (resultStatus == 2) {
+                        lastCallTime = result.getProperty("ExecutionTime").toString();
 
                         SoapObject userStatusSoapObject = (SoapObject) result.getProperty("UserStatus");
-
 
                         if (userStatusSoapObject.getPropertyCount() == 0)
                             return null;
@@ -151,7 +134,8 @@ public class NotificationService extends Service {
 
                         if (matchList.size() > 0) {
                             Log.i(TAG, "MAKE NOTIFICATION " + matchList.size());
-                            showNotification(matchList);
+                           // showNotification(matchList);
+                            NotificationUtil.showNotification(NotificationService.this, matchList);
                         }
 
                         if (nList.size() == matchList.size()) {
@@ -173,7 +157,6 @@ public class NotificationService extends Service {
             return null;
         }
     }
-
     private SoapObject getRequestInfoParams() {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.REQUEST_STATUS_INFO);
 
@@ -189,30 +172,105 @@ public class NotificationService extends Service {
         pi.setType(String.class);
         request.addProperty(pi);
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        String lastCall = sdf.format(new Date(lastTimeChecked));
-
-        Log.i(TAG, "lastCall " + lastCall);
-
-
         pi = new PropertyInfo();
         pi.setName("LastCall");
-        pi.setValue(lastCall);
+        pi.setValue(lastCallTime);
         pi.setType(String.class);
         request.addProperty(pi);
-
-        lastTimeChecked = System.currentTimeMillis();
-
 
         return request;
     }
 
+
+//    private void showNotification(List<Notification> notificationList) {
+//
+////        Intent intent = new Intent(this, StartActivity.class);
+////        // use System.currentTimeMillis() to have a unique ID for the pending intent
+////        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+//
+//        String contentTitle = getString(R.string.user_changed_statuses) + " ";
+//        String contentText = "";
+//
+//        if (notificationList.size() == 1) {
+//            contentTitle = notificationList.get(0).getName();
+//            contentText = getString(R.string.changed_status_to) + " " + getStatusText(notificationList.get(0).getStatus());
+//        } else {
+//            for (int i = 0; i < notificationList.size() && i < 3; i++) {
+//                contentText += notificationList.get(i).getName() +
+//                        getString(R.string.changed_status_to) +
+//                        getStatusText(notificationList.get(i).getStatus());
+//            }
+//        }
+//
+//        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+//                this).
+//                setSmallIcon(R.mipmap.ic_launcher).
+//                setAutoCancel(true)
+//                .setContentTitle(contentTitle)
+//                .setContentText(contentText)
+//                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+//
+//
+//        Intent myIntent = new Intent(this, StartActivity.class);
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.from(this);
+//        // Adds the back stack for the Intent (but not the Intent itself)
+//        stackBuilder.addParentStack(StartActivity.class);
+//        // Adds the Intent that starts the Activity to the top of the stack
+//        stackBuilder.addNextIntent(myIntent);
+//
+//        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+//                PendingIntent.FLAG_CANCEL_CURRENT);
+//        mBuilder.setContentIntent(resultPendingIntent);
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//        notificationManager.notify(0, mBuilder.build());
+//    }
+//    private String getStatusText(Status status) {
+//
+//        String statusText = "";
+//
+//        switch (status) {
+//            case RED_STATUS:
+//                statusText = getString(R.string.busy);
+//                break;
+//            case GREEN_STATUS:
+//                statusText = getString(R.string.online);
+//                break;
+//            case YELLOW_STATUS:
+//                statusText = getString(R.string.not_available);
+//                break;
+//            case ON_PHONE:
+//                statusText = getString(R.string.speaking);
+//                break;
+//        }
+//
+//        return statusText;
+//    }
+
+
     private void stopNotificationService() {
-
         Log.i(TAG, "stopNotificationService");
+        this.stopSelf();
 
+    }
+    private void startNotificationService() {
+        Intent intent = new Intent(this, NotificationService.class);
+        PendingIntent pintent = PendingIntent.getService(getApplicationContext(),
+                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        int interval = 20;
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                interval * 1000, pintent);
+
+        Log.i(TAG, "interval " + interval);
+    }
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
         Intent intent = new Intent(this, NotificationService.class);
         PendingIntent pintent = PendingIntent.getService(getApplicationContext(),
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -220,84 +278,7 @@ public class NotificationService extends Service {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pintent);
 
-        this.stopSelf();
-
-    }
-
-    private void showNotification(List<Notification> notificationList) {
-
-        Intent intent = new Intent(this, StartActivity.class);
-        // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-
-        String contentTitle = getString(R.string.user_changed_statuses) + " ";
-        String contentText = "";
-
-        Notification notification;
-
-        if (notificationList.size() == 1) {
-            contentTitle = notificationList.get(0).getName();
-            contentText = getString(R.string.changed_status_to) + " " + getStatusText(notificationList.get(0).getStatus());
-        } else {
-            for (int i = 0; i < notificationList.size() && i < 3; i++) {
-                contentText += notificationList.get(i).getName() +
-                        getString(R.string.changed_status_to) +
-                        getStatusText(notificationList.get(i).getStatus());
-            }
-        }
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                this).
-                setSmallIcon(R.mipmap.ic_launcher).
-                setAutoCancel(true)
-                .setContentTitle(contentTitle)
-                .setContentText(contentText)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-
-
-        Intent myIntent = new Intent(this, StartActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.from(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(StartActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(myIntent);
-
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0, mBuilder.build());
-    }
-
-    private String getStatusText(Status status) {
-
-        String statusText = "";
-
-        switch (status) {
-            case RED_STATUS:
-                statusText = getString(R.string.busy);
-                break;
-            case GREEN_STATUS:
-                statusText = getString(R.string.online);
-                break;
-            case YELLOW_STATUS:
-                statusText = getString(R.string.not_available);
-                break;
-            case ON_PHONE:
-                statusText = getString(R.string.speaking);
-                break;
-        }
-
-        return statusText;
-    }
-
-    @Override
-    public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "onDestroy");
     }
 
     @Nullable

@@ -29,12 +29,15 @@ import java.util.TimeZone;
 
 import test.myprojects.com.callproject.Util.DataBase;
 import test.myprojects.com.callproject.Util.InternetStatus;
+import test.myprojects.com.callproject.Util.NotificationUtil;
 import test.myprojects.com.callproject.Util.Prefs;
 import test.myprojects.com.callproject.model.Contact;
+import test.myprojects.com.callproject.model.Notification;
 import test.myprojects.com.callproject.model.Status;
 import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.service.ImALiveService;
+import test.myprojects.com.callproject.service.NotificationService;
 import test.myprojects.com.callproject.tabFragments.AnswerMachineFragment;
 import test.myprojects.com.callproject.tabFragments.ContactsFragment;
 import test.myprojects.com.callproject.tabFragments.FavoritFragment;
@@ -132,7 +135,10 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         }else {
             Toast.makeText(this, getString(R.string.please_enable_internet), Toast.LENGTH_LONG).show();
         }
-        
+
+
+        Intent pushIntent = new Intent(this, NotificationService.class);
+        stopService(pushIntent);
         mPollHandler.postDelayed(mPollRunnable, 50);
 
         checkAndUpdateAllContact();
@@ -143,7 +149,11 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
+        Intent pushIntent = new Intent(this, NotificationService.class);
+        startService(pushIntent);
         mPollHandler.removeCallbacks(mPollRunnable);
+
+
     }
 
     private void setTabs() {
@@ -197,7 +207,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 //    public void refreshCheckPhoneNumbers(){
 //        new SendMessageTask(this, getCheckPhoneParams()).execute();
 //    }
-    private void checkAndUpdateAllContact(){
+    public void checkAndUpdateAllContact(){
         new CheckAndUpdateAllContactsTask(this).execute();
     }
 
@@ -362,24 +372,47 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                     for (int i = 0; i < userStatusSoapObject.getPropertyCount(); i++) {
                         SoapObject csUserStatusSoapObject = (SoapObject) userStatusSoapObject.getProperty(i);
 
-                        String pohoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
+                        String phoneNumber = ""+csUserStatusSoapObject.getProperty("PhoneNumber");
                         //      Log.i(TAG, "pohoneNumber " + pohoneNumber);
 
 
                         for (Contact c : contactList){
-                            if (c.getPhoneNumber().contentEquals(pohoneNumber)){
+                            if (c.getPhoneNumber().contentEquals(phoneNumber)){
 
                                 //      Log.i(TAG, "nasao " + c.getPhoneNumber());
+                                int status = Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString());
 
-                                c.setStatus(Status.values()[Integer.valueOf(csUserStatusSoapObject.getProperty("Status").toString())]);
+                                c.setStatus(Status.values()[status]);
 
                                 String statusText = "" + csUserStatusSoapObject.getProperty("StatusText");
                                 if (statusText.contentEquals("anyType{}") || statusText.contentEquals("(null)")){
                                     statusText = "";
                                 }
-
                                 c.setStatusText(statusText);
                                 //  c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
+
+
+                                List<test.myprojects.com.callproject.model.Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
+                                        getInstance(MainActivity.this).getWritableDatabase());
+
+                                if (nList.size() > 0){
+                                    List<test.myprojects.com.callproject.model.Notification> matchList = new ArrayList<>();
+                                    for (Notification notification : nList) {
+                                        if (notification.getPhoneNumber().contentEquals(phoneNumber) && notification.getStatus().getValue() != status) {
+                                            notification.setStatus(test.myprojects.com.callproject.model.Status.values()[status]);
+                                            matchList.add(notification);
+                                            DataBase.removeNotificationNumberToDb(DataBase.getInstance
+                                                    (MainActivity.this).getWritableDatabase(), notification);
+                                            break;
+                                        }
+                                    }
+
+                                    if (matchList.size() > 0) {
+                                        Log.i(TAG, "MAKE NOTIFICATION " + matchList.size());
+                                        NotificationUtil.showNotification(MainActivity.this, matchList);
+                                    }
+                                }
+
                                 break;
                             }
                         }
@@ -531,5 +564,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         }
     }
 
+    private void chechForNotification(){
 
+    }
 }
