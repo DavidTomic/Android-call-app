@@ -38,7 +38,8 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
 
 
     public static final String NAMESPACE = "http://tempuri.org/";
-    public static final String URL = "http://call.celox.dk/wsCall.asmx";
+   // public static final String URL = "http://call.celox.dk/wsCall.asmx";
+    public static final String URL = " https://ws.when2call.dk/wscall.asmx";
     private String SOAP_ACTION;
     public static final int SOAP_TIMEOUT = 10000;
 
