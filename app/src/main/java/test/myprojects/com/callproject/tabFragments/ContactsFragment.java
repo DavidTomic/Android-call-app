@@ -582,7 +582,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         int parent_postion;
 
 
-        List<Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
+        List<Notification> nList = DataBase.getNotificationListFromDb(DataBase.
                 getInstance(getActivity()).getWritableDatabase());
 
         public SwipeAdapter(Context context, int parent_postion) {
@@ -767,7 +767,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
                                 contactList.get(parent_postion).getPhoneNumber());
 
                         if (notification != null)
-                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+                            DataBase.removeNotificationFromDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
 
                     }
 

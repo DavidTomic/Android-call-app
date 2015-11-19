@@ -392,7 +392,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                                 //  c.setEndTime(""+csUserStatusSoapObject.getProperty("EndTimeStatus"));
 
 
-                                List<test.myprojects.com.callproject.model.Notification> nList = DataBase.getNotificationNumberListFromDb(DataBase.
+                                List<test.myprojects.com.callproject.model.Notification> nList = DataBase.getNotificationListFromDb(DataBase.
                                         getInstance(MainActivity.this).getWritableDatabase());
 
                                 if (nList.size() > 0){
@@ -401,7 +401,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                                         if (notification.getPhoneNumber().contentEquals(phoneNumber) && notification.getStatus().getValue() != status) {
                                             notification.setStatus(test.myprojects.com.callproject.model.Status.values()[status]);
                                             matchList.add(notification);
-                                            DataBase.removeNotificationNumberToDb(DataBase.getInstance
+                                            DataBase.removeNotificationFromDb(DataBase.getInstance
                                                     (MainActivity.this).getWritableDatabase(), notification);
                                             break;
                                         }

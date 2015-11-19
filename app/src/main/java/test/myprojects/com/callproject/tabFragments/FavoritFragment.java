@@ -612,7 +612,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                                 favoritList.get(parent_postion).getPhoneNumber());
 
                         if (notification != null)
-                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+                            DataBase.removeNotificationFromDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
 
                     }
 

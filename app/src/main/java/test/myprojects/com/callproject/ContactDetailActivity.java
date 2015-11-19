@@ -96,11 +96,11 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
         else if (text.contentEquals(getString(R.string.set_notification))) {
             bConfirm.setText(getString(R.string.remove_notification));
 
-            DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
+            notification = DataBase.addNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(),
                     contact.getName(), contact.getPhoneNumber(), contact.getStatus().getValue());
         } else if (text.contentEquals(getString(R.string.remove_notification))) {
             bConfirm.setText(getString(R.string.set_notification));
-            DataBase.removeNotificationNumberToDb(DataBase.getInstance(this).getWritableDatabase(), notification);
+            DataBase.removeNotificationFromDb(DataBase.getInstance(this).getWritableDatabase(), notification);
         }
 
     }

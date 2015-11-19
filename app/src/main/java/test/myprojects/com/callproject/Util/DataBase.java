@@ -71,24 +71,30 @@ public class DataBase extends SQLiteOpenHelper {
 
 
     //notifications
-    public static void addNotificationNumberToDb(SQLiteDatabase db, String name, String phoneNumber, int status) {
+    public static Notification addNotificationNumberToDb(SQLiteDatabase db, String name, String phoneNumber, int status) {
+
+        Notification notification = new Notification();
+        notification.setName(name);
+        notification.setPhoneNumber(phoneNumber);
+        notification.setStatus(Status.values()[status]);
 
         ContentValues value = new ContentValues(3);
         value.put(NAME, name);
         value.put(PHONE_NUMBER, phoneNumber);
         value.put(STATUS, status);
 
-        db.insert(NOTIFICATION_TABLE, null, value);
+        notification.setNotificationID((int) db.insert(NOTIFICATION_TABLE, null, value));
 
+        return notification;
     }
 
-    public static void removeNotificationNumberToDb(SQLiteDatabase db, Notification notification) {
+    public static void removeNotificationFromDb(SQLiteDatabase db, Notification notification) {
 
         db.delete(NOTIFICATION_TABLE, NOTIFICATION_ID + "='" + notification.getNotificationID() + "'", null);
 
     }
 
-    public static List<Notification> getNotificationNumberListFromDb(SQLiteDatabase db) {
+    public static List<Notification> getNotificationListFromDb(SQLiteDatabase db) {
 
         Cursor cursor = db.rawQuery("SELECT *" + " FROM "
                 + NOTIFICATION_TABLE, null);

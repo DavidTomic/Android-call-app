@@ -31,7 +31,7 @@ public class EditNotificationsActivity extends ListActivity {
         setContentView(R.layout.activity_edit_notifications);
         ButterKnife.bind(this);
 
-        nList = DataBase.getNotificationNumberListFromDb(DataBase.
+        nList = DataBase.getNotificationListFromDb(DataBase.
                 getInstance(this).getWritableDatabase());
 
         for (Notification notification : nList){
@@ -54,7 +54,7 @@ public class EditNotificationsActivity extends ListActivity {
     public void onListItemClick(ListView parent, View v, int position, long id) {
 
 
-        DataBase.removeNotificationNumberToDb(DataBase.getInstance(this).
+        DataBase.removeNotificationFromDb(DataBase.getInstance(this).
                 getWritableDatabase(), nList.get(position));
 
         names.remove(position);

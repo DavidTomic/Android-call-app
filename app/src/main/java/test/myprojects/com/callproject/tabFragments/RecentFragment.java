@@ -601,7 +601,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                                 recentList.get(parent_postion).getPhoneNumber());
 
                         if (notification != null)
-                            DataBase.removeNotificationNumberToDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
+                            DataBase.removeNotificationFromDb(DataBase.getInstance(getActivity()).getWritableDatabase(), notification);
 
                     }
 
