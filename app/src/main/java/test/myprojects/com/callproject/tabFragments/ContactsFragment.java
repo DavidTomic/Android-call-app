@@ -467,7 +467,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 //            }
 
             holder.swipelist.setOffsetLeft(WindowSize.convertDpToPixel(100));
-            ((ListView)holder.swipelist).setChoiceMode(CHOICE_MODE_MULTIPLE_MODAL);
+            ((ListView) holder.swipelist).setChoiceMode(CHOICE_MODE_MULTIPLE_MODAL);
 
             SwipeAdapter sadapter = new SwipeAdapter(getActivity().getApplicationContext(), position);
             holder.swipelist.setAdapter(sadapter);
@@ -789,30 +789,35 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
     }
 
     private void deleteContact(Contact contact) {
-        Cursor cur = getActivity().getContentResolver().query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                new String[]{"" + contact.getRecordId()}, null);
+//        Cursor cur = getActivity().getContentResolver().query(
+//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                new String[]{ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
+//                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+//                new String[]{"" + contact.getRecordId()}, null);
+//
+//        try {
+//            if (cur.moveToFirst()) {
+//                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();
+//                String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+//                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+//                getActivity().getContentResolver().delete(uri, null, null);
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e.getStackTrace());
+//        }finally {
+//            cur.close();
+//        }
 
         try {
-            if (cur.moveToFirst()) {
-                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();
-
-                String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-                getActivity().getContentResolver().delete(uri, null, null);
-
-                contactList.remove(contact);
-                User.getInstance(getActivity()).getContactList().remove(contact);
-                adapter.notifyDataSetChanged();
-            }
+            new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contact.getLookupKey());
+            getActivity().getContentResolver().delete(uri, null, null);
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
-        }finally {
-            cur.close();
+            e.printStackTrace();
         }
-
+        contactList.remove(contact);
+        User.getInstance(getActivity()).getContactList().remove(contact);
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -862,7 +867,8 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
         return request;
     }
-    private SoapObject getDeleteContactParams(String number){
+
+    private SoapObject getDeleteContactParams(String number) {
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.DELETE_CONTACT);
 
         PropertyInfo pi = new PropertyInfo();
