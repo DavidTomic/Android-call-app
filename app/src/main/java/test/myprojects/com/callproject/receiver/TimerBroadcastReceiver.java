@@ -37,7 +37,7 @@ public class TimerBroadcastReceiver extends BroadcastReceiver {
         Intent i = new Intent(context, TimerBroadcastReceiver.class);
         i.putExtra("time", time);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        am.set(AlarmManager.RTC_WAKEUP, time, pi);
+        am.set(AlarmManager.RTC, time, pi);
     }
 
     public static void CancelAlarmIfNeed(Context context)

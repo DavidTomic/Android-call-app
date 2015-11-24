@@ -39,6 +39,7 @@
     <string name="title_activity_edit_notifications">EditNotificationsActivity</string>
     <string name="title_activity_settings_detail">SettingsDetailActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_select_language">SelectLanguageActivity</string>
 
     <string name="one">1</string>
     <string name="two">2</string>
@@ -146,7 +147,6 @@
     <string name="remove_notifications">Remove notifications</string>
     <string name="remove_notification">Remove notification</string>
     <string name="please_correct_your_start_end_time">Please correct you start and end time</string>
-    <string name="title_activity_select_language">SelectLanguageActivity</string>
     <string name="ok">Ok</string>
     <string name="clear_timer">Clear timer</string>
     <string name="enter_phone_number">Please check your phone number</string>

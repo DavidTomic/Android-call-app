@@ -91,6 +91,5 @@
      <string name="remove_notifications">Fjern alle notifikation</string> 
     <string name="remove_notification">Fjern notifikation</string>
      <string name="please_correct_your_start_end_time">Ret start og slut tidspunkt</string>
-     <string name="title_activity_select_language">Vælg sprog</string>
 
 </resources>

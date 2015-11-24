@@ -119,11 +119,12 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                 showError(getString(R.string.please_correct_your_start_end_time));
 
-                return;
+            }else {
+
+                SendMessageTask task = new SendMessageTask(this, getUpdateStatusParamsWithTimeStamp());
+                task.execute();
             }
 
-            SendMessageTask task = new SendMessageTask(this, getUpdateStatusParamsWithTimeStamp());
-            task.execute();
         }
 
 
@@ -163,7 +164,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         setStatusBackgrounds();
 
     }
-
 
     private Status currentStatus;
 
