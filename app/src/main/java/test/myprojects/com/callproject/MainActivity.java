@@ -100,28 +100,28 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         Intent pushIntent = new Intent(this, ImALiveService.class);
         startService(pushIntent);
 
-        new SendMessageTask(null, getGetContactParams()).execute();
+  //      new SendMessageTask(null, getGetContactParams()).execute();
 
     }
 
-        private SoapObject getGetContactParams() {
-
-        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_CONTACT);
-
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("Phonenumber");
-        pi.setValue(User.getInstance(this).getPhoneNumber());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        pi = new PropertyInfo();
-        pi.setName("password");
-        pi.setValue(User.getInstance(this).getPassword());
-        pi.setType(String.class);
-        request.addProperty(pi);
-
-        return request;
-    }
+//        private SoapObject getGetContactParams() {
+//
+//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.GET_CONTACT);
+//
+//        PropertyInfo pi = new PropertyInfo();
+//        pi.setName("Phonenumber");
+//        pi.setValue(User.getInstance(this).getPhoneNumber());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        pi = new PropertyInfo();
+//        pi.setName("password");
+//        pi.setValue(User.getInstance(this).getPassword());
+//        pi.setType(String.class);
+//        request.addProperty(pi);
+//
+//        return request;
+//    }
 
 
     @Override

@@ -100,10 +100,12 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
             return false;
         }
 
+
+
         List<String> currentList = DataBase.getContactsPhoneNumberListFromDb
                 (DataBase.getInstance(mainActivity).getWritableDatabase());
 
-        // add new contacts to server
+        // add new contacts to server (user add contact out of this app)
         for (Contact contact : contactList) {
             if (!currentList.contains(contact.getPhoneNumber())) {
                 newContactsList.add(contact);
