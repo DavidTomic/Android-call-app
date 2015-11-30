@@ -470,6 +470,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
 
 
             String statusText = contact.getStatusText();
+            Log.i(TAG, "statusText " + statusText);
             if (statusText != null) {
                 holder.statusText.setText(contact.getStatusText());
                 holder.statusText.setVisibility(View.VISIBLE);
@@ -716,7 +717,7 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
             contact.setPhoneNumber(cursor.getString(cursor
                     .getColumnIndex(CallLog.Calls.NUMBER)));
 
-            //   Log.i(TAG, "NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) + " PN: " + contact.getPhoneNumber());
+         //   Log.i(TAG, "NAME: " + cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) + " PN: " + contact.getPhoneNumber());
 
             if (contact.getPhoneNumber() == null || contact.getPhoneNumber().length() < 5) continue;
 
@@ -738,6 +739,11 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 for (Contact c : User.getInstance(getActivity()).getContactList()) {
                     if (c.getRecordId() == contact.getRecordId()) {
                         contact.setStatus(c.getStatus());
+                        contact.setStatusText(c.getStatusText());
+
+                        if (contact.getName() == null){
+                            contact.setName(c.getName());
+                        }
                     }
                 }
             }
