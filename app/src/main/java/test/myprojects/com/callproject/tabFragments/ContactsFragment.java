@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -580,14 +581,13 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
     public class SwipeAdapter extends BaseAdapter {
         Context context;
         int parent_postion;
+        SQLiteDatabase db;
 
-
-        List<Notification> nList = DataBase.getNotificationListFromDb(DataBase.
-                getInstance(getActivity()).getWritableDatabase());
 
         public SwipeAdapter(Context context, int parent_postion) {
             this.context = context;
             this.parent_postion = parent_postion;
+            db = DataBase.getInstance(context).getWritableDatabase();
         }
 
         @Override
@@ -654,16 +654,10 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             if (status != null) {
 
-                boolean contains = false;
+                Notification notification = DataBase.getNotificationWithPhoneNumber
+                        (db, contact.getPhoneNumber());
 
-                for (Notification notification : nList) {
-                    if (notification.getPhoneNumber().contentEquals(contact.getPhoneNumber())) {
-                        contains = true;
-                        break;
-                    }
-                }
-
-                if (contains) {
+                if (notification != null) {
                     swipeholder.edit_btn.setText(getString(R.string.remove_notification));
                     swipeholder.ivEnvelop.setVisibility(View.VISIBLE);
                 } else {

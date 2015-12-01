@@ -37,7 +37,7 @@ public class DataBase extends SQLiteOpenHelper {
     }
 
     private DataBase(Context context) {
-        super(context, DB_NAME, null, 3);
+        super(context, DB_NAME, null, 4);
 
     }
 
