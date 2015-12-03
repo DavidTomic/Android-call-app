@@ -282,15 +282,32 @@ public class User {
         contactNumber = Uri.encode(contactNumber);
         int phoneContactID = -1;
 
-        Cursor contactLookupCursor = context.getContentResolver().query(Uri.
-                withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                        contactNumber), new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME,
-                ContactsContract.PhoneLookup._ID}, null, null, null);
+   //     Log.i(TAG, "contactNumber " + contactNumber);
 
-        while (contactLookupCursor.moveToNext()) {
-            phoneContactID = contactLookupCursor.getInt(contactLookupCursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+//        Cursor contactLookupCursor = context.getContentResolver().query(
+//                Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, contactNumber),
+//                new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup._ID},
+//                null, null, null);
+//
+//
+//        if (contactLookupCursor.getCount() > 0){
+//            contactLookupCursor.moveToFirst();
+//            phoneContactID = contactLookupCursor.getInt(contactLookupCursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
+//            contactLookupCursor.close();
+//        }
+
+        Cursor contactLookupCursor = context.getContentResolver().query(
+                Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, contactNumber),
+                new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.CONTACT_ID},
+                null, null, null);
+
+
+        if (contactLookupCursor.getCount() > 0){
+            contactLookupCursor.moveToFirst();
+            phoneContactID = contactLookupCursor.getInt(contactLookupCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+            contactLookupCursor.close();
         }
-        contactLookupCursor.close();
+
 
         return phoneContactID;
     }
