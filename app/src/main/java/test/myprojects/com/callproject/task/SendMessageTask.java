@@ -60,13 +60,6 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         soapEnvelope.dotNet = true;
         soapEnvelope.setOutputSoapObject(request);
 
-//        //mozda
-//        if (request.getName().contentEquals(CHECK_PHONE_NUMBERS)){
-//            soapEnvelope.implicitTypes = true;
-//            soapEnvelope.addMapping(NAMESPACE, "ActionRequest", new PhoneNumbers().getClass());
-//        }
-
-
         aht = new HttpTransportSE(URL, SOAP_TIMEOUT);
         aht.debug = true;
 
@@ -90,18 +83,18 @@ public class SendMessageTask extends AsyncTask<Void, Void, SoapObject> {
         super.onPostExecute(result);
         Log.i(TAG, "result " + result + " methodName " + request.getName());
 
-        try {
-            if (aht != null){
-                Log.d("dump Request: ", aht.requestDump);
-            }
-
-            if (result != null && aht!= null){
-                Log.w("dump Response: ", aht.responseDump);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        try {
+//            if (aht != null){
+//                Log.d("dump Request: ", aht.requestDump);
+//            }
+//
+//            if (result != null && aht!= null){
+//                Log.w("dump Response: ", aht.responseDump);
+//            }
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
 
         if (messageInterface != null){

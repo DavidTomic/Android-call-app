@@ -285,11 +285,7 @@ public class CheckAndUpdateAllContactsTask extends AsyncTask<Void, Void, Boolean
                         mainActivity.refreshStatuses();
                     }
 
-                    //      Prefs.setLastContactCount(mainActivity, contactList.size());
                 }
-//            else {
-//                Prefs.setLastContactCount(mainActivity, 0);
-//            }
             } catch (Exception e) {
                 e.printStackTrace();
             }

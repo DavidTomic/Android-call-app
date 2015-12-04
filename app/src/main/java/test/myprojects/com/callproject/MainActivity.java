@@ -142,7 +142,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         mPollHandler.postDelayed(mPollRunnable, 50);
 
         checkAndUpdateAllContact();
-     //   refreshCheckPhoneNumbers();
 
     }
     @Override
@@ -204,9 +203,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         mPollHandler.removeCallbacks(mPollRunnable);
         mPollHandler.postDelayed(mPollRunnable, 50);
     }
-//    public void refreshCheckPhoneNumbers(){
-//        new SendMessageTask(this, getCheckPhoneParams()).execute();
-//    }
+
     public void checkAndUpdateAllContact(){
         new CheckAndUpdateAllContactsTask(this).execute();
     }
@@ -229,38 +226,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
 
         return request;
     }
-//    private SoapObject getCheckPhoneParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.CHECK_PHONE_NUMBERS);
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        SoapObject phoneNumbersSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "PhoneNumbers");
-//
-//        List<Contact> cList = User.getInstance(this).getContactList();
-//
-//        for (Contact contact : cList) {
-//            PropertyInfo piPhoneNumber = new PropertyInfo();
-//            piPhoneNumber.setName("string");
-//            piPhoneNumber.setValue(contact.getPhoneNumber());
-//            piPhoneNumber.setType(String.class);
-//            phoneNumbersSoapObject.addProperty(piPhoneNumber);
-//        }
-//
-//        request.addProperty("PhoneNumbers", phoneNumbersSoapObject);
-//
-//        return request;
-//    }
+
     private SoapObject getLogInParams() {
 
         SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.LOG_IN);
@@ -325,15 +291,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
             }
 
         }
-//        else {
-//
-//            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//            lastCallTime = sdf.format(new Date(time));
-//        }
-
-     //   Log.i(TAG, "endTime " + endTime);
 
 
         pi = new PropertyInfo();
@@ -450,32 +407,7 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                 e.printStackTrace();
             }
         }
-//        else if (methodName.contentEquals(SendMessageTask.CHECK_PHONE_NUMBERS)) {
-//            try {
-//
-//                int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
-//
-//                List<String> list = User.getInstance(this).getCheckPhoneNumberList();
-//                list.clear();
-//
-//                if (resultStatus == 2) {
-//
-//                    SoapObject phoneNumbersSoapObject = (SoapObject) result.getProperty("PhoneNumbers");
-//
-//                    for (int i = 0; i < phoneNumbersSoapObject.getPropertyCount(); i++) {
-//                     //   Log.i(TAG, "phoneNumbersSoapObject " + phoneNumbersSoapObject.getProperty(i));
-//                        list.add(""+phoneNumbersSoapObject.getProperty(i));
-//                    }
-//
-//
-//                }
-//
-//
-//            } catch (NullPointerException ne) {
-//                ne.printStackTrace();
-//            }
-//
-//        }
+
         else if (methodName.contentEquals(SendMessageTask.LOG_IN)) {
             try {
                 int resultStatus = Integer.valueOf(result.getProperty("Result").toString());
@@ -520,21 +452,6 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
                         user.setStatus(Status.values()[Integer.valueOf(result.getProperty("Status").toString())]);
                     }
 
-//                    String statusStartTime = "" + result.getProperty("StartTimeStatus");
-//                    if (statusStartTime.contentEquals("anyType{}")){
-//                        statusStartTime = "2000-01-01T00:00:00";
-//                    }
-//              //      user.setStatusStartTime(statusStartTime);
-//
-//                    String statusEndTime = "" + result.getProperty("EndTimeStatus");
-//                    if (statusEndTime.contentEquals("anyType{}")){
-//                        statusEndTime = "2000-01-01T00:00:00";
-//                    }
-                    //      user.setStatusEndTime(statusEndTime);
-
-
-
-
 
                     //    Log.i(TAG, "lang user " + user.getLanguage().getValue());
 
@@ -564,7 +481,4 @@ public class MainActivity extends FragmentActivity implements MessageInterface {
         }
     }
 
-    private void chechForNotification(){
-
-    }
 }

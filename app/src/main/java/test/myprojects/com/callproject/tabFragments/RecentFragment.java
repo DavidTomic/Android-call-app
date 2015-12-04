@@ -494,24 +494,10 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
                 holder.edit_btn.setText(getString(R.string.invite));
                 holder.ivEnvelop.setVisibility(View.GONE);
 
-//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-//                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
-//                params.addRule(RelativeLayout.CENTER_VERTICAL);
-//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                params.setMargins(0,0,WindowSize.convertDpToPixel(14),0);
-//                holder.date.setLayoutParams(params);
 
             } else {
                 holder.infoButton.setVisibility(View.VISIBLE);
 
-//                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-//                        ((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT);
-//                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                params.setMargins(0,0,WindowSize.convertDpToPixel(14),WindowSize.convertDpToPixel(2));
-//                holder.date.setLayoutParams(params);
-//
-//                holder.vStatus.setVisibility(View.VISIBLE);
                 holder.tvOnPhone.setVisibility(View.GONE);
 
                 if (status != null) {
@@ -770,8 +756,6 @@ public class RecentFragment extends Fragment implements MessageInterface, View.O
         cursor.close();
 
         adapter.notifyDataSetChanged();
-
-     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
 
     }
 

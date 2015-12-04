@@ -91,5 +91,11 @@
      <string name="remove_notifications">Fjern alle notifikation</string> 
     <string name="remove_notification">Fjern notifikation</string>
      <string name="please_correct_your_start_end_time">Ret start og slut tidspunkt</string>
+    <string name="ok">Ok</string>
+    <string name="clear_timer">Clear timer</string>
+    <string name="enter_phone_number">Kontroller venligst dit telefonnummer</string>
+    <string name="enter_password">Kontroller din adgangskode</string>
+    <string name="enter_name">Kontroller venligst dit navn</string>
+    <string name="enter_email">Tjek venligst din email</string>
 
 </resources>

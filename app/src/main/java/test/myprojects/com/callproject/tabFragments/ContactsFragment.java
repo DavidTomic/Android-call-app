@@ -309,16 +309,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
         getActivity().registerReceiver(statusUpdateBroadcastReceiver,
                 new IntentFilter(MainActivity.BROADCAST_STATUS_UPDATE_ACTION));
 
-
-//        if (User.getInstance(getActivity()).isNeedRefreshStatus()) {
-//            User.getInstance(getActivity()).setNeedRefreshStatus(false);
-//
-//            Prefs.setLastCallTime(getActivity(), 0);
-//            ((MainActivity) getActivity()).refreshStatuses();
-//
-//        }
-
-        //   adapter.notifyDataSetChanged();
         createListAdapter(0);
     }
 
@@ -388,21 +378,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
     }
 
-    private void closeOpenedItems() {
-
-        StickyListHeadersListView list = stlist.getRefreshableView();
-//        for (int i = 0; i< list.getLastVisiblePosition();i++){
-//            View child = list.getAdapter().getView(i, null ,list);
-//            SwipeListView swipeListView = (SwipeListView) child.findViewById(R.id.swipe_lv_list);
-//            swipeListView.closeOpenedItems();
-//        }
-
-        View child = list.getAdapter().getView(2, null, list);
-        SwipeListView swipeListView = (SwipeListView) child.findViewById(R.id.swipe_lv_list);
-        swipeListView.openAnimate(0);
-    }
-
-
     public class StickyAdapter extends BaseAdapter implements StickyListHeadersAdapter, Filterable {
 
 
@@ -423,15 +398,9 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
             mOriginalValues = null;
 
-            //   Log.i(TAG, "User.getInstance(mContext).getContactList() " +
-            //          User.getInstance(mContext).getContactList().size());
 
             contactList = new ArrayList<>(User.getInstance(mContext).getContactList());
-            //
             notifyDataSetChanged();
-            //  closeOpenedItems();
-
-            //  createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
         }
 
         @Override
@@ -737,10 +706,7 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
 
 
                     }
-//                        else if (text.contentEquals(getString(R.string.add_contact))) {
-//                            new SendMessageTask(ContactsFragment.this, getAddContactsParams(contactList.get(parent_postion).getPhoneNumber())).execute();
-//
-//                        }
+
                     else if (text.contentEquals(getString(R.string.set_notification))) {
 
 
@@ -783,24 +749,6 @@ public class ContactsFragment extends Fragment implements MessageInterface, View
     }
 
     private void deleteContact(Contact contact) {
-//        Cursor cur = getActivity().getContentResolver().query(
-//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-//                new String[]{ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
-//                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-//                new String[]{"" + contact.getRecordId()}, null);
-//
-//        try {
-//            if (cur.moveToFirst()) {
-//                new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();
-//                String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-//                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-//                getActivity().getContentResolver().delete(uri, null, null);
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e.getStackTrace());
-//        }finally {
-//            cur.close();
-//        }
 
         try {
             new SendMessageTask(null, getDeleteContactParams(contact.getPhoneNumber())).execute();

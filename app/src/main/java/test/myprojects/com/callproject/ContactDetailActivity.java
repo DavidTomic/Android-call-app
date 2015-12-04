@@ -89,10 +89,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
 
         }
-//        else if (text.contentEquals(getString(R.string.add_contact))){
-//            new SendMessageTask(this, getAddContactsParams(contact.getPhoneNumber())).execute();
-//
-//        }
+
         else if (text.contentEquals(getString(R.string.set_notification))) {
             bConfirm.setText(getString(R.string.remove_notification));
 

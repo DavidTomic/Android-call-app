@@ -68,8 +68,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     private static final String TAG = "FavoritFragment";
     private View rootView;
     private List<Contact> favoritList = new ArrayList<>();
-    //  private FavoritAdapter favoritAdapter;
-    //  private SwipeMenuListView swipeMenuListView;
     private boolean editEnabled;
 
     private PullToRefreshStickyList stlist;
@@ -95,9 +93,7 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
         if (editEnabled) {
             bEdit.setText(getString(R.string.edit));
             editEnabled = false;
-            //  swipeMenuListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
         } else {
-            //  swipeMenuListView.setSwipeDirection(0);
             bEdit.setText(getString(R.string.done));
             editEnabled = true;
         }
@@ -121,12 +117,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
     LinearLayout llYellowStatus;
     @Bind(R.id.llGreenStatus)
     LinearLayout llGreenStatus;
-
-//    @OnClick(R.id.bSetTime)
-//    public void bSetTimeClicked() {
-//        closeSwipeView();
-//        startActivity(new Intent(getActivity(), SetStatusActivity.class));
-//    }
 
     @OnClick(R.id.llSettings)
     public void settingsClicked() {
@@ -173,7 +163,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
 
         adapter.notifyDataSetChanged();
 
-     //   createListAdapter(stlist.getRefreshableView().getFirstVisiblePosition());
     }
 
     @Override
@@ -188,25 +177,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
             stlist = (PullToRefreshStickyList) rootView.findViewById(R.id.stickSwipeList);
 
             createListAdapter(0);
-
-            //  stlist.getRefreshableView().sets
-
-
-//            swipeMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    Log.i(TAG, "onItemClick");
-//                    dialNumber(favoritList.get(position).getPhoneNumber());
-//                }
-//            });
-//
-//            swipeMenuListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-//                @Override
-//                public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-//                    removeFromFavorites(favoritList.get(position));
-//                    return false;
-//                }
-//            });
 
 
             llStatusHolder.setOnTouchListener(new View.OnTouchListener() {
@@ -279,14 +249,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                                 closeSwipeView();
                             } else {
 
-//                                if (rightMargin > WindowSize.convertDpToPixel(30)) {
-//                                    rightMargin = WindowSize.convertDpToPixel(100);
-//                                    params.rightMargin = rightMargin;
-//                                    params.leftMargin = -rightMargin;
-//                                    llStatusHolder.setLayoutParams(params);
-//                                } else {
-//                                    closeSwipeView();
-//                                }
                                 if (rightMargin > WindowSize.convertDpToPixel(30)) {
                                     startActivity(new Intent(getActivity(), SetStatusActivity.class));
                                 }
@@ -547,27 +509,6 @@ public class FavoritFragment extends Fragment implements MessageInterface, View.
                 holder.edit_btn.setText(getString(R.string.invite));
                 holder.ivEnvelop.setVisibility(View.GONE);
             }
-
-
-//            List<String> checkPhoneList = User.getInstance(getActivity()).getCheckPhoneNumberList();
-//
-//            if (checkPhoneList.contains(contact.getPhoneNumber())) {
-//
-//                Notification notification = DataBase.getNotificationWithPhoneNumber
-//                        (db, contact.getPhoneNumber());
-//
-//                if (notification != null) {
-//                    holder.edit_btn.setText(getString(R.string.remove_notification));
-//                    holder.ivEnvelop.setVisibility(View.VISIBLE);
-//                } else {
-//                    holder.edit_btn.setText(getString(R.string.set_notification));
-//                    holder.ivEnvelop.setVisibility(View.GONE);
-//                }
-//
-//            } else {
-//                holder.edit_btn.setText(getString(R.string.invite));
-//                holder.ivEnvelop.setVisibility(View.GONE);
-//            }
 
 
             holder.edit_btn.setOnClickListener(new View.OnClickListener() {

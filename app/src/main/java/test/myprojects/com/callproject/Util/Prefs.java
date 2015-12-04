@@ -34,7 +34,6 @@ public class Prefs {
     private static final String PREFS_USER_TIMER_STATUS_TEXT = "status_timer_text";
 
     public static final String PREFS_LAST_CALL_TIME = "last_call_time_v2";
-  //  public static final String PREFS_LAST_CONTACTS_COUNT = "last_contacts_count";
 
     public static final String PREFS_VOICEMAIL_NUMBER = "voice_mail_number";
     public static final String PREFS_COUNTRY_CODE = "country_code";
@@ -132,21 +131,6 @@ public class Prefs {
         return list;
     }
 
-
-//    public static void setLastContactCount(Context context, int count) {
-//        SharedPreferences.Editor editor = context.getSharedPreferences(
-//                PREFS_FILE, 0).edit();
-//
-//        editor.putLong(PREFS_LAST_CONTACTS_COUNT, count);
-//        editor.commit();
-//    }
-//    public static long getLastContactCount(Context context) {
-//
-//        SharedPreferences prefs = context.getSharedPreferences(
-//                PREFS_FILE, 0);
-//
-//        return prefs.getLong(PREFS_LAST_CONTACTS_COUNT, 0);
-//    }
 
     public static void setVoiceMailNumber(Context context, String voicemailNumber) {
         SharedPreferences.Editor editor = context.getSharedPreferences(

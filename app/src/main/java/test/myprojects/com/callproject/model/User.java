@@ -42,9 +42,6 @@ public class User {
     private int requestStatusInfoSeconds;
 
     private List<Contact> contactList = new ArrayList<>();
-  //  private List<String> checkPhoneNumberList = new ArrayList<>();
-
-  //  private boolean needRefreshStatus;
 
     private User() {
 

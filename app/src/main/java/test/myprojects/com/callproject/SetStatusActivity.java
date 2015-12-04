@@ -127,23 +127,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
         }
 
-
-//        List<String> defaultTextList = Prefs.getDefaultTexts(this);
-//
-//        if (etStatus.getText() != null && etStatus.getText().toString().length() > 0) {
-//            String currentText = etStatus.getText().toString();
-//
-//            if (!defaultTextList.contains(currentText)) {
-//
-//                defaultTextList.add(currentText);
-//
-//                Prefs.saveDefaultTexts(this, defaultTextList);
-//
-//                SendMessageTask task = new SendMessageTask(this, getDefaultTextParams());
-//                task.execute();
-//            }
-//        }
-
     }
 
     @Override
@@ -257,23 +240,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
                         tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                     (new java.util.Date(selectedStartTime)));
 
-
-//                        if (selectedEndTime == 0) {
-//
-//                            tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-//                                    (new java.util.Date(selectedStartTime)));
-//
-//                        } else {
-//                            if (selectedStartTime < selectedEndTime) {
-//
-//                                tvStartTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-//                                        (new java.util.Date(selectedStartTime)));
-//
-//                            } else {
-//                                selectedStartTime = 0;
-//                                tvStartTime.setText("-:-");
-//                            }
-//                        }
                     } else {
                         selectedStartTime = 0;
                         tvStartTime.setText("-:-");
@@ -285,13 +251,6 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
 
                     Log.i(TAG, "time " + selectedEndTime);
 
-//                    if (selectedEndTime > selectedStartTime && selectedEndTime > System.currentTimeMillis()) {
-//                        tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
-//                                (new java.util.Date(selectedEndTime)));
-//                    } else {
-//                        selectedEndTime = 0;
-//                        tvEndTime.setText("-:-");
-//                    }
                     if (selectedEndTime > System.currentTimeMillis() && selectedEndTime > selectedStartTime) {
                         tvEndTime.setText(new java.text.SimpleDateFormat("dd-MM·HH:mm").format
                                 (new java.util.Date(selectedEndTime)));
@@ -473,38 +432,7 @@ public class SetStatusActivity extends Activity implements View.OnClickListener,
         }
     }
 
-//    private SoapObject getDefaultTextParams() {
-//
-//        SoapObject request = new SoapObject(SendMessageTask.NAMESPACE, SendMessageTask.SET_DEFAULT_TEXT);
-//
-//        PropertyInfo pi = new PropertyInfo();
-//        pi.setName("Phonenumber");
-//        pi.setValue(User.getInstance(this).getPhoneNumber());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        pi = new PropertyInfo();
-//        pi.setName("password");
-//        pi.setValue(User.getInstance(this).getPassword());
-//        pi.setType(String.class);
-//        request.addProperty(pi);
-//
-//        SoapObject piDefaultTextSoapObject = new SoapObject(SendMessageTask.NAMESPACE, "DefaultText");
-//
-//        List<String> list = Prefs.getDefaultTexts(this);
-//
-//        for (String text : list) {
-//            PropertyInfo piDefaultText = new PropertyInfo();
-//            piDefaultText.setName("string");
-//            piDefaultText.setValue(text);
-//            piDefaultText.setType(String.class);
-//            piDefaultTextSoapObject.addProperty(piDefaultText);
-//        }
-//
-//        request.addProperty("DefaultText", piDefaultTextSoapObject);
-//
-//        return request;
-//    }
+
 
     @Override
     public void responseToSendMessage(SoapObject result, String methodName) {

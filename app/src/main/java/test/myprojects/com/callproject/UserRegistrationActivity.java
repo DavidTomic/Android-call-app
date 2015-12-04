@@ -143,32 +143,19 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
 
     private void refreshUI() {
 
-//        String text = bTitle.getText().toString();
-//        SpannableString spannablecontent = new SpannableString(text);
 
         if (isLogIn) {
-//            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY), 0, text.indexOf("/"),
-//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-//                            (R.color.blue_default)), text.indexOf("/"), text.length(),
-//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             etName.setVisibility(View.INVISIBLE);
             etEmail.setVisibility(View.INVISIBLE);
             bConfirm.setText(getString(R.string.log_in));
         } else {
-//            spannablecontent.setSpan(new ForegroundColorSpan(getResources().getColor
-//                            (R.color.blue_default)), 0, text.indexOf("/"),
-//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            spannablecontent.setSpan(new ForegroundColorSpan(Color.GRAY),
-//                    text.indexOf("/"), text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             etName.setVisibility(View.VISIBLE);
             etEmail.setVisibility(View.VISIBLE);
             bConfirm.setText(getString(R.string.sign_up));
         }
 
-     //   bTitle.setText(spannablecontent);
 
         TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         String mPhoneNumber = tMgr.getLine1Number();
@@ -396,27 +383,9 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setPassword(etPassword.getText().toString());
                     user.setName(accountSetupSoapObject.getProperty("Name").toString());
                     user.setEmail(accountSetupSoapObject.getProperty("Email").toString());
-                //    user.setLanguage(Language.values()[Integer.valueOf(accountSetupSoapObject.getProperty("Language").toString())]);
                     user.setLogedIn(true);
 
-//                    String lang = "en";
-//                    if (user.getLanguage() == Language.DANISH){
-//                        lang = "da";
-//                    }
-//
-//                    Prefs.setLanguageCountryCode(this, lang);
-//
-//                    Locale myLocale = new Locale(lang);
-//                    Locale.setDefault(myLocale);
-//                    Resources res = getResources();
-//                    DisplayMetrics dm = res.getDisplayMetrics();
-//                    Configuration conf = res.getConfiguration();
-//                    conf.locale = myLocale;
-//                    res.updateConfiguration(conf, dm);
 
-//                    Prefs.setUserData(this, User.getInstance(this));
-//                    startActivity(new Intent(this, MainActivity.class));
-//                    finish();
                     String countryCode = Locale.getDefault().getCountry().toLowerCase();
 
                     Log.i(TAG, "CCC + " + countryCode);
@@ -491,7 +460,6 @@ public class UserRegistrationActivity extends Activity implements MessageInterfa
                     user.setLogedIn(true);
 
                     Prefs.setUserData(this, User.getInstance(this));
-              //      Prefs.setLastContactCount(this, user.getContactList().size());
                     DataBase.addContactsPhoneNumbersToDb(DataBase.getInstance(this).getWritableDatabase(),
                             user.getContactList());
 
