@@ -23,7 +23,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Mint.enableDebug();
+        //Mint.enableDebug();
         Mint.initAndStartSession(this, "fb54e21b");
 
         WindowSize.initialize(this);
