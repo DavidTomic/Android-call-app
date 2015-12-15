@@ -20,7 +20,6 @@ android {
 }
 
 repositories {
-    maven { url 'http://clinker.47deg.com/nexus/content/groups/public' }
     maven {
         url "https://mint.splunk.com/gradle/"
     }
@@ -35,9 +34,6 @@ dependencies {
     compile 'com.baoyz.swipemenulistview:library:1.2.1'
 
     compile 'se.emilsjolander:stickylistheaders:2.5.1'
-    compile('com.fortysevendeg.swipelistview:swipelistview:1.0-SNAPSHOT@aar') {
-        transitive = true
-    }
     compile project(':libraryPTR')
 
     compile 'de.hdodenhof:circleimageview:1.3.0'

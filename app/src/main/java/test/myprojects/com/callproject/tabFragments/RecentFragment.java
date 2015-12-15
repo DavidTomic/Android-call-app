@@ -32,7 +32,6 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -59,6 +58,7 @@ import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
 import test.myprojects.com.callproject.service.NotificationService;
+import test.myprojects.com.callproject.swipelistview.SwipeListView;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
 

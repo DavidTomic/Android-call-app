@@ -11,7 +11,7 @@
     <!--android:layout_height="wrap_content"/>-->
 
 
-    <com.fortysevendeg.swipelistview.SwipeListView xmlns:konj="http://schemas.android.com/apk/res-auto"
+    <test.myprojects.com.callproject.swipelistview.SwipeListView xmlns:konj="http://schemas.android.com/apk/res-auto"
         android:id="@+id/swipe_lv_list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

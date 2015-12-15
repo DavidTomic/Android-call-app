@@ -30,8 +30,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
-import com.fortysevendeg.swipelistview.SwipeListView;
 
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
@@ -59,6 +57,7 @@ import test.myprojects.com.callproject.model.User;
 import test.myprojects.com.callproject.myInterfaces.MessageInterface;
 import test.myprojects.com.callproject.receiver.TimerBroadcastReceiver;
 import test.myprojects.com.callproject.service.NotificationService;
+import test.myprojects.com.callproject.swipelistview.SwipeListView;
 import test.myprojects.com.callproject.task.SendMessageTask;
 import test.myprojects.com.callproject.view.IndexView;
 import test.myprojects.com.callproject.view.PullToRefreshStickyList;
