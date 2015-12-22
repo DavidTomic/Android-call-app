@@ -147,7 +147,7 @@ public class ContactDetailActivity extends Activity implements MessageInterface 
 
         }
 
-        new SendMessageTask(this, getAddContactsParams(contact));
+        new SendMessageTask(this, getAddContactsParams(contact)).execute();
     }
 
     @OnClick(R.id.ibCall)
